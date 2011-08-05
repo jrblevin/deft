@@ -201,8 +201,17 @@
 (defun deft-find-all-files ()
   "Return a list of all files in the Deft directory."
   (if (file-exists-p deft-directory)
-      (directory-files deft-directory t (concat "\." deft-extension "$") t)
-    nil))
+      (let (files result)
+        ;; List all files
+        (setq files
+              (directory-files deft-directory t
+                               (concat "\." deft-extension "$") t))
+        ;; Filter out files that are not readable or are directories
+        (dolist (file files)
+          (when (and (file-readable-p file)
+                     (not (file-directory-p file)))
+            (setq result (cons file result))))
+        result)))
 
 (defun deft-parse-title (contents)
   "Parse the given file CONTENTS and determine the title.
