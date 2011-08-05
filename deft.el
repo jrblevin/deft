@@ -43,10 +43,10 @@
 ;; list is updated on the fly with all files that match the current
 ;; string.
 
-;; Pressing TAB while filtering will trigger a completion.  If there
+;; Pressing `TAB` while filtering will trigger a completion.  If there
 ;; are matching files, the first file in the list will be opened.  If
 ;; there are no matching files, a new file will be created using the
-;; search string as the title.  Pressing RET while filtering will
+;; search string as the title.  Pressing `RET` while filtering will
 ;; return to the file list for further manipulation or later
 ;; filtering.
 
@@ -85,10 +85,26 @@
 ;; * On slower systems, press `L` instead for static filtering, which
 ;;   updates the only list once, when `RET` is pressed.
 
+;; Getting Started
+;; ---------------
+
+;; ![Setup](http://jblevins.org/projects/deft/setup.png)
+
+;; When you first load `deft.el` and run `M-x deft`, it will complain
+;; that it cannot find the `~/.deft` directory.  You can either create
+;; a symbolic link to another directory where you keep your notes or
+;; run `M-x deft-setup` to create the `~/.deft` directory
+;; automatically.
+
+;; One useful way to use Deft is to keep a directory of notes in a
+;; Dropbox folder.  This can be used with other applications and
+;; mobile devices, for example, Notational Velocity or Simplenote
+;; on OS X, Elements on iOS, or Epistle on Android.
+
 ;; Customization
 ;; -------------
 
-;; Customize the `deft' group to change the functionality.
+;; Customize the `deft` group to change the functionality.
 
 ;; By default, Deft looks for notes by searching for files with the
 ;; extension `.txt` in the `~/.deft` directory.  You can customize
@@ -111,6 +127,11 @@
 
 ;;     (global-set-key [f8] 'deft)
 
+;; The faces used for highlighting various parts of the screen can
+;; also be customized.  By default, these faces inherit their
+;; properties from the standard font-lock faces defined by your current
+;; color theme.
+
 ;; Acknowledgements
 ;; ----------------
 
@@ -132,6 +153,10 @@
 (require 'widget)
 
 ;; Customization
+
+(defgroup deft nil
+  "Emacs Deft mode."
+  :group 'local)
 
 (defcustom deft-directory (expand-file-name "~/.deft/")
   "Deft directory."
