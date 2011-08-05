@@ -25,8 +25,8 @@
 
 ;;; Commentary:
 
-;; Deft is an Emacs mode for slicing and dicing directories of plain
-;; text notes, inspired by Notational Velocity.
+;; Deft is an Emacs mode for quickly browsing, filtering, and editing
+;; directories of plain text notes, inspired by Notational Velocity.
 
 ;; Download it directly here:
 
@@ -165,8 +165,8 @@
 ;; Thanks to Konstantinos Efstathiou for writing simplnote.el, from
 ;; which I borrowed liberally, and to Zachary Schneirov for writing
 ;; Notational Velocity, which I have never had the pleasure of using,
-;; but whose functionality and spirit I wanted to bring to Emacs and
-;; Linux.
+;; but whose functionality and spirit I wanted to bring to other
+;; platforms via Emacs.
 
 ;; History
 ;; -------
