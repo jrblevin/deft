@@ -30,11 +30,27 @@
 ;; that it presents the user with a list of files in the Deft
 ;; directory which can be browsed, opened, renamed, or deleted.
 
+;; ![File Browser](http://jblevins.org/projects/deft/browser.png)
+
 ;; This list consists of the title of each file followed by a short
 ;; summary.  The title is taken to be the first line of the file and
 ;; the summary is extracted from the text that follows.  By default,
 ;; Deft lists all files in the Deft directory in terms of the last
 ;; modified date, from newest to oldest.
+
+;; All Deft files or notes are simple plain text files where the first
+;; line contains a title.  As an example, the following directory
+;; structure generated the screenshot above.
+;;
+;;     % ls ~/.deft
+;;     about.txt    browser.txt     directory.txt   operations.txt
+;;     ack.txt      completion.txt  extensions.txt  text-mode.txt
+;;     binding.txt  creation.txt    filtering.txt
+;;     
+;;     % cat ~/.deft/about.txt
+;;     About
+;;     
+;;     An Emacs mode for slicing and dicing plain text files.
 
 ;; The second mode of operation is filtering.  The list of files can
 ;; be filtered or searched using a string, which will match either the
@@ -42,6 +58,8 @@
 ;; and begin typing.  Filtering happens interactively and the file
 ;; list is updated on the fly with all files that match the current
 ;; string.
+
+;; ![Filtering](http://jblevins.org/projects/deft/filter.png)
 
 ;; Pressing `TAB` while filtering will trigger a completion.  If there
 ;; are matching files, the first file in the list will be opened.  If
@@ -87,8 +105,6 @@
 
 ;; Getting Started
 ;; ---------------
-
-;; ![Setup](http://jblevins.org/projects/deft/setup.png)
 
 ;; When you first load `deft.el` and run `M-x deft`, it will complain
 ;; that it cannot find the `~/.deft` directory.  You can either create
