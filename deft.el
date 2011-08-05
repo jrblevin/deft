@@ -531,7 +531,8 @@ title."
     (define-key map (kbd "r") 'deft-rename-file)
     (define-key map (kbd "n") 'widget-forward)
     (define-key map (kbd "p") 'widget-backward)
-    map))
+    map)
+  "Keymap for Deft mode.")
 
 (defun deft-mode ()
   "Major mode for quickly browsing, filtering, and editing plain text notes.
