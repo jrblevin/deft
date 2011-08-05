@@ -150,6 +150,38 @@
   :type 'function
   :group 'deft)
 
+;; Faces
+
+(defgroup deft-faces nil
+  "Faces used in Deft mode"
+  :group 'deft
+  :group 'faces)
+
+(defface deft-header-face
+  '((t :inherit font-lock-keyword-face :bold t))
+  "Face for Deft header."
+  :group 'deft-faces)
+
+(defface deft-filter-string-face
+  '((t :inherit font-lock-string-face))
+  "Face for Deft filter string."
+  :group 'deft-faces)
+
+(defface deft-title-face
+  '((t :inherit font-lock-function-name-face :bold t))
+  "Face for Deft file titles."
+  :group 'deft-faces)
+
+(defface deft-separator-face
+  '((t :inherit font-lock-comment-delimiter-face))
+  "Face for Deft separator string."
+  :group 'deft-faces)
+
+(defface deft-summary-face
+  '((t :inherit font-lock-comment-face))
+  "Face for Deft file summary strings."
+  :group 'deft-faces)
+
 ;; Constants
 
 (defconst deft-buffer "*Deft*"
@@ -303,9 +335,14 @@ title."
 
 (defun deft-print-header ()
   "Prints the *Deft* buffer header."
-  (widget-insert "Deft")
-  (when deft-filter-regexp
-    (widget-insert (concat ": " deft-filter-regexp)))
+  (if deft-filter-regexp
+      (progn
+        (widget-insert
+         (propertize "Deft: " 'face 'deft-header-face))
+        (widget-insert
+         (propertize deft-filter-regexp 'face 'deft-filter-string-face)))
+    (widget-insert
+         (propertize "Deft" 'face 'deft-header-face)))
   (widget-insert "\n\n"))
 
 (defun deft-buffer-setup ()
@@ -338,6 +375,7 @@ title."
       (widget-create 'link
                      :button-prefix ""
                      :button-suffix ""
+                     :button-face 'deft-title-face
                      :format "%[%v%]"
                      :tag file
                      :help-echo "Edit this file"
@@ -345,8 +383,8 @@ title."
                                (deft-open-file (widget-get widget :tag)))
                      (or title "[Empty file]"))
       (when summary
-        (widget-insert (propertize deft-separator 'face 'shadow))
-        (widget-insert (propertize summary 'face 'shadow)))
+        (widget-insert (propertize deft-separator 'face 'deft-separator-face))
+        (widget-insert (propertize summary 'face 'deft-summary-face)))
       (widget-insert "\n"))))
 
 (defun deft-refresh ()
