@@ -25,6 +25,14 @@
 ;; Deft is an Emacs mode for slicing and dicing directories of plain
 ;; text notes, inspired by Notational Velocity.
 
+;; Download it directly here:
+
+;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
+
+;; or clone the Git repository:
+
+;;     git clone git://jblevins.org/git/deft.git
+
 ;; Deft has two basic modes of operation.  The first, and default, is
 ;; the file browser mode, which is similar in spirit to dired-mode in
 ;; that it presents the user with a list of files in the Deft
