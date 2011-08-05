@@ -497,8 +497,8 @@ If the point is not on a file widget, do nothing."
   (setq deft-current-files (delq nil deft-current-files))
   (deft-refresh))
 
-(defun deft-filter-decrement (char)
-  "Remove character CHAR from the filter regexp and update `deft-current-files'."
+(defun deft-filter-decrement ()
+  "Remove last character from the filter regexp and update `deft-current-files'."
   (if (> (length deft-filter-regexp) 1)
       (deft-filter-static (substring deft-filter-regexp 0 -1))
     (deft-filter-clear)))
@@ -526,7 +526,7 @@ If the point is not on a file widget, do nothing."
         (setq exit t))
        ;; Backspace (remove the last character from the filter regexp)
        ((or (char-equal char ?\b) (char-equal char ?\d))
-        (deft-filter-decrement char))
+        (deft-filter-decrement))
        ;; Default
        (t
         (deft-filter-increment char))))))
