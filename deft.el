@@ -562,14 +562,6 @@ Turning on deft-mode runs the hook `deft-mode-hook'.
   (if (not (eq major-mode 'deft-mode))
       (deft-mode)))
 
-;; DEBUG
-
-(defun deft-reload ()
-  (interactive)
-  (unload-feature 'deft)
-  (load-library "deft")
-  (deft))
-
 (provide 'deft)
 
 ;;; deft.el ends here
