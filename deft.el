@@ -163,7 +163,8 @@
 
 ;; Global variables
 
-(defvar deft-mode-hook nil)
+(defvar deft-mode-hook nil
+  "Hook run when entering Deft mode.")
 
 (defvar deft-filter-regexp nil
   "Current filter regexp used by Deft.")
@@ -194,7 +195,7 @@
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
 (defun deft-base-filename (file)
-  "Strip the path and extension from a filename."
+  "Strip the path and extension from filename FILE."
   (setq file (file-name-nondirectory file))
   (setq file (replace-regexp-in-string (concat "\." deft-extension "$") "" file)))
 
@@ -261,13 +262,14 @@ title."
   (kill-buffer "*Deft temp*"))
 
 (defun deft-file-newer-p (file1 file2)
+  "Return non-nil if FILE1 was modified since FILE2 and nil otherwise."
   (let (time1 time2)
     (setq time1 (deft-file-mtime file1))
     (setq time2 (deft-file-mtime file2))
     (time-less-p time2 time1)))
 
 (defun deft-cache-initialize ()
-  "Initializes hash tables for caching files."
+  "Initialize hash tables for caching files."
   (setq deft-hash-contents (make-hash-table :test 'equal))
   (setq deft-hash-mtimes (make-hash-table :test 'equal))
   (setq deft-hash-titles (make-hash-table :test 'equal))
@@ -282,27 +284,32 @@ title."
 ;; Cache access
 
 (defun deft-file-contents (file)
+  "Retrieve complete contents of FILE from cache."
   (gethash file deft-hash-contents))
 
 (defun deft-file-mtime (file)
+  "Retrieve modified time of FILE from cache."
   (gethash file deft-hash-mtimes))
 
 (defun deft-file-title (file)
+  "Retrieve title of FILE from cache."
   (gethash file deft-hash-titles))
 
 (defun deft-file-summary (file)
+  "Retrieve summary of FILE from cache."
   (gethash file deft-hash-summaries))
 
 ;; File list display
 
 (defun deft-print-header ()
-  "Prints the Deft buffer header"
+  "Prints the *Deft* buffer header."
   (widget-insert "Deft")
   (when deft-filter-regexp
     (widget-insert (concat ": " deft-filter-regexp)))
   (widget-insert "\n\n"))
 
 (defun deft-buffer-setup ()
+  "Render the file browser in the *Deft* buffer."
   (let ((inhibit-read-only t))
     (erase-buffer))
   (remove-overlays)
@@ -322,6 +329,7 @@ title."
   (forward-line 2))
 
 (defun deft-file-widget (file)
+  "Add a line to the file browser for the given FILE."
   (when file
     (let ((key (file-name-nondirectory file))
           (text (deft-file-contents file))
@@ -351,9 +359,11 @@ title."
     (deft-buffer-setup)))
 
 (defun deft-no-directory-message ()
+  "Return a short message to display when the Deft directory does not exist."
   (concat "Directory " deft-directory " does not exist.\n"))
 
 (defun deft-no-files-message ()
+  "Return a short message to display if no files are found."
   (if deft-filter-regexp
       "No files match the current filter string.\n"
     "No files found."))
@@ -361,10 +371,10 @@ title."
 ;; File list file management actions
 
 (defun deft-open-file (file)
-  "Opens FILE in a new buffer, setting its mode, and returns the buffer."
+  "Open FILE in a new buffer and setting its mode."
   (prog1 (find-file file)
     (funcall deft-text-mode)
-    (add-hook 'after-save-hook 
+    (add-hook 'after-save-hook
               (lambda () (save-excursion (deft-refresh)))
               nil t)))
 
@@ -374,6 +384,8 @@ title."
   (deft-open-file file))
 
 (defun deft-new-file-named (file)
+  "Create a new file named FILE (or interactively prompt for a filename).
+If the filter string is non-nil, use it as the title."
   (interactive "sNew filename (without extension): ")
   (setq file (concat (file-name-as-directory deft-directory)
                      file "." deft-extension))
@@ -384,6 +396,8 @@ title."
     (deft-open-file file)))
 
 (defun deft-new-file ()
+  "Create a new file quickly, with an automatically generated filename.
+If the filter string is non-nil, use it as the title."
   (interactive)
   (let (fmt filename counter temp-buffer)
     (setq counter 0)
@@ -400,6 +414,9 @@ title."
       (end-of-buffer))))
 
 (defun deft-delete-file ()
+  "Delete the file represented by the widget at the point.
+If the point is not on a file widget, do nothing.  Prompts before
+proceeding."
   (interactive)
   (let ((filename (widget-get (widget-at) :tag)))
     (when filename
@@ -411,6 +428,8 @@ title."
         (deft-refresh)))))
 
 (defun deft-rename-file ()
+  "Rename the file represented by the widget at the point.
+If the point is not on a file widget, do nothing."
   (interactive)
   (let (old-filename new-filename old-name new-name)
     (setq old-filename (widget-get (widget-at) :tag))
@@ -427,9 +446,11 @@ title."
 ;; File list filtering
 
 (defun deft-sort-files (files)
+  "Sort FILES in reverse order by modified time."
   (sort files '(lambda (f1 f2) (deft-file-newer-p f1 f2))))
 
 (defun deft-filter-initialize ()
+  "Initialize the filter string (nil) and files list (all files)."
   (interactive)
   (setq deft-filter-regexp nil)
   (setq deft-current-files deft-all-files))
@@ -442,7 +463,7 @@ title."
     (setq deft-current-files (delq nil deft-current-files))))
 
 (defun deft-filter-match-file (file)
-  "Returns FILE if FILE matches the current filter regexp."
+  "Return FILE if FILE matches the current filter regexp."
   (if (or (string-match deft-filter-regexp (deft-file-title file))
           (string-match deft-filter-regexp (deft-file-contents file)))
       file))
@@ -450,6 +471,7 @@ title."
 ;; Filters that cause a refresh
 
 (defun deft-filter-clear ()
+  "Clear the current filter string and refresh the file browser."
   (interactive)
   (when deft-filter-regexp
     (setq deft-filter-regexp nil)
@@ -458,7 +480,7 @@ title."
   (message "Filter cleared."))
 
 (defun deft-filter-static (str)
-  "Set the filter regexp, update deft-current-files, and refresh buffer."
+  "Set the filter string to STR and update the file browser."
   (interactive "sFilter: ")
   (if (= (length str) 0)
       (setq deft-filter-regexp nil)
@@ -468,7 +490,7 @@ title."
   (deft-refresh))
 
 (defun deft-filter-increment (char)
-  "Add a character to the filter regexp and update deft-current-files."
+  "Append character CHAR to the filter regexp and update `deft-current-files'."
   (setq char (char-to-string char))
   (setq deft-filter-regexp (concat deft-filter-regexp char))
   (setq deft-current-files (mapcar 'deft-filter-match-file deft-current-files))
@@ -476,7 +498,7 @@ title."
   (deft-refresh))
 
 (defun deft-filter-decrement (char)
-  "Remove a character from the filter regexp and update deft-current-files."
+  "Remove character CHAR from the filter regexp and update `deft-current-files'."
   (if (> (length deft-filter-regexp) 1)
       (deft-filter-static (substring deft-filter-regexp 0 -1))
     (deft-filter-clear)))
@@ -536,7 +558,7 @@ title."
 
 (defun deft-mode ()
   "Major mode for quickly browsing, filtering, and editing plain text notes.
-Turning on deft-mode runs the hook `deft-mode-hook'.
+Turning on `deft-mode' runs the hook `deft-mode-hook'.
 
 \\{deft-mode-map}."
   (interactive)
