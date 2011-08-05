@@ -182,6 +182,11 @@
   "Face for Deft file summary strings."
   :group 'deft-faces)
 
+(defface deft-time-face
+  '((t :inherit font-lock-variable-name-face))
+  "Face for Deft last modified times."
+  :group 'deft-faces)
+
 ;; Constants
 
 (defconst deft-buffer "*Deft*"
@@ -190,8 +195,8 @@
 (defconst deft-separator " --- "
   "Text used to separate file titles and summaries.")
 
-(defconst deft-line-width 80
-  "Total width of lines in file browser.")
+(defconst deft-line-width 63
+  "Total width of lines in file browser, not including modified time.")
 
 ;; Global variables
 
@@ -371,7 +376,8 @@ title."
     (let ((key (file-name-nondirectory file))
           (text (deft-file-contents file))
           (title (deft-file-title file))
-          (summary (deft-file-summary file)))
+          (summary (deft-file-summary file))
+          (mtime (deft-file-mtime file)))
       (widget-create 'link
                      :button-prefix ""
                      :button-suffix ""
@@ -382,9 +388,13 @@ title."
                      :notify (lambda (widget &rest ignore)
                                (deft-open-file (widget-get widget :tag)))
                      (or title "[Empty file]"))
-      (when summary
+      (if (not summary)
+          (while (< (current-column) deft-line-width)
+            (widget-insert " "))
         (widget-insert (propertize deft-separator 'face 'deft-separator-face))
         (widget-insert (propertize summary 'face 'deft-summary-face)))
+      (widget-insert (propertize (format-time-string " %Y-%m-%d %H:%M" mtime)
+                                 'face 'deft-time-face))
       (widget-insert "\n"))))
 
 (defun deft-refresh ()
