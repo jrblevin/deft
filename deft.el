@@ -645,6 +645,7 @@ If the point is not on a file widget, do nothing."
     (define-key map (kbd "q") 'quit-window)
     (define-key map (kbd "f") 'deft-find-file)
     (define-key map (kbd "l") 'deft-filter)
+    (define-key map (kbd "L") 'deft-filter-static)
     (define-key map (kbd "C-l") 'deft-filter-clear)
     (define-key map (kbd "g") 'deft-refresh)
     (define-key map (kbd "c") 'deft-new-file-named)
