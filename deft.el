@@ -2,6 +2,7 @@
 
 ;; Copyright (C) 2011 Jason R. Blevins <jrblevin@sdf.org>
 
+;; Version: 0.1
 ;; Author: Jason R. Blevins <jrblevin@sdf.org>
 ;; Keywords: plain text, notes, Simplenote, Notational Velocity
 ;; URL: http://jblevins.org/projects/deft/
@@ -227,6 +228,8 @@
   :group 'deft-faces)
 
 ;; Constants
+
+(defconst deft-version "0.1")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
@@ -615,6 +618,11 @@ Otherwise, quick create a new file."
     (deft-new-file))))
 
 ;;; Mode definition
+
+(defun deft-show-version ()
+  "Show the version number in the minibuffer."
+  (interactive)
+  (message "Deft %s" deft-version))
 
 (defun deft-setup ()
   "Prepare environment by creating the Deft notes directory."
