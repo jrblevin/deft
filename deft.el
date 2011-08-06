@@ -96,7 +96,7 @@
 ;; Getting Started
 ;; ---------------
 
-;; To start using it, place it in your Emacs lisp directory and place
+;; To start using it, place it in your Emacs Lisp directory and place
 ;; the line
 
 ;;     (require 'deft)
