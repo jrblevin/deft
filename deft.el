@@ -97,8 +97,8 @@
 ;; Getting Started
 ;; ---------------
 
-;; To start using it, place it in your Emacs Lisp directory and place
-;; the line
+;; To start using it, place it somewhere in your Emacs load-path and
+;; add the line
 
 ;;     (require 'deft)
 
