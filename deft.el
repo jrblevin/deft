@@ -110,7 +110,8 @@
 ;; * Pressing `RET` while filtering returns to the file list with the
 ;;   current filter string applied.
 ;; * Filtering can be resumed by pressing `l` again.
-;; * Press `C-l` at any time to clear the filter and show all files.
+;; * Press `C-c C-l` in the file browser clear the filter and show all
+;;   files.
 ;; * On slower systems, press `L` instead for static filtering, which
 ;;   updates the only list once, when `RET` is pressed.
 
@@ -620,10 +621,6 @@ If the point is not on a file widget, do nothing."
        ;; Finish (RET, C-m)
        ((char-equal char ?\r)
         (setq exit t))
-       ;; Clear filter (C-l)
-       ((char-equal char ?\f)
-        (deft-filter-clear)
-        (setq exit t))
        ;; Backspace (remove the last character from the filter regexp)
        ((or (char-equal char ?\b) (char-equal char ?\d))
         (deft-filter-decrement))
@@ -646,7 +643,7 @@ If the point is not on a file widget, do nothing."
     (define-key map (kbd "f") 'deft-find-file)
     (define-key map (kbd "l") 'deft-filter)
     (define-key map (kbd "L") 'deft-filter-static)
-    (define-key map (kbd "C-l") 'deft-filter-clear)
+    (define-key map (kbd "C-c C-l") 'deft-filter-clear)
     (define-key map (kbd "g") 'deft-refresh)
     (define-key map (kbd "c") 'deft-new-file-named)
     (define-key map (kbd "C") 'deft-new-file)
