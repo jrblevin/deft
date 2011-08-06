@@ -28,7 +28,8 @@
 ;; Deft is an Emacs mode for quickly browsing, filtering, and editing
 ;; directories of plain text notes, inspired by Notational Velocity.
 
-;; Download it directly here:
+;; Deft is free software, released under the GNU GPL.  You may
+;; download it directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
 
@@ -36,18 +37,14 @@
 
 ;;     git clone git://jblevins.org/git/deft.git
 
-;; Deft has two basic modes of operation.  The first, and default, is
-;; the file browser mode, which is similar in spirit to dired-mode in
-;; that it presents the user with a list of files in the Deft
-;; directory which can be browsed, opened, renamed, or deleted.
-
 ;; ![File Browser](http://jblevins.org/projects/deft/browser.png)
 
-;; This list consists of the title of each file followed by a short
-;; summary.  The title is taken to be the first line of the file and
-;; the summary is extracted from the text that follows.  By default,
-;; Deft lists all files in the Deft directory in terms of the last
-;; modified date, from newest to oldest.
+;; The Deft buffer is simply a file browser which lists the titles of
+;; all text files in the Deft directory followed by short summaries
+;; and last modified times.  The title is taken to be the first line
+;; of the file and the summary is extracted from the text that
+;; follows.  Files are sorted in terms of the last modified date, from
+;; newest to oldest.
 
 ;; All Deft files or notes are simple plain text files where the first
 ;; line contains a title.  As an example, the following directory
@@ -63,66 +60,55 @@
 ;;     
 ;;     An Emacs mode for slicing and dicing plain text files.
 
-;; The second mode of operation is filtering.  The list of files can
-;; be filtered or searched using a string, which will match either the
-;; title and/or the body text.  To initiate a filter, simply press `l`
-;; and begin typing.  Filtering happens interactively and the file
-;; list is updated on the fly with all files that match the current
-;; string.
-
 ;; ![Filtering](http://jblevins.org/projects/deft/filter.png)
 
-;; Pressing `TAB` while filtering will trigger a completion.  If there
-;; are matching files, the first file in the list will be opened.  If
-;; there are no matching files, a new file will be created using the
-;; search string as the title.  Pressing `RET` while filtering will
-;; return to the file list for further manipulation or later
-;; filtering.
+;; Deft's primary operation is searching and filtering.  The list of
+;; files can be limited or filtered using a search string, which will
+;; match both the title and the body text.  To initiate a filter,
+;; simply start typing.  Filtering happens on the fly.  As you type,
+;; the file browser is updated to include only files that match the
+;; current string.
 
-;; Static filtering is also available by pressing `L`.  This is
+;; To open the first matching file, simply press `RET`.  If no files
+;; match your search string, pressing `RET` will create a new file
+;; using the string as the title.  This is a very fast way to start
+;; writing new notes.  The filename will be generated automatically.
+;; If you prefer to provide a specific filename, use `C-RET` instead.
+
+;; To open files other than the first match, navigate up and down
+;; using `C-p` and `C-n` and press `RET` on the file you want to open.
+
+;; Press `C-c C-c` to clear the filter string and display all files
+;; and `C-c C-g` to refresh the file browser using the current filter
+;; string.
+
+;; Static filtering is also possible by pressing `C-c C-l`.  This is
 ;; sometimes useful on its own, and it may be preferable in some
 ;; situations, such as over slow connections or on older systems,
 ;; where interactive filtering performance is poor.
 
-;; File Browser
-;; ------------
-
-;; * Use `n` and `p` to move down and up in the file list.
-;; * Alternatively, `TAB` and `S-TAB` or the mouse can be used for
-;;   navigation.
-;; * Press `c` to create a new file and be prompted for the filename.
-;; * Press `C` to quickly create a new file with an automatically
-;;   generated filename.
-;; * In both cases, if a filter string is currently applied it will
-;;   be used as the title of the newly created file.
-;; * Press `r` to rename a file or `d` to delete a file.
-;; * Press `f` to find a file in the Deft directory using the
-;;   minibuffer.
-;; * If anything unusual happens, press `g` to refresh the file browser.
-
-;; Filtering
-;; ---------
-
-;; * Press `l` to start or continue filtering.
-;; * While filtering, press `TAB` to complete.
-;; * Completion opens the first matching file, if possible, or creates
-;;   a new file with the filter string as the title.
-;; * Pressing `RET` while filtering returns to the file list with the
-;;   current filter string applied.
-;; * Filtering can be resumed by pressing `l` again.
-;; * Press `C-c C-l` in the file browser clear the filter and show all
-;;   files.
-;; * On slower systems, press `L` instead for static filtering, which
-;;   updates the only list once, when `RET` is pressed.
+;; Common file operations can also be carried out from within Deft.
+;; Files can be renamed using `C-c C-r` or deleted using `C-c C-d`.
+;; New files can also be created using `C-c C-n` for quick creation or
+;; `C-c C-m` for a filename prompt.  You can leave Deft at any time
+;; with `C-c C-q`.
 
 ;; Getting Started
 ;; ---------------
 
-;; When you first load `deft.el` and run `M-x deft`, it will complain
-;; that it cannot find the `~/.deft` directory.  You can either create
-;; a symbolic link to another directory where you keep your notes or
-;; run `M-x deft-setup` to create the `~/.deft` directory
-;; automatically.
+;; To start using it, place it in your Emacs lisp directory and place
+;; the line
+
+;;     (require 'deft)
+
+;; in your `.emacs` file.  Then run `M-x deft` to start.  It is useful
+;; to create a global keybinding for the `deft` function (e.g., a
+;; function key) to start it quickly (see below for details).
+
+;; When you first run Deft, it will complain that it cannot find the
+;; `~/.deft` directory.  You can either create a symbolic link to
+;; another directory where you keep your notes or run `M-x deft-setup`
+;; to create the `~/.deft` directory automatically.
 
 ;; One useful way to use Deft is to keep a directory of notes in a
 ;; Dropbox folder.  This can be used with other applications and
@@ -160,8 +146,8 @@
 ;; properties from the standard font-lock faces defined by your current
 ;; color theme.
 
-;; Acknowledgements
-;; ----------------
+;; Acknowledgments
+;; ---------------
 
 ;; Thanks to Konstantinos Efstathiou for writing simplnote.el, from
 ;; which I borrowed liberally, and to Zachary Schneirov for writing
@@ -580,7 +566,7 @@ If the point is not on a file widget, do nothing."
     (deft-refresh))
   (message "Filter cleared."))
 
-(defun deft-filter-static (str)
+(defun deft-filter (str)
   "Set the filter string to STR and update the file browser."
   (interactive "sFilter: ")
   (if (= (length str) 0)
@@ -590,43 +576,43 @@ If the point is not on a file widget, do nothing."
     (setq deft-current-files (delq nil deft-current-files)))
   (deft-refresh))
 
-(defun deft-filter-increment (char)
-  "Append character CHAR to the filter regexp and update `deft-current-files'."
-  (setq char (char-to-string char))
-  (setq deft-filter-regexp (concat deft-filter-regexp char))
-  (setq deft-current-files (mapcar 'deft-filter-match-file deft-current-files))
-  (setq deft-current-files (delq nil deft-current-files))
+(defun deft-filter-increment ()
+  "Append character to the filter regexp and update `deft-current-files'."
+  (interactive)
+  (let ((char last-command-char))
+    (if (= char ?\S-\ )
+	(setq char ?\s))
+    (setq char (char-to-string char))
+    (setq deft-filter-regexp (concat deft-filter-regexp char))
+    (setq deft-current-files (mapcar 'deft-filter-match-file deft-current-files))
+    (setq deft-current-files (delq nil deft-current-files)))
   (deft-refresh))
 
 (defun deft-filter-decrement ()
   "Remove last character from the filter regexp and update `deft-current-files'."
+  (interactive)
   (if (> (length deft-filter-regexp) 1)
-      (deft-filter-static (substring deft-filter-regexp 0 -1))
+      (deft-filter (substring deft-filter-regexp 0 -1))
     (deft-filter-clear)))
 
-(defun deft-filter ()
-  "Interactively filter the files list."
+(defun deft-complete ()
+  "Complete the current action.
+If there is a widget at the point, press it.  If a filter is
+applied and there is at least one match, open the first matching
+file.  If there is an active filter but there are no matches,
+quick create a new file using the filter string as the title.
+Otherwise, quick create a new file."
   (interactive)
-  (let (char exit)
-    (while (not exit)
-      ;; Read an additional character and handle it accordingly
-      (setq char (read-char (concat "Deft (TAB to complete): " deft-filter-regexp)))
-      (cond
-       ;; Complete (open first file or create a new file) (TAB, C-i)
-       ((char-equal char ?\t)
-        (if (not deft-current-files)
-            (deft-new-file)
-          (deft-open-file (car deft-current-files)))
-        (setq exit t))
-       ;; Finish (RET, C-m)
-       ((char-equal char ?\r)
-        (setq exit t))
-       ;; Backspace (remove the last character from the filter regexp)
-       ((or (char-equal char ?\b) (char-equal char ?\d))
-        (deft-filter-decrement))
-       ;; Default
-       (t
-        (deft-filter-increment char))))))
+  (cond
+   ;; Activate widget
+   ((widget-at)
+    (widget-button-press (point)))
+   ;; Active filter string with match
+   ((and deft-filter-regexp deft-current-files)
+    (deft-open-file (car deft-current-files)))
+   ;; Default
+   (t
+    (deft-new-file))))
 
 ;;; Mode definition
 
@@ -638,19 +624,31 @@ If the point is not on a file widget, do nothing."
   (deft-refresh))
 
 (defvar deft-mode-map
-  (let ((map (copy-keymap widget-keymap)))
-    (define-key map (kbd "q") 'quit-window)
-    (define-key map (kbd "f") 'deft-find-file)
-    (define-key map (kbd "l") 'deft-filter)
-    (define-key map (kbd "L") 'deft-filter-static)
-    (define-key map (kbd "C-c C-l") 'deft-filter-clear)
-    (define-key map (kbd "g") 'deft-refresh)
-    (define-key map (kbd "c") 'deft-new-file-named)
-    (define-key map (kbd "C") 'deft-new-file)
-    (define-key map (kbd "d") 'deft-delete-file)
-    (define-key map (kbd "r") 'deft-rename-file)
-    (define-key map (kbd "n") 'widget-forward)
-    (define-key map (kbd "p") 'widget-backward)
+  (let ((i 0)
+        (map (copy-keymap widget-keymap)))
+    ;; Extend the filter string by default.
+    (setq i ?\s)
+    (while (< i 256)
+      (define-key map (vector i) 'deft-filter-increment)
+      (setq i (1+ i)))
+    ;; Handle backspace and delete
+    (define-key map (kbd "DEL") 'deft-filter-decrement)
+    ;; Handle return via completion or opening file
+    (define-key map (kbd "RET") 'deft-complete)
+    ;; Filtering
+    (define-key map (kbd "C-c C-l") 'deft-filter)
+    (define-key map (kbd "C-c C-c") 'deft-filter-clear)
+    ;; File creation
+    (define-key map (kbd "C-c C-n") 'deft-new-file)
+    (define-key map (kbd "C-c C-m") 'deft-new-file-named)
+    (define-key map (kbd "<C-return>") 'deft-new-file-named)
+    ;; File management
+    (define-key map (kbd "C-c C-d") 'deft-delete-file)
+    (define-key map (kbd "C-c C-r") 'deft-rename-file)
+    (define-key map (kbd "C-c C-f") 'deft-find-file)
+    ;; Miscellaneous
+    (define-key map (kbd "C-c C-g") 'deft-refresh)
+    (define-key map (kbd "C-c C-q") 'quit-window)
     map)
   "Keymap for Deft mode.")
 
