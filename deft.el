@@ -501,7 +501,7 @@ If the filter string is non-nil, use it as the title."
       (write-region (concat deft-filter-regexp "\n\n") nil filename nil))
     (deft-open-file filename)
     (with-current-buffer (get-file-buffer filename)
-      (end-of-buffer))))
+      (goto-char (point-max)))))
 
 (defun deft-delete-file ()
   "Delete the file represented by the widget at the point.
@@ -582,7 +582,7 @@ If the point is not on a file widget, do nothing."
 (defun deft-filter-increment ()
   "Append character to the filter regexp and update `deft-current-files'."
   (interactive)
-  (let ((char last-command-char))
+  (let ((char last-command-event))
     (if (= char ?\S-\ )
 	(setq char ?\s))
     (setq char (char-to-string char))
