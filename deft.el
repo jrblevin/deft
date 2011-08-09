@@ -555,6 +555,7 @@ If the point is not on a file widget, do nothing."
 (defun deft-filter-match-file (file)
   "Return FILE if FILE matches the current filter regexp."
   (if (or (string-match deft-filter-regexp (deft-file-title file))
+          (string-match deft-filter-regexp file)
           (string-match deft-filter-regexp (deft-file-contents file)))
       file))
 
