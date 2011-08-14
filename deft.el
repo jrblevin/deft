@@ -94,6 +94,10 @@
 ;; `C-c C-m` for a filename prompt.  You can leave Deft at any time
 ;; with `C-c C-q`.
 
+;; Files opened with deft are automatically saved after Emacs has been
+;; idle for a customizable number of seconds.  This value is a floating
+;; point number given by `deft-auto-save-interval' (default: 1.0).
+
 ;; Getting Started
 ;; ---------------
 
@@ -190,6 +194,12 @@
   :type 'function
   :group 'deft)
 
+(defcustom deft-auto-save-interval 1.0
+  "Idle time in seconds before automatically saving buffers opened by Deft.
+Set to zero to disable."
+  :type 'float
+  :group 'deft)
+
 ;; Faces
 
 (defgroup deft-faces nil
@@ -265,6 +275,9 @@
 
 (defvar deft-hash-summaries nil
   "Hash containing cached file summaries, keyed by filename.")
+
+(defvar deft-auto-save-buffers nil
+  "List of buffers that will be automatically saved.")
 
 ;; File processing
 
@@ -464,6 +477,7 @@ title."
   "Open FILE in a new buffer and setting its mode."
   (prog1 (find-file file)
     (funcall deft-text-mode)
+    (add-to-list 'deft-auto-save-buffers (buffer-name))
     (add-hook 'after-save-hook
               (lambda () (save-excursion (deft-refresh)))
               nil t)))
@@ -618,6 +632,20 @@ Otherwise, quick create a new file."
    (t
     (deft-new-file))))
 
+;;; Automatic File Saving
+
+(defun deft-auto-save ()
+  (save-excursion
+    (dolist (buf deft-auto-save-buffers)
+      (if (get-buffer buf)
+          ;; Save open buffers that have been modified.
+          (progn
+            (set-buffer buf)
+            (when (buffer-modified-p)
+              (basic-save-buffer)))
+        ;; If a buffer is no longer open, remove it from auto save list.
+        (delq buf deft-auto-save-buffers)))))
+
 ;;; Mode definition
 
 (defun deft-show-version ()
@@ -678,6 +706,8 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (setq major-mode 'deft-mode)
   (setq mode-name "Deft")
   (deft-buffer-setup)
+  (when (> deft-auto-save-interval 0)
+    (run-with-idle-timer deft-auto-save-interval t 'deft-auto-save))
   (run-mode-hooks 'deft-mode-hook))
 
 (put 'deft-mode 'mode-class 'special)
