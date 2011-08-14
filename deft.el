@@ -28,6 +28,10 @@
 
 ;; Deft is an Emacs mode for quickly browsing, filtering, and editing
 ;; directories of plain text notes, inspired by Notational Velocity.
+;; It was designed for increased productivity when writing and taking
+;; notes by making it fast and simple to find the right file at the
+;; right time and by automating many of the usual tasks such as
+;; creating new files and saving files.
 
 ;; Deft is free software, released under the GNU GPL.  You may
 ;; download it directly here:
@@ -140,6 +144,10 @@
 
 ;;     (setq deft-text-mode 'markdown-mode)
 
+;; Note that the mode need not be a traditional text mode.  If you
+;; prefer to write notes as LaTeX fragments, for example, you could
+;; set `deft-extension' to "tex" and `deft-text-mode' to `latex-mode'.
+
 ;; You can easily set up a global keyboard binding for Deft.  For
 ;; example, to bind it to F8, add the following code to your `.emacs`
 ;; file:
@@ -158,7 +166,7 @@
 ;; which I borrowed liberally, and to Zachary Schneirov for writing
 ;; Notational Velocity, which I have never had the pleasure of using,
 ;; but whose functionality and spirit I wanted to bring to other
-;; platforms via Emacs.
+;; platforms, such as Linux, via Emacs.
 
 ;; History
 ;; -------
