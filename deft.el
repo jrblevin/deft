@@ -559,7 +559,7 @@ If the point is not on a file widget, do nothing."
 
 (defun deft-sort-files (files)
   "Sort FILES in reverse order by modified time."
-  (sort files '(lambda (f1 f2) (deft-file-newer-p f1 f2))))
+  (sort files (lambda (f1 f2) (deft-file-newer-p f1 f2))))
 
 (defun deft-filter-initialize ()
   "Initialize the filter string (nil) and files list (all files)."
