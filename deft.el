@@ -184,13 +184,13 @@
 ;; -------
 
 ;; Version 0.2 (2011-08-22):
+
 ;; * Match filenames when filtering.
 ;; * Automatically save opened files (optional).
 ;; * Address some byte-compilation warnings.
 
 ;; Deft was originally written by Jason Blevins.
 ;; The initial version, 0.1, was released on August 6, 2011.
-
 
 ;;; Code:
 
