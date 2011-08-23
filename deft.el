@@ -42,8 +42,8 @@
 ;; right time and by automating many of the usual tasks such as
 ;; creating new files and saving files.
 
-;; Deft is free software, released under the GNU GPL.  You may
-;; download it directly here:
+;; Deft is open source software and may be freely distributed and
+;; modified under the BSD license.  You may download it directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
 
