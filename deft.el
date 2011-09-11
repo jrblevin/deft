@@ -161,6 +161,11 @@
 ;; prefer to write notes as LaTeX fragments, for example, you could
 ;; set `deft-extension' to "tex" and `deft-text-mode' to `latex-mode'.
 
+;; If you prefer `org-mode', then simply use
+
+;;     (setq deft-extension "org")
+;;     (setq deft-text-mode 'org-mode)
+
 ;; You can easily set up a global keyboard binding for Deft.  For
 ;; example, to bind it to F8, add the following code to your `.emacs`
 ;; file:
