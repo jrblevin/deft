@@ -687,7 +687,10 @@ Otherwise, quick create a new file."
 
 (defvar deft-mode-map
   (let ((i 0)
-        (map (copy-keymap widget-keymap)))
+        (map (make-keymap)))
+    ;; Make multibyte characters extend the filter string.
+    (set-char-table-range (nth 1 map) (cons #x100 (max-char))
+                          'deft-filter-increment)
     ;; Extend the filter string by default.
     (setq i ?\s)
     (while (< i 256)
@@ -711,6 +714,12 @@ Otherwise, quick create a new file."
     ;; Miscellaneous
     (define-key map (kbd "C-c C-g") 'deft-refresh)
     (define-key map (kbd "C-c C-q") 'quit-window)
+    ;; Widgets
+    (define-key map [down-mouse-1] 'widget-button-click)
+    (define-key map [down-mouse-2] 'widget-button-click)
+    (define-key map (kbd "<tab>") 'widget-forward)
+    (define-key map (kbd "<backtab>") 'widget-backward)
+    (define-key map (kbd "<S-tab>") 'widget-backward)
     map)
   "Keymap for Deft mode.")
 
