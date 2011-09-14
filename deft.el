@@ -274,7 +274,7 @@ Set to zero to disable."
 
 ;; Constants
 
-(defconst deft-version "0.1")
+(defconst deft-version "0.3")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
