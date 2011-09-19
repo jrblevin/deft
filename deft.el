@@ -72,10 +72,10 @@
 ;;     about.txt    browser.txt     directory.txt   operations.txt
 ;;     ack.txt      completion.txt  extensions.txt  text-mode.txt
 ;;     binding.txt  creation.txt    filtering.txt
-;;     
+;;
 ;;     % cat ~/.deft/about.txt
 ;;     About
-;;     
+;;
 ;;     An Emacs mode for slicing and dicing plain text files.
 
 ;; ![Filtering](http://jblevins.org/projects/deft/filter.png)
@@ -233,6 +233,13 @@
   "Idle time in seconds before automatically saving buffers opened by Deft.
 Set to zero to disable."
   :type 'float
+  :group 'deft)
+
+(defcustom deft-time-format " %d. %m. %y %H:%M"
+  "Deft time format.
+Set to nil to hide."
+  :type '(choice (string :tag "Time format")
+		 (const :tag "Hide" nil))
   :group 'deft)
 
 ;; Faces
@@ -481,10 +488,11 @@ title."
       (when summary
         (widget-insert (propertize deft-separator 'face 'deft-separator-face))
         (widget-insert (propertize summary 'face 'deft-summary-face)))
-      (while (< (current-column) deft-line-width)
-        (widget-insert " "))
-      (widget-insert (propertize (format-time-string " %Y-%m-%d %H:%M" mtime)
-                                 'face 'deft-time-face))
+      (when deft-time-format
+	(while (< (current-column) deft-line-width)
+	  (widget-insert " "))
+	(widget-insert (propertize (format-time-string deft-time-format mtime)
+				   'face 'deft-time-face)))
       (widget-insert "\n"))))
 
 (defun deft-refresh ()
