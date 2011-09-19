@@ -289,9 +289,6 @@ Set to nil to hide."
 (defconst deft-separator " --- "
   "Text used to separate file titles and summaries.")
 
-(defconst deft-line-width 63
-  "Total width of lines in file browser, not including modified time.")
-
 ;; Global variables
 
 (defvar deft-mode-hook nil
@@ -353,21 +350,18 @@ Set to nil to hide."
 The title is taken to be the first non-empty line of a file."
   (let ((begin (string-match "^.+$" contents)))
     (when begin
-      (substring contents begin (min (match-end 0)
-                                 (+ begin deft-line-width))))))
+      (substring contents begin (match-end 0)))))
 
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
 The summary is a string extracted from the contents following the
 title."
   (let* ((contents (replace-regexp-in-string "\n" " " contents))
-         (begin (when title (string-match (regexp-quote title) contents)))
-         (size (- deft-line-width (length deft-separator) (match-end 0))))
+         (begin (when title (string-match (regexp-quote title) contents))))
     (when begin
-      (when (< 0 size)
-        (setq contents (substring contents (match-end 0) (length contents)))
-        (setq contents (deft-chomp contents))
-        (substring contents 0 (min size (length contents)))))))
+      (setq contents (deft-chomp (substring contents (match-end 0)
+					    (length contents))))
+      (substring contents 0 (length contents)))))
 
 (defun deft-cache-file (file)
   "Update file cache if FILE exists."
@@ -470,11 +464,19 @@ title."
 (defun deft-file-widget (file)
   "Add a line to the file browser for the given FILE."
   (when file
-    (let ((key (file-name-nondirectory file))
-          (text (deft-file-contents file))
-          (title (deft-file-title file))
-          (summary (deft-file-summary file))
-          (mtime (deft-file-mtime file)))
+    (let* ((key (file-name-nondirectory file))
+	   (text (deft-file-contents file))
+	   (title (deft-file-title file))
+	   (summary (deft-file-summary file))
+	   (mtime (when deft-time-format
+		    (format-time-string deft-time-format (deft-file-mtime file))))
+	   (mtime-width (length mtime))
+	   (line-width (- (window-width) mtime-width))
+	   (title-width (min line-width (length title)))
+	   (summary-width (min (length summary)
+			       (- line-width
+				  title-width
+				  (length deft-separator)))))
       (widget-create 'link
                      :button-prefix ""
                      :button-suffix ""
@@ -484,16 +486,21 @@ title."
                      :help-echo "Edit this file"
                      :notify (lambda (widget &rest ignore)
                                (deft-open-file (widget-get widget :tag)))
-                     (or title "[Empty file]"))
-      (when summary
+                     (if title (substring title 0 title-width) "[Empty file]"))
+      (when (> summary-width 0)
         (widget-insert (propertize deft-separator 'face 'deft-separator-face))
-        (widget-insert (propertize summary 'face 'deft-summary-face)))
-      (when deft-time-format
-	(while (< (current-column) deft-line-width)
+        (widget-insert (propertize (substring summary 0 summary-width)
+				   'face 'deft-summary-face)))
+      (when mtime
+	(while (< (current-column) line-width)
 	  (widget-insert " "))
-	(widget-insert (propertize (format-time-string deft-time-format mtime)
-				   'face 'deft-time-face)))
+	(widget-insert (propertize mtime 'face 'deft-time-face)))
       (widget-insert "\n"))))
+
+(add-hook 'window-configuration-change-hook
+	  (lambda ()
+	    (when (eq (current-buffer) (get-buffer deft-buffer))
+	      (deft-buffer-setup))))
 
 (defun deft-refresh ()
   "Refresh the *Deft* buffer in the background."
