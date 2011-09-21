@@ -235,7 +235,7 @@ Set to zero to disable."
   :type 'float
   :group 'deft)
 
-(defcustom deft-time-format " %d. %m. %y %H:%M"
+(defcustom deft-time-format " %Y-%m-%d %H:%M"
   "Deft time format.
 Set to nil to hide."
   :type '(choice (string :tag "Time format")
