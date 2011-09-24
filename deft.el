@@ -353,7 +353,9 @@ Set to nil to hide."
         result)))
 
 (defun deft-parse-title (file contents)
-  "Parse the given FILE or CONTENTS and determine the title."
+  "Parse the given FILE and CONTENTS and determine the title.
+According to deft-use-filename-as-title, the title is taken to
+be the first non-empty line of a file or the file name."
   (if deft-use-filename-as-title
       (deft-base-filename file)
     (let ((begin (string-match "^.+$" contents)))
@@ -363,13 +365,18 @@ Set to nil to hide."
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
 The summary is a string extracted from the contents following the
-title."
-  (let* ((contents (replace-regexp-in-string "\n" " " contents))
-         (begin (when title (string-match (regexp-quote title) contents))))
-    (when begin
-      (setq contents (deft-chomp (substring contents (match-end 0)
-					    (length contents))))
-      (substring contents 0 (length contents)))))
+title if deft-use-filename-as-title is not set, otherwize it is the
+first non-empty line of the contents."
+  (if deft-use-filename-as-title
+    (let ((begin (string-match "^.+$" contents)))
+      (when begin
+	(substring contents begin (match-end 0))))
+    (let* ((contents (replace-regexp-in-string "\n" " " contents))
+	   (begin (when title (string-match (regexp-quote title) contents))))
+      (when begin
+	(setq contents (deft-chomp (substring contents (match-end 0)
+					      (length contents))))
+	(substring contents 0 (length contents))))))
 
 (defun deft-cache-file (file)
   "Update file cache if FILE exists."
@@ -547,19 +554,22 @@ title."
 
 (defun deft-new-file-named (file)
   "Create a new file named FILE (or interactively prompt for a filename).
-If the filter string is non-nil, use it as the title."
+If the filter string is non-nil and title is not from file name,
+use it as the title."
   (interactive "sNew filename (without extension): ")
   (setq file (concat (file-name-as-directory deft-directory)
                      file "." deft-extension))
   (if (file-exists-p file)
       (message (concat "Aborting, file already exists: " file))
-    (when deft-filter-regexp
+    (when (and deft-filter-regexp (not deft-use-filename-as-title))
       (write-region deft-filter-regexp nil file nil))
     (deft-open-file file)))
 
 (defun deft-new-file ()
-  "Create a new file quickly, with an automatically generated filename.
-If the filter string is non-nil, use it as the title."
+  "Create a new file quickly, with an automatically generated filename
+or the filter string if non-nil and deft-use-filename-as-title is set.
+If the filter string is non-nil and title is not from filename,
+use it as the title."
   (interactive)
   (let (filename)
     (if (and deft-use-filename-as-title deft-filter-regexp)
