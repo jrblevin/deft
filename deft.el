@@ -354,7 +354,7 @@ Set to nil to hide."
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
-According to deft-use-filename-as-title, the title is taken to
+According to `deft-use-filename-as-title', the title is taken to
 be the first non-empty line of a file or the file name."
   (if deft-use-filename-as-title
       (deft-base-filename file)
@@ -365,7 +365,7 @@ be the first non-empty line of a file or the file name."
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
 The summary is a string extracted from the contents following the
-title if deft-use-filename-as-title is not set, otherwize it is the
+title if `deft-use-filename-as-title' is not set, otherwise it is the
 first non-empty line of the contents."
   (if deft-use-filename-as-title
     (let ((begin (string-match "^.+$" contents)))
