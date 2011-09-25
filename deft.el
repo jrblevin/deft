@@ -242,6 +242,11 @@ Set to nil to hide."
 		 (const :tag "Hide" nil))
   :group 'deft)
 
+(defcustom deft-use-filename-as-title nil
+  "If true, use filename as title, instead of the first line of the contents."
+  :type 'boolp
+  :group 'deft)
+
 ;; Faces
 
 (defgroup deft-faces nil
@@ -328,7 +333,9 @@ Set to nil to hide."
 (defun deft-base-filename (file)
   "Strip the path and extension from filename FILE."
   (setq file (file-name-nondirectory file))
-  (setq file (replace-regexp-in-string (concat "\." deft-extension "$") "" file)))
+  (if (> (length deft-extension) 0)
+      (setq file (replace-regexp-in-string (concat "\." deft-extension "$") "" file)))
+  file)
 
 (defun deft-find-all-files ()
   "Return a list of all files in the Deft directory."
@@ -345,12 +352,13 @@ Set to nil to hide."
             (setq result (cons file result))))
         result)))
 
-(defun deft-parse-title (contents)
-  "Parse the given file CONTENTS and determine the title.
-The title is taken to be the first non-empty line of a file."
-  (let ((begin (string-match "^.+$" contents)))
-    (when begin
-      (substring contents begin (match-end 0)))))
+(defun deft-parse-title (file contents)
+  "Parse the given FILE or CONTENTS and determine the title."
+  (if deft-use-filename-as-title
+      (deft-base-filename file)
+    (let ((begin (string-match "^.+$" contents)))
+      (when begin
+	(substring contents begin (match-end 0))))))
 
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
@@ -383,7 +391,7 @@ title."
       (setq contents (concat (buffer-string))))
     (puthash file contents deft-hash-contents)
     ;; Title
-    (setq title (deft-parse-title contents))
+    (setq title (deft-parse-title file contents))
     (puthash file title deft-hash-titles)
     ;; Summary
     (puthash file (deft-parse-summary contents title) deft-hash-summaries))
@@ -553,18 +561,21 @@ If the filter string is non-nil, use it as the title."
   "Create a new file quickly, with an automatically generated filename.
 If the filter string is non-nil, use it as the title."
   (interactive)
-  (let (fmt filename counter temp-buffer)
-    (setq counter 0)
-    (setq fmt (concat "deft-%d." deft-extension))
-    (setq filename (concat (file-name-as-directory deft-directory)
-                           (format fmt counter)))
-    (while (or (file-exists-p filename)
-               (get-file-buffer filename))
-      (setq counter (1+ counter))
-      (setq filename (concat (file-name-as-directory deft-directory)
-                             (format fmt counter))))
-    (when deft-filter-regexp
-      (write-region (concat deft-filter-regexp "\n\n") nil filename nil))
+  (let (filename)
+    (if (and deft-use-filename-as-title deft-filter-regexp)
+	(setq filename (concat (file-name-as-directory deft-directory) deft-filter-regexp "." deft-extension))
+      (let (fmt counter temp-buffer)
+	(setq counter 0)
+	(setq fmt (concat "deft-%d." deft-extension))
+	(setq filename (concat (file-name-as-directory deft-directory)
+			       (format fmt counter)))
+	(while (or (file-exists-p filename)
+		   (get-file-buffer filename))
+	  (setq counter (1+ counter))
+	  (setq filename (concat (file-name-as-directory deft-directory)
+				 (format fmt counter))))
+	(when deft-filter-regexp
+	  (write-region (concat deft-filter-regexp "\n\n") nil filename nil))))
     (deft-open-file filename)
     (with-current-buffer (get-file-buffer filename)
       (goto-char (point-max)))))
