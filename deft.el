@@ -166,6 +166,16 @@
 ;;     (setq deft-extension "org")
 ;;     (setq deft-text-mode 'org-mode)
 
+;; For compatibility with other applications which take the title from
+;; the filename, rather than from first line of the file, set the
+;; `deft-use-filename-as-title' flag to a non-nil value.  This also
+;; changes the default behavior for creating new files when the filter
+;; is non-empty: the filter string will be used as the new filename
+;; rather than inserted into the new file.  To enable this
+;; functionality, simply add the following to your `.emacs` file:
+
+;;     (setq deft-use-filename-as-title t)
+
 ;; You can easily set up a global keyboard binding for Deft.  For
 ;; example, to bind it to F8, add the following code to your `.emacs`
 ;; file:
