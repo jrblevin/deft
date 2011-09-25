@@ -636,12 +636,12 @@ If the point is not on a file widget, do nothing."
 
 (defun deft-filter-match-file (file)
   "Return FILE if FILE matches the current filter regexp."
-  (let ((title (deft-file-title file))
-        (contents (deft-file-contents file)))
-    (if (or
-         (and title (string-match deft-filter-regexp title))
-         (and file (string-match deft-filter-regexp file))
-         (and contents (string-match deft-filter-regexp contents)))
+  (with-temp-buffer
+    (insert file)
+    (insert (deft-file-title file))
+    (insert (deft-file-contents file))
+    (goto-char (point-min))
+    (if (search-forward deft-filter-regexp nil t)
         file)))
 
 ;; Filters that cause a refresh
