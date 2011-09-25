@@ -236,14 +236,14 @@ Set to zero to disable."
   :group 'deft)
 
 (defcustom deft-time-format " %Y-%m-%d %H:%M"
-  "Deft time format.
+  "Format string for modification times in the Deft browser.
 Set to nil to hide."
   :type '(choice (string :tag "Time format")
 		 (const :tag "Hide" nil))
   :group 'deft)
 
 (defcustom deft-use-filename-as-title nil
-  "If true, use filename as title, instead of the first line of the contents."
+  "Use filename as title, instead of the first line of the contents."
   :type 'boolp
   :group 'deft)
 
