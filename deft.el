@@ -784,7 +784,6 @@ Otherwise, quick create a new file."
 Turning on `deft-mode' runs the hook `deft-mode-hook'.
 
 \\{deft-mode-map}."
-  (interactive)
   (kill-all-local-variables)
   (setq truncate-lines t)
   (setq buffer-read-only t)
