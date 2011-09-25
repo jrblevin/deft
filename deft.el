@@ -244,7 +244,7 @@ Set to nil to hide."
 
 (defcustom deft-use-filename-as-title nil
   "Use filename as title, instead of the first line of the contents."
-  :type 'boolp
+  :type 'boolean
   :group 'deft)
 
 ;; Faces
