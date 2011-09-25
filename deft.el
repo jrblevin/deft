@@ -365,18 +365,13 @@ be the first non-empty line of a file or the file name."
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
 The summary is a string extracted from the contents following the
-title if `deft-use-filename-as-title' is not set, otherwise it is the
-first non-empty line of the contents."
-  (if deft-use-filename-as-title
-    (let ((begin (string-match "^.+$" contents)))
-      (when begin
-	(substring contents begin (match-end 0))))
-    (let* ((contents (replace-regexp-in-string "\n" " " contents))
-	   (begin (when title (string-match (regexp-quote title) contents))))
-      (when begin
-	(setq contents (deft-chomp (substring contents (match-end 0)
-					      (length contents))))
-	(substring contents 0 (length contents))))))
+title."
+  (let (summary begin)
+    (setq summary (replace-regexp-in-string "\n" " " contents))
+    (when (and (not deft-use-filename-as-title) title)
+      (string-match (regexp-quote title) summary)
+      (deft-chomp (substring summary (match-end 0) (length summary))))
+    summary))
 
 (defun deft-cache-file (file)
   "Update file cache if FILE exists."
