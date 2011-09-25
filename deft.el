@@ -333,6 +333,9 @@ Set to nil to hide."
 (defvar deft-auto-save-buffers nil
   "List of buffers that will be automatically saved.")
 
+(defvar deft-window-width nil
+  "Width of Deft buffer.")
+
 ;; File processing
 
 (defun deft-chomp (str)
@@ -463,6 +466,7 @@ title."
 
 (defun deft-buffer-setup ()
   "Render the file browser in the *Deft* buffer."
+  (setq deft-window-width (window-width))
   (let ((inhibit-read-only t))
     (erase-buffer))
   (remove-overlays)
@@ -491,7 +495,7 @@ title."
 	   (mtime (when deft-time-format
 		    (format-time-string deft-time-format (deft-file-mtime file))))
 	   (mtime-width (length mtime))
-	   (line-width (- (window-width) mtime-width))
+	   (line-width (- deft-window-width mtime-width))
 	   (title-width (min line-width (length title)))
 	   (summary-width (min (length summary)
 			       (- line-width
@@ -519,8 +523,9 @@ title."
 
 (add-hook 'window-configuration-change-hook
 	  (lambda ()
-	    (when (eq (current-buffer) (get-buffer deft-buffer))
-	      (deft-buffer-setup))))
+	    (when (and (eq (current-buffer) (get-buffer deft-buffer))
+                       (not (eq deft-window-width (window-width))))
+              (deft-buffer-setup))))
 
 (defun deft-refresh ()
   "Refresh the *Deft* buffer in the background."
