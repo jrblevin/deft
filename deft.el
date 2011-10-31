@@ -529,7 +529,7 @@ title."
               (deft-buffer-setup))))
 
 (defun deft-refresh ()
-  "Refresh the *Deft* buffer in the background."
+  "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
   (interactive)
   (when (get-buffer deft-buffer)
     (set-buffer deft-buffer)
@@ -538,6 +538,7 @@ title."
     (deft-buffer-setup)))
 
 (defun deft-refresh-browser ()
+  "Refresh the *Deft* buffer in the background."
   (when (get-buffer deft-buffer)
     (with-current-buffer deft-buffer
       (deft-buffer-setup))))
