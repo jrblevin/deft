@@ -537,6 +537,11 @@ title."
     (deft-filter-update)
     (deft-buffer-setup)))
 
+(defun deft-refresh-browser ()
+  (when (get-buffer deft-buffer)
+    (with-current-buffer deft-buffer
+      (deft-buffer-setup))))
+
 (defun deft-no-directory-message ()
   "Return a short message to display when the Deft directory does not exist."
   (concat "Directory " deft-directory " does not exist.\n"))
@@ -679,7 +684,7 @@ If the point is not on a file widget, do nothing."
     (setq deft-filter-regexp str)
     (setq deft-current-files (mapcar 'deft-filter-match-file deft-all-files))
     (setq deft-current-files (delq nil deft-current-files)))
-  (deft-refresh))
+  (deft-refresh-browser))
 
 (defun deft-filter-increment ()
   "Append character to the filter regexp and update `deft-current-files'."
@@ -691,7 +696,7 @@ If the point is not on a file widget, do nothing."
     (setq deft-filter-regexp (concat deft-filter-regexp char))
     (setq deft-current-files (mapcar 'deft-filter-match-file deft-current-files))
     (setq deft-current-files (delq nil deft-current-files)))
-  (deft-refresh))
+  (deft-refresh-browser))
 
 (defun deft-filter-decrement ()
   "Remove last character from the filter regexp and update `deft-current-files'."
