@@ -372,18 +372,19 @@ be the first non-empty line of a file or the file name."
   (if deft-use-filename-as-title
       (deft-base-filename file)
     (let ((begin (string-match "^.+$" contents)))
-      (when begin
-	(substring contents begin (match-end 0))))))
+      (if begin
+        (substring contents begin (match-end 0))
+        (deft-base-filename file)))))
 
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
 The summary is a string extracted from the contents following the
 title."
-  (let (summary)
-    (setq summary (replace-regexp-in-string "[\n\t]" " " contents))
-    (when (and (not deft-use-filename-as-title) title)
-      (string-match (regexp-quote title) summary)
-      (setq summary (deft-chomp (substring summary (match-end 0) (length summary)))))
+  (let ((summary (replace-regexp-in-string "[\n\t]" " " contents)))
+    (if (and (not deft-use-filename-as-title) title)
+        (if (string-match (regexp-quote title) summary)
+            (deft-chomp (substring summary (match-end 0) nil))
+          ""))
     summary))
 
 (defun deft-cache-file (file)
