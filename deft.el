@@ -384,8 +384,8 @@ title."
     (if (and (not deft-use-filename-as-title) title)
         (if (string-match (regexp-quote title) summary)
             (deft-chomp (substring summary (match-end 0) nil))
-          ""))
-    summary))
+          "")
+      summary)))
 
 (defun deft-cache-file (file)
   "Update file cache if FILE exists."
