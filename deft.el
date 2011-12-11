@@ -26,7 +26,7 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
-;; Version: 0.3
+;; Version: 0.4
 ;; Author: Jason R. Blevins <jrblevin@sdf.org>
 ;; Keywords: plain text, notes, Simplenote, Notational Velocity
 ;; URL: http://jblevins.org/projects/deft/
@@ -43,7 +43,7 @@
 ;; creating new files and saving files.
 
 ;; Deft is open source software and may be freely distributed and
-;; modified under the BSD license.  Version 0.3 is the latest stable
+;; modified under the BSD license.  Version 0.4 is the latest stable
 ;; version, released on September 11, 2011.  You may download it
 ;; directly here:
 
@@ -198,6 +198,15 @@
 
 ;; History
 ;; -------
+
+;; Version 0.4 (2011-12-11):
+
+;; * Improved filtering performance.
+;; * Optionally take title from filename instead of first line of the
+;;   contents (see `deft-use-filename-as-title').
+;; * Dynamically resize width to fit the entire window.
+;; * Customisable time format (see `deft-time-format').
+;; * Handle `deft-directory' properly with or without a trailing slash.
 
 ;; Version 0.3 (2011-09-11):
 
