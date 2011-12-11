@@ -44,7 +44,7 @@
 
 ;; Deft is open source software and may be freely distributed and
 ;; modified under the BSD license.  Version 0.4 is the latest stable
-;; version, released on September 11, 2011.  You may download it
+;; version, released on December 11, 2011.  You may download it
 ;; directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
