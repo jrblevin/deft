@@ -1,6 +1,6 @@
 ;;; deft.el --- quickly browse, filter, and edit plain text notes
 
-;; Copyright (C) 2011 Jason R. Blevins <jrblevin@sdf.org>
+;; Copyright (C) 2011-2012 Jason R. Blevins <jrblevin@sdf.org>
 ;; All rights reserved.
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -692,8 +692,7 @@ If the point is not on a file widget, do nothing."
   (if (= (length str) 0)
       (setq deft-filter-regexp nil)
     (setq deft-filter-regexp str)
-    (setq deft-current-files (mapcar 'deft-filter-match-file deft-all-files))
-    (setq deft-current-files (delq nil deft-current-files)))
+    (deft-filter-update))
   (deft-refresh-browser))
 
 (defun deft-filter-increment ()
