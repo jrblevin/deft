@@ -436,10 +436,15 @@ title."
   (setq deft-hash-titles (make-hash-table :test 'equal))
   (setq deft-hash-summaries (make-hash-table :test 'equal)))
 
-(defun deft-cache-update ()
-  "Update cached file information."
+(defun deft-cache-update-all ()
+  "Update file list and update cached information for each file."
   (setq deft-all-files (deft-find-all-files))             ; List all files
   (mapc 'deft-cache-file deft-all-files)                  ; Cache contents
+  (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
+
+(defun deft-cache-update-file (file)
+  "Update cached information for a single file."
+  (deft-cache-file file)                                  ; Cache contents
   (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
 
 ;; Cache access
@@ -542,7 +547,7 @@ title."
   (interactive)
   (when (get-buffer deft-buffer)
     (set-buffer deft-buffer)
-    (deft-cache-update)
+    (deft-cache-update-all)
     (deft-filter-update)
     (deft-buffer-setup)))
 
@@ -810,7 +815,7 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (setq default-directory deft-directory)
   (use-local-map deft-mode-map)
   (deft-cache-initialize)
-  (deft-cache-update)
+  (deft-cache-update-all)
   (deft-filter-initialize)
   (setq major-mode 'deft-mode)
   (setq mode-name "Deft")
