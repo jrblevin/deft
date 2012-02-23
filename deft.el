@@ -580,7 +580,9 @@ Call this function after any actions which update the filter and file list."
     (funcall deft-text-mode)
     (add-to-list 'deft-auto-save-buffers (buffer-name))
     (add-hook 'after-save-hook
-              (lambda () (save-excursion (deft-refresh)))
+              (lambda () (save-excursion
+                           (deft-cache-update-file buffer-file-name)
+                           (deft-refresh-filter)))
               nil t)))
 
 (defun deft-find-file (file)
