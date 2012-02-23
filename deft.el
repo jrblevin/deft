@@ -545,14 +545,19 @@ title."
 (defun deft-refresh ()
   "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
   (interactive)
-  (when (get-buffer deft-buffer)
-    (set-buffer deft-buffer)
-    (deft-cache-update-all)
-    (deft-filter-update)
-    (deft-buffer-setup)))
+  (deft-cache-update-all)
+  (deft-refresh-filter))
+
+(defun deft-refresh-filter ()
+  "Reapply the filter and refresh the *Deft* buffer.
+Call this after any actions which update the cache."
+  (interactive)
+  (deft-filter-update)
+  (deft-refresh-browser))
 
 (defun deft-refresh-browser ()
-  "Refresh the *Deft* buffer in the background."
+  "Refresh the *Deft* buffer in the background.
+Call this function after any actions which update the filter and file list."
   (when (get-buffer deft-buffer)
     (with-current-buffer deft-buffer
       (deft-buffer-setup))))
