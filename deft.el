@@ -603,6 +603,7 @@ use it as the title."
       (write-region deft-filter-regexp nil file nil))
     (deft-open-file file)))
 
+;;;###autoload
 (defun deft-new-file ()
   "Create a new file quickly, with an automatically generated filename
 or the filter string if non-nil and deft-use-filename-as-title is set.
