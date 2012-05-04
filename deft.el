@@ -368,6 +368,24 @@ is non-nil and `re-search-forward' otherwise."
       (search-forward str nil t)
     (re-search-forward str nil t)))
 
+(defun deft-set-mode-name ()
+  (if deft-incremental-search
+      (setq mode-name "Deft")
+    (setq mode-name "Deft/R")))
+
+(defun deft-toggle-incremental-search ()
+  "Toggle the `deft-incremental-search' setting."
+  (interactive)
+  (cond
+   (deft-incremental-search
+    (setq deft-incremental-search nil)
+    (message "Regex search"))
+   (t
+    (setq deft-incremental-search t)
+    (message "Incremental string search")))
+    (deft-refresh-filter)
+    (deft-set-mode-name))
+
 ;; File processing
 
 (defun deft-chomp (str)
@@ -841,6 +859,8 @@ Otherwise, quick create a new file."
     (define-key map (kbd "C-c C-d") 'deft-delete-file)
     (define-key map (kbd "C-c C-r") 'deft-rename-file)
     (define-key map (kbd "C-c C-f") 'deft-find-file)
+    ;; Settings
+    (define-key map (kbd "C-c C-t") 'deft-toggle-incremental-search)
     ;; Miscellaneous
     (define-key map (kbd "C-c C-g") 'deft-refresh)
     (define-key map (kbd "C-c C-q") 'quit-window)
@@ -867,7 +887,7 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (deft-cache-update-all)
   (deft-filter-initialize)
   (setq major-mode 'deft-mode)
-  (setq mode-name "Deft")
+  (deft-set-mode-name)
   (deft-buffer-setup)
   (when (> deft-auto-save-interval 0)
     (run-with-idle-timer deft-auto-save-interval t 'deft-auto-save))
