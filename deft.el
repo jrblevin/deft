@@ -305,7 +305,7 @@ Set to nil to hide."
 
 ;; Constants
 
-(defconst deft-version "0.3")
+(defconst deft-version "0.4")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
