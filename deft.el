@@ -357,6 +357,14 @@ Subfilters are seperated by SPACE."
   "Join incremental filters into one."
   (mapconcat 'identity (reverse deft-filter-regexp) " "))
 
+(defun deft-search-forward (str)
+  "Function to use when matching files against filter strings.
+This function calls `search-forward' when `deft-incremental-search'
+is non-nil and `re-search-forward' otherwise."
+  (if deft-incremental-search
+      (search-forward str nil t)
+    (re-search-forward str nil t)))
+
 ;; File processing
 
 (defun deft-chomp (str)
@@ -701,11 +709,11 @@ If the point is not on a file widget, do nothing."
     (if batch
 	(if (every (lambda (filter)
 		     (goto-char (point-min))
-		     (search-forward filter nil t))
+                     (deft-search-forward filter))
 		   deft-filter-regexp)
 	    file)
       (goto-char (point-min))
-      (if (search-forward (car deft-filter-regexp) nil t)
+      (if (deft-search-forward (car deft-filter-regexp))
 	  file))))
 
 ;; Filters that cause a refre
