@@ -383,8 +383,8 @@ is non-nil and `re-search-forward' otherwise."
    (t
     (setq deft-incremental-search t)
     (message "Incremental string search")))
-    (deft-refresh-filter)
-    (deft-set-mode-name))
+  (deft-filter (deft-whole-filter-regexp))
+  (deft-set-mode-name))
 
 ;; File processing
 
@@ -751,12 +751,13 @@ If the point is not on a file widget, do nothing."
 (defun deft-filter (str)
   "Set the filter string to STR and update the file browser."
   (interactive "sFilter: ")
-  (cond ((called-interactively-p 'any)
-         (if deft-incremental-search
-             (setq deft-filter-regexp (reverse (split-string str " ")))
-           (setq deft-filter-regexp (list str))))
-	((= (length str) 0) (setq deft-filter-regexp (cdr deft-filter-regexp)))
-	(t (setcar deft-filter-regexp str)))
+  (cond
+   ((= (length str) 0)
+    (setq deft-filter-regexp nil))
+   (t
+    (if deft-incremental-search
+        (setq deft-filter-regexp (reverse (split-string str " ")))
+      (setq deft-filter-regexp (list str)))))
   (deft-filter-update)
   (deft-refresh-browser))
 
