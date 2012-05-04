@@ -612,7 +612,7 @@ use it as the title."
   (if (file-exists-p file)
       (message (concat "Aborting, file already exists: " file))
     (when (and deft-filter-regexp (not deft-use-filename-as-title))
-      (write-region (car deft-filter-regexp) nil file nil))
+      (write-region (deft-whole-filter-regexp) nil file nil))
     (deft-open-file file)))
 
 ;;;###autoload
