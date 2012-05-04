@@ -267,8 +267,11 @@ Set to nil to hide."
   :group 'deft)
 
 (defcustom deft-incremental-search t
-  "Use incremental search.
-Subfilters are seperated by SPACE."
+  "Use incremental string search when non-nil and regex search when nil.
+During incremental string search, substrings separated by spaces are
+treated as subfilters, each of which must match a file.  They need
+not be adjacent and may appear in any order.  During regex search, the
+entire filter string is interpreted as a single regular expression."
   :type 'boolean
   :group 'deft)
 
@@ -716,7 +719,7 @@ If the point is not on a file widget, do nothing."
       (if (deft-search-forward (car deft-filter-regexp))
 	  file))))
 
-;; Filters that cause a refre
+;; Filters that cause a refresh
 
 (defun deft-filter-clear ()
   "Clear the current filter string and refresh the file browser."
