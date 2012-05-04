@@ -730,7 +730,10 @@ If the point is not on a file widget, do nothing."
 (defun deft-filter (str)
   "Set the filter string to STR and update the file browser."
   (interactive "sFilter: ")
-  (cond ((called-interactively-p 'any) (setq deft-filter-regexp (list str)))
+  (cond ((called-interactively-p 'any)
+         (if deft-incremental-search
+             (setq deft-filter-regexp (reverse (split-string str " ")))
+           (setq deft-filter-regexp (list str))))
 	((= (length str) 0) (setq deft-filter-regexp (cdr deft-filter-regexp)))
 	(t (setcar deft-filter-regexp str)))
   (deft-filter-update)
