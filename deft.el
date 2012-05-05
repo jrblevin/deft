@@ -383,7 +383,7 @@ is non-nil and `re-search-forward' otherwise."
    (t
     (setq deft-incremental-search t)
     (message "Incremental string search")))
-  (deft-filter (deft-whole-filter-regexp))
+  (deft-filter (deft-whole-filter-regexp) t)
   (deft-set-mode-name))
 
 ;; File processing
@@ -748,15 +748,16 @@ If the point is not on a file widget, do nothing."
     (deft-refresh))
   (message "Filter cleared."))
 
-(defun deft-filter (str)
+(defun deft-filter (str &optional reset)
   "Update the filter string with STR and update the file browser.
 In incremental search mode, STR will be added to the list of
 filter strings.  If STR has zero length, one element is removed
 from the list.  In regex search mode, the current filter string
-will be replaced with STR."
+will be replaced with STR.  When called interactively, or when
+RESET is non-nil, always replace the entire filter string."
   (interactive "sFilter: ")
   (if deft-incremental-search
-      (if (called-interactively-p 'any)
+      (if (or (called-interactively-p 'any) reset)
           (if (= (length str) 0)
               (setq deft-filter-regexp nil)
             (setq deft-filter-regexp (reverse (split-string str " "))))
