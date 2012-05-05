@@ -749,15 +749,21 @@ If the point is not on a file widget, do nothing."
   (message "Filter cleared."))
 
 (defun deft-filter (str)
-  "Set the filter string to STR and update the file browser."
+  "Update the filter string with STR and update the file browser.
+In incremental search mode, STR will be added to the list of
+filter strings.  If STR has zero length, one element is removed
+from the list.  In regex search mode, the current filter string
+will be replaced with STR."
   (interactive "sFilter: ")
-  (cond
-   ((= (length str) 0)
-    (setq deft-filter-regexp nil))
-   (t
-    (if deft-incremental-search
-        (setq deft-filter-regexp (reverse (split-string str " ")))
-      (setq deft-filter-regexp (list str)))))
+  (if deft-incremental-search
+      (if (called-interactively-p 'any)
+          (if (= (length str) 0)
+              (setq deft-filter-regexp nil)
+            (setq deft-filter-regexp (reverse (split-string str " "))))
+        (if (= (length str) 0)
+            (setq deft-filter-regexp (cdr deft-filter-regexp))
+          (setcar deft-filter-regexp str)))
+    (setq deft-filter-regexp (list str)))
   (deft-filter-update)
   (deft-refresh-browser))
 
