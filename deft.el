@@ -760,9 +760,9 @@ will be replaced with STR."
           (if (= (length str) 0)
               (setq deft-filter-regexp nil)
             (setq deft-filter-regexp (reverse (split-string str " "))))
-        (if (= (length str) 0)
-            (setq deft-filter-regexp (cdr deft-filter-regexp))
-          (setcar deft-filter-regexp str)))
+        (if str
+            (setcar deft-filter-regexp str)
+          (setq deft-filter-regexp (cdr deft-filter-regexp))))
     (setq deft-filter-regexp (list str)))
   (deft-filter-update)
   (deft-refresh-browser))
@@ -787,10 +787,10 @@ will be replaced with STR."
 (defun deft-filter-decrement ()
   "Remove last character from the filter regexp and update `deft-current-files'."
   (interactive)
-  (cond ((> (length (car deft-filter-regexp)) 1)
+  (cond ((> (length (car deft-filter-regexp)) 0)
 	 (deft-filter (substring (car deft-filter-regexp) 0 -1)))
 	((> (length deft-filter-regexp) 1)
-	 (deft-filter ""))
+	 (deft-filter nil))
 	(t (deft-filter-clear))))
 
 (defun deft-complete ()
