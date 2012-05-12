@@ -198,6 +198,19 @@
 ;; startup, but you can set `deft-incremental-search' to nil to make
 ;; regex search the default.
 
+;; The title of each file is taken to be the first line of the file,
+;; with certain characters removed from the beginning (hash
+;; characters, as used in Markdown headers, and asterisks, as in Org
+;; Mode headers).  The substrings to remove are specified in
+;; `deft-strip-title-regex'.
+
+;; More generally, the title post-processing function itself can be
+;; customized by setting `deft-parse-title-function', which accepts
+;; the first line of the file as an argument and returns the parsed
+;; title to display in the file browser.  The default function is
+;; `deft-strip-title', which removes all occurrences of
+;; `deft-strip-title-regex' as described above.
+
 ;; Acknowledgments
 ;; ---------------
 
@@ -284,6 +297,17 @@ treated as subfilters, each of which must match a file.  They need
 not be adjacent and may appear in any order.  During regex search, the
 entire filter string is interpreted as a single regular expression."
   :type 'boolean
+  :group 'deft)
+
+(defcustom deft-parse-title-function 'deft-strip-title
+  "Function for post-processing file titles."
+  :type 'function
+  :group 'deft)
+
+(defcustom deft-strip-title-regex "^[#\* ]*"
+  "Regular expression to remove from file titles."
+  :type 'regexp
+  :safe 'stringp
   :group 'deft)
 
 ;; Faces
@@ -426,6 +450,10 @@ is non-nil and `re-search-forward' otherwise."
             (setq result (cons file result))))
         result)))
 
+(defun deft-strip-title (title)
+  "Remove all strings matching `deft-strip-title-regex' from TITLE."
+  (replace-regexp-in-string deft-strip-title-regex "" title))
+
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
 According to `deft-use-filename-as-title', the title is taken to
@@ -434,7 +462,8 @@ be the first non-empty line of a file or the file name."
       (deft-base-filename file)
     (let ((begin (string-match "^.+$" contents)))
       (if begin
-        (substring contents begin (match-end 0))
+          (funcall deft-parse-title-function
+                   (substring contents begin (match-end 0)))
         (deft-base-filename file)))))
 
 (defun deft-parse-summary (contents title)
