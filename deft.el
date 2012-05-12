@@ -100,6 +100,13 @@
 ;; and `C-c C-g` to refresh the file browser using the current filter
 ;; string.
 
+;; By default, Deft filters files in incremental string search mode,
+;; where "search string" will match all files containing both "search"
+;; and "string" in any order.  Alternatively, Deft supports direct
+;; regex filtering.  Pressing `C-c C-t` will toggle between these two
+;; modes of operation.  Regex mode is indicated by an "R" in the mode
+;; line.
+
 ;; Static filtering is also possible by pressing `C-c C-l`.  This is
 ;; sometimes useful on its own, and it may be preferable in some
 ;; situations, such as over slow connections or on older systems,
@@ -186,6 +193,10 @@
 ;; also be customized.  By default, these faces inherit their
 ;; properties from the standard font-lock faces defined by your current
 ;; color theme.
+
+;; Incremental string search is the default method of filtering on
+;; startup, but you can set `deft-incremental-search' to nil to make
+;; regex search the default.
 
 ;; Acknowledgments
 ;; ---------------
