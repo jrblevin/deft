@@ -480,6 +480,7 @@ title."
 (defun deft-cache-file (file)
   "Update file cache if FILE exists."
   (when (file-exists-p file)
+    (add-to-list 'deft-all-files file)
     (let ((mtime-cache (deft-file-mtime file))
           (mtime-file (nth 5 (file-attributes file))))
       (if (or (not mtime-cache)
