@@ -655,6 +655,19 @@ Call this function after any actions which update the filter and file list."
 
 ;; File list file management actions
 
+(defun deft-unused-filename ()
+  (let (fmt counter slug dir file)
+    (setq fmt (concat "deft-%d"))
+    (setq dir (file-name-as-directory deft-directory))
+    (setq counter 0)
+    (setq slug (format fmt counter))
+    (setq file (concat dir slug "." deft-extension))
+    (while (or (file-exists-p file) (get-file-buffer file))
+      (setq counter (1+ counter))
+      (setq slug (format fmt counter))
+      (setq file (concat dir slug "." deft-extension)))
+    slug))
+
 (defun deft-open-file (file)
   "Open FILE in a new buffer and setting its mode."
   (prog1 (find-file file)
@@ -680,9 +693,14 @@ use it as the title."
                      file "." deft-extension))
   (if (file-exists-p file)
       (message (concat "Aborting, file already exists: " file))
+    ;; Insert the contents of the filter string in the file.
     (when (and deft-filter-regexp (not deft-use-filename-as-title))
-      (write-region (deft-whole-filter-regexp) nil file nil))
-    (deft-open-file file)))
+      (write-region (concat (deft-whole-filter-regexp) "\n\n") nil file nil))
+    (deft-cache-update-file file)
+    (deft-refresh-filter)
+    (deft-open-file file)
+    (with-current-buffer (get-file-buffer file)
+      (goto-char (point-max)))))
 
 ;;;###autoload
 (defun deft-new-file ()
@@ -693,24 +711,15 @@ filter string is non-nil and title is not from filename, use it
 as the title."
   (interactive)
   (let (file)
-    (if (and deft-use-filename-as-title deft-filter-regexp)
+    (if (and deft-filter-regexp deft-use-filename-as-title)
+        ;; If the filter string is non-emtpy and titles are taken from
+        ;; filenames is set, construct filename from filter string.
 	(setq file (concat (file-name-as-directory deft-directory)
                            (deft-whole-filter-regexp) "." deft-extension))
-      (let (fmt counter temp-buffer)
-	(setq counter 0)
-	(setq fmt (concat "deft-%d." deft-extension))
-	(setq file (concat (file-name-as-directory deft-directory)
-                           (format fmt counter)))
-	(while (or (file-exists-p file)
-		   (get-file-buffer file))
-	  (setq counter (1+ counter))
-	  (setq file (concat (file-name-as-directory deft-directory)
-                             (format fmt counter))))
-	(when deft-filter-regexp
-	  (write-region (concat (deft-whole-filter-regexp) "\n\n") nil file nil))))
-    (deft-open-file file)
-    (with-current-buffer (get-file-buffer file)
-      (goto-char (point-max)))))
+      ;; If the filter string is empty, or titles are taken from file
+      ;; contents, then use an automatically generated unique filename.
+      (setq file (deft-unused-filename)))
+    (deft-new-file-named file)))
 
 (defun deft-delete-file ()
   "Delete the file represented by the widget at the point.
