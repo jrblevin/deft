@@ -1,6 +1,6 @@
 ;;; deft.el --- quickly browse, filter, and edit plain text notes
 
-;;; Copyright (C) 2011-2012 Jason R. Blevins <jrblevin@sdf.org>
+;;; Copyright (C) 2011-2013 Jason R. Blevins <jrblevin@sdf.org>
 ;; All rights reserved.
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
-;;; Version: 0.4
+;;; Version: 0.5
 ;;; Author: Jason R. Blevins <jrblevin@sdf.org>
 ;;; Keywords: plain text, notes, Simplenote, Notational Velocity
 ;;; URL: http://jblevins.org/projects/deft/
@@ -43,8 +43,8 @@
 ;; creating new files and saving files.
 
 ;; Deft is open source software and may be freely distributed and
-;; modified under the BSD license.  Version 0.4 is the latest stable
-;; version, released on December 11, 2011.  You may download it
+;; modified under the BSD license.  Version 0.5 is the latest stable
+;; version, released on January 25, 2013.  You may download it
 ;; directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
@@ -231,12 +231,28 @@
 
 ;; Thanks to Konstantinos Efstathiou for writing simplnote.el, from
 ;; which I borrowed liberally, and to Zachary Schneirov for writing
-;; Notational Velocity, which I have never had the pleasure of using,
-;; but whose functionality and spirit I wanted to bring to other
-;; platforms, such as Linux, via Emacs.
+;; Notational Velocity, whose functionality and spirit I wanted to
+;; bring to Emacs.
 
 ;; History
 ;; -------
+
+;; Version 0.5 (2013-01-25):
+
+;; * Implement incremental string search (default) and regex search.
+;;   These search modes can be toggled by pressing `C-c C-t`.
+;; * Default search method can be changed by setting `deft-incremental-search'.
+;; * Support custom `deft-parse-title-function' for post-processing titles.
+;; * The default `deft-parse-title-function' simply strips occurrences of
+;;   `deft-strip-title-regexp', which removes Markdown and Org headings.
+;; * Open files in another window with `C-o`.  Prefix it with `C-u` to
+;;   switch to the other window.
+;; * For symbolic links, use modification time of taget for sorting.
+;; * When opening files, move point to the end of the first match of
+;;   the filter string.
+;; * Improved filter editing: delete (`DEL`), delete word (`M-DEL`),
+;;   and yank (`C-y`).
+;; * Advanced filter editing in minibuffer (`C-c C-l`).
 
 ;; Version 0.4 (2011-12-11):
 
@@ -244,7 +260,7 @@
 ;; * Optionally take title from filename instead of first line of the
 ;;   contents (see `deft-use-filename-as-title').
 ;; * Dynamically resize width to fit the entire window.
-;; * Customisable time format (see `deft-time-format').
+;; * Customizable time format (see `deft-time-format').
 ;; * Handle `deft-directory' properly with or without a trailing slash.
 
 ;; Version 0.3 (2011-09-11):
@@ -257,7 +273,7 @@
 ;; * Automatically save opened files (optional).
 ;; * Address some byte-compilation warnings.
 
-;; Deft was originally written by Jason Blevins.
+;; Deft was originally written by [Jason Blevins](http://jblevins.org/).
 ;; The initial version, 0.1, was released on August 6, 2011.
 
 ;;; Code:
@@ -369,7 +385,7 @@ entire filter string is interpreted as a single regular expression."
 
 ;; Constants
 
-(defconst deft-version "0.4")
+(defconst deft-version "0.5")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
