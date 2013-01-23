@@ -686,10 +686,11 @@ use it as the title."
 
 ;;;###autoload
 (defun deft-new-file ()
-  "Create a new file quickly, with an automatically generated filename
-or the filter string if non-nil and deft-use-filename-as-title is set.
-If the filter string is non-nil and title is not from filename,
-use it as the title."
+  "Create a new file quickly.
+Use either an automatically generated filename or the filter
+string if non-nil and `deft-use-filename-as-title' is set.  If the
+filter string is non-nil and title is not from filename, use it
+as the title."
   (interactive)
   (let (filename)
     (if (and deft-use-filename-as-title deft-filter-regexp)
