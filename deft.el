@@ -931,6 +931,7 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (kill-all-local-variables)
   (setq truncate-lines t)
   (setq buffer-read-only t)
+  (setq deft-directory (expand-file-name deft-directory))
   (setq default-directory deft-directory)
   (use-local-map deft-mode-map)
   (deft-cache-initialize)
