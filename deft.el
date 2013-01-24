@@ -429,6 +429,15 @@ is non-nil and `re-search-forward' otherwise."
   (deft-filter (deft-whole-filter-regexp) t)
   (deft-set-mode-name))
 
+(defun deft-filter-regexp-as-regexp ()
+  "Return a regular expression corresponding to the current filter string.
+When `deft-incremental-search' is non-nil, we must combine each individual
+whitespace separated string.  Otherwise, the `car' of `deft-filter-regexp'
+is the complete regexp."
+  (if deft-incremental-search
+      (mapconcat 'regexp-quote (reverse deft-filter-regexp) "\\|")
+    (car deft-filter-regexp)))
+
 ;; File processing
 
 (defun deft-chomp (str)
@@ -685,6 +694,9 @@ OTHER and SWITCH are both non-nil, switch to the other window."
     (with-current-buffer buffer
       (when (not (eq major-mode deft-text-mode))
         (funcall deft-text-mode))
+      (when deft-filter-regexp
+        (when (re-search-forward (deft-filter-regexp-as-regexp) nil t)
+          (goto-char (match-beginning 0))))
       (add-to-list 'deft-auto-save-buffers buffer)
       (add-hook 'after-save-hook
                 (lambda () (save-excursion
