@@ -357,6 +357,9 @@ entire filter string is interpreted as a single regular expression."
 (defconst deft-separator " --- "
   "Text used to separate file titles and summaries.")
 
+(defconst deft-empty-file-title "[Empty file]"
+  "Text to use as title for empty files.")
+
 ;; Global variables
 
 (defvar deft-mode-hook nil
@@ -463,8 +466,7 @@ be the first non-empty line of a file or the file name."
     (let ((begin (string-match "^.+$" contents)))
       (if begin
           (funcall deft-parse-title-function
-                   (substring contents begin (match-end 0)))
-        (deft-base-filename file)))))
+                   (substring contents begin (match-end 0)))))))
 
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
@@ -607,7 +609,8 @@ title."
                      :help-echo "Edit this file"
                      :notify (lambda (widget &rest ignore)
                                (deft-open-file (widget-get widget :tag)))
-                     (if title (substring title 0 title-width) "[Empty file]"))
+                     (if title (substring title 0 title-width)
+                       deft-empty-file-title))
       (when (> summary-width 0)
         (widget-insert (propertize deft-separator 'face 'deft-separator-face))
         (widget-insert (propertize (substring summary 0 summary-width)
