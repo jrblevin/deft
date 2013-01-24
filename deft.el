@@ -813,8 +813,10 @@ If the point is not on a file widget, do nothing."
   "Return FILE if FILE matches the current filter regexp."
   (with-temp-buffer
     (insert file)
-    (insert (deft-file-title file))
-    (insert (deft-file-contents file))
+    (let ((title (deft-file-title file))
+          (contents (deft-file-contents file)))
+      (when title (insert title))
+      (when contents (insert contents)))
     (if batch
 	(if (every (lambda (filter)
 		     (goto-char (point-min))
