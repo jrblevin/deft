@@ -684,18 +684,18 @@ OTHER and SWITCH are both non-nil, switch to the other window."
   (let ((buffer (find-file-noselect file)))
     (with-current-buffer buffer
       (when (not (eq major-mode deft-text-mode))
-        (funcall deft-text-mode)))
+        (funcall deft-text-mode))
+      (add-to-list 'deft-auto-save-buffers buffer)
+      (add-hook 'after-save-hook
+                (lambda () (save-excursion
+                             (deft-cache-update-file buffer-file-name)
+                             (deft-refresh-filter)))
+                nil t))
     (if other
         (if switch
             (switch-to-buffer-other-window buffer)
           (display-buffer buffer other))
-      (switch-to-buffer buffer))
-    (add-to-list 'deft-auto-save-buffers buffer)
-    (add-hook 'after-save-hook
-              (lambda () (save-excursion
-                           (deft-cache-update-file buffer-file-name)
-                           (deft-refresh-filter)))
-              nil t)))
+      (switch-to-buffer buffer))))
 
 (defun deft-find-file (file)
   "Find FILE interactively using the minibuffer."
