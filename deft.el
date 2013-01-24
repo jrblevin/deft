@@ -96,6 +96,11 @@
 ;; To open files other than the first match, navigate up and down
 ;; using `C-p` and `C-n` and press `RET` on the file you want to open.
 
+;; You can also press `C-o` to open a file in another window, without
+;; switching to the other window.  Issue the same command with a prefix
+;; argument, `C-u C-o`, to open the file in another window and switch
+;; to that window.
+
 ;; Press `C-c C-c` to clear the filter string and display all files
 ;; and `C-c C-g` to refresh the file browser using the current filter
 ;; string.
@@ -672,11 +677,20 @@ Call this function after any actions which update the filter and file list."
       (setq file (concat dir slug "." deft-extension)))
     slug))
 
-(defun deft-open-file (file)
-  "Open FILE in a new buffer and setting its mode."
-  (prog1 (find-file file)
-    (funcall deft-text-mode)
-    (add-to-list 'deft-auto-save-buffers (buffer-name))
+(defun deft-open-file (file &optional other switch)
+  "Open FILE in a new buffer and setting its mode.
+When OTHER is non-nil, open the file in another window.  When
+OTHER and SWITCH are both non-nil, switch to the other window."
+  (let ((buffer (find-file-noselect file)))
+    (with-current-buffer buffer
+      (when (not (eq major-mode deft-text-mode))
+        (funcall deft-text-mode)))
+    (if other
+        (if switch
+            (switch-to-buffer-other-window buffer)
+          (display-buffer buffer other))
+      (switch-to-buffer buffer))
+    (add-to-list 'deft-auto-save-buffers buffer)
     (add-hook 'after-save-hook
               (lambda () (save-excursion
                            (deft-cache-update-file buffer-file-name)
@@ -724,6 +738,13 @@ as the title."
       ;; contents, then use an automatically generated unique filename.
       (setq file (deft-unused-filename)))
     (deft-new-file-named file)))
+
+(defun deft-open-file-other-window (&optional arg)
+  "When the point is at a widget, open the file in the other window."
+  (interactive "P")
+  (let ((file (widget-get (widget-at) :tag)))
+    (when file
+      (deft-open-file file t arg))))
 
 (defun deft-delete-file ()
   "Delete the file represented by the widget at the point.
@@ -933,6 +954,7 @@ Otherwise, quick create a new file."
     (define-key map (kbd "<tab>") 'widget-forward)
     (define-key map (kbd "<backtab>") 'widget-backward)
     (define-key map (kbd "<S-tab>") 'widget-backward)
+    (define-key map (kbd "C-o") 'deft-open-file-other-window)
     map)
   "Keymap for Deft mode.")
 
