@@ -489,7 +489,7 @@ title."
   (when (file-exists-p file)
     (add-to-list 'deft-all-files file)
     (let ((mtime-cache (deft-file-mtime file))
-          (mtime-file (nth 5 (file-attributes file))))
+          (mtime-file (nth 5 (file-attributes (file-truename file)))))
       (if (or (not mtime-cache)
               (time-less-p mtime-cache mtime-file))
           (deft-cache-newer-file file mtime-file)))))
