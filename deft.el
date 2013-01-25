@@ -119,9 +119,11 @@
 ;; By default, Deft filters files in incremental string search mode,
 ;; where "search string" will match all files containing both "search"
 ;; and "string" in any order.  Alternatively, Deft supports direct
-;; regexp filtering.  Pressing `C-c C-t` will toggle between these two
-;; modes of operation.  Regexp mode is indicated by an "R" in the mode
-;; line.
+;; regexp filtering, where the filter string is interpreted as a
+;; formal regular expression.  For example, `^\(foo\|bar\)` matches
+;; foo or bar at the beginning of a line.  Pressing `C-c C-t` will
+;; toggle between incremental and regexp search modes.  Regexp
+;; search mode is indicated by an "R" in the mode line.
 
 ;; Common file operations can also be carried out from within Deft.
 ;; Files can be renamed using `C-c C-r` or deleted using `C-c C-d`.
@@ -338,6 +340,11 @@ entire filter string is interpreted as a single regular expression."
   "Face for Deft filter string."
   :group 'deft-faces)
 
+(defface deft-filter-string-error-face
+  '((t :inherit font-lock-warning-face))
+  "Face for Deft filter string when regexp is invalid."
+  :group 'deft-faces)
+
 (defface deft-title-face
   '((t :inherit font-lock-function-name-face :bold t))
   "Face for Deft file titles."
@@ -414,6 +421,9 @@ regexp.")
 
 (defvar deft-filter-history nil
   "History of interactive filter strings.")
+
+(defvar deft-regexp-error nil
+  "Flag for indicating invalid regexp errors.")
 
 ;; Helpers
 
@@ -590,7 +600,10 @@ title."
         (widget-insert
          (propertize "Deft: " 'face 'deft-header-face))
         (widget-insert
-         (propertize (deft-whole-filter-regexp) 'face 'deft-filter-string-face)))
+         (propertize (deft-whole-filter-regexp) 'face
+                     (if (and (not deft-incremental-search) deft-regexp-error)
+                         'deft-filter-string-error-face
+                       'deft-filter-string-face))))
     (widget-insert
          (propertize "Deft" 'face 'deft-header-face)))
   (widget-insert "\n\n"))
@@ -818,15 +831,6 @@ If the point is not on a file widget, do nothing."
   (setq deft-filter-regexp nil)
   (setq deft-current-files deft-all-files))
 
-(defun deft-filter-update ()
-  "Update the filtered files list using the current filter regexp."
-  (if (not deft-filter-regexp)
-      (setq deft-current-files deft-all-files)
-    (setq deft-current-files (mapcar (lambda (file)
-				       (deft-filter-match-file file t))
-				     deft-all-files))
-    (setq deft-current-files (delq nil deft-current-files))))
-
 (defun deft-filter-match-file (file &optional batch)
   "Return FILE if FILE matches the current filter regexp."
   (with-temp-buffer
@@ -844,6 +848,32 @@ If the point is not on a file widget, do nothing."
       (goto-char (point-min))
       (if (deft-search-forward (car deft-filter-regexp))
 	  file))))
+
+(defun deft-filter-files (files)
+  "Update `deft-current-files' given a list of paths, FILES.
+Apply `deft-filter-match-file' to `deft-all-files', handling
+any errors that occur."
+  (delq nil
+        (condition-case nil
+            ;; Map `deft-filter-match-file' onto FILES.  Return
+            ;; filtered files list and clear error flag if no error.
+            (progn
+              (setq deft-regexp-error nil)
+              (mapcar (lambda (file) (deft-filter-match-file file t)) files))
+          ;; Upon an error (`invalid-regexp'), set an error flag
+          (error
+           (progn
+             (setq deft-regexp-error t)
+             files)))))
+
+(defun deft-filter-update ()
+  "Update the filtered files list using the current filter regexp.
+Starts from scratch using `deft-all-files'.  Does not refresh the
+Deft buffer."
+  (if (not deft-filter-regexp)
+      (setq deft-current-files deft-all-files)
+    (setq deft-current-files
+          (deft-filter-files deft-all-files))))
 
 ;; Filters that cause a refresh
 
@@ -911,7 +941,7 @@ replace the entire filter string."
 	(if (car deft-filter-regexp)
 	    (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
 	  (setq deft-filter-regexp (list char)))
-	(setq deft-current-files (mapcar 'deft-filter-match-file deft-current-files))
+	(setq deft-current-files (deft-filter-files deft-current-files))
 	(setq deft-current-files (delq nil deft-current-files))
 	(deft-refresh-browser)))))
 
