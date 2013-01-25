@@ -104,11 +104,17 @@
 ;; To edit the filter string, press `DEL` (backspace) to remove the
 ;; last character or `M-DEL` to remove the last "word".  To yank
 ;; (paste) the most recently killed (cut or copied) text into the
-;; filter string, press `C-y`.
+;; filter string, press `C-y`.  Press `C-c C-c` to clear the filter
+;; string and display all files and `C-c C-g` to refresh the file
+;; browser using the current filter string.
 
-;; Press `C-c C-c` to clear the filter string and display all files
-;; and `C-c C-g` to refresh the file browser using the current filter
-;; string.
+;; For more advanced editing operations, you can also edit the filter
+;; string in the minibuffer by pressing `C-c C-l`.  While in the
+;; minibuffer, the history of previous edits can be cycled through by
+;; pressing `M-p` and `M-n`.  This form of static, one-time filtering
+;; (as opposed to incremental, on-the-fly filtering) may be preferable
+;; in some situations, such as over slow connections or on systems
+;; where interactive filtering performance is poor.
 
 ;; By default, Deft filters files in incremental string search mode,
 ;; where "search string" will match all files containing both "search"
@@ -116,11 +122,6 @@
 ;; regexp filtering.  Pressing `C-c C-t` will toggle between these two
 ;; modes of operation.  Regexp mode is indicated by an "R" in the mode
 ;; line.
-
-;; Static filtering is also possible by pressing `C-c C-l`.  This is
-;; sometimes useful on its own, and it may be preferable in some
-;; situations, such as over slow connections or on older systems,
-;; where interactive filtering performance is poor.
 
 ;; Common file operations can also be carried out from within Deft.
 ;; Files can be renamed using `C-c C-r` or deleted using `C-c C-d`.
@@ -410,6 +411,9 @@ regexp.")
 
 (defvar deft-window-width nil
   "Width of Deft buffer.")
+
+(defvar deft-filter-history nil
+  "History of interactive filter strings.")
 
 ;; Helpers
 
@@ -867,7 +871,9 @@ with STR.
 
 When called interactively, or when RESET is non-nil, always
 replace the entire filter string."
-  (interactive "sFilter: ")
+  (interactive
+   (list (read-from-minibuffer "Filter: " (deft-whole-filter-regexp)
+                               nil nil 'deft-filter-history)))
   (if deft-incremental-search
       ;; Incremental search mode
       (if (or (called-interactively-p 'any) reset)
