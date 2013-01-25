@@ -371,7 +371,16 @@ entire filter string is interpreted as a single regular expression."
   "Hook run when entering Deft mode.")
 
 (defvar deft-filter-regexp nil
-  "Current filter regexp used by Deft.")
+  "A list of string representing the current filter used by Deft.
+
+In incremental search mode, when `deft-incremental-search' is
+non-nil, the elements of this list are the individual words of
+the filter string, in reverse order.  That is, the car of the
+list is the last word in the filter string.
+
+In regexp search mode, when `deft-incremental-search' is nil,
+this list has a single element containing the entire filter
+regexp.")
 
 (defvar deft-current-files nil
   "List of files matching current filter.")
@@ -839,22 +848,42 @@ If the point is not on a file widget, do nothing."
   (message "Filter cleared."))
 
 (defun deft-filter (str &optional reset)
-  "Update the filter string with STR and update the file browser.
-In incremental search mode, STR will be added to the list of
-filter strings.  If STR has zero length, one element is removed
-from the list.  In regexp search mode, the current filter string
-will be replaced with STR.  When called interactively, or when
-RESET is non-nil, always replace the entire filter string."
+  "Update the filter with STR and update the file browser.
+
+In incremental search mode, the car of `deft-filter-regexp' will
+be replaced with STR.  If STR has zero length and the length of
+the list is greater than one, the empty string will be retained
+to simulate whitespace.  However, if STR has zero length and the
+list is of length one, then the filter will be cleared.  If STR
+is nil, then the car is removed from the list.
+
+In regexp search mode, the current filter string will be replaced
+with STR.
+
+When called interactively, or when RESET is non-nil, always
+replace the entire filter string."
   (interactive "sFilter: ")
   (if deft-incremental-search
+      ;; Incremental search mode
       (if (or (called-interactively-p 'any) reset)
+          ;; Called interactively or RESET non-nil
           (if (= (length str) 0)
               (setq deft-filter-regexp nil)
             (setq deft-filter-regexp (reverse (split-string str " "))))
-        (if str
-            (setcar deft-filter-regexp str)
-          (setq deft-filter-regexp (cdr deft-filter-regexp))))
-    (setq deft-filter-regexp (list str)))
+        ;; Called noninteractively
+        (if (not str)
+            ;; If str is nil, remove it and filter with the cdr
+            (setq deft-filter-regexp (cdr deft-filter-regexp))
+          ;; Use STR it as the new car, even when empty (to simulate
+          ;; whitespace), unless this is the only element in the list.
+          (if (and (= (length deft-filter-regexp) 1)
+                   (= (length str) 0))
+              (setq deft-filter-regexp nil)
+            (setcar deft-filter-regexp str))))
+    ;; Regexp search mode
+    (if (> (length str) 0)
+        (setq deft-filter-regexp (list str))
+      (setq deft-filter-regexp nil)))
   (deft-filter-update)
   (deft-refresh-browser))
 
@@ -876,13 +905,22 @@ RESET is non-nil, always replace the entire filter string."
 	(deft-refresh-browser)))))
 
 (defun deft-filter-decrement ()
-  "Remove last character from the filter regexp and update `deft-current-files'."
+  "Remove last character from the filter, if possible, and update.
+
+In incremental search mode, the elements of `deft-filter-regexp'
+are the words of the filter string in reverse order.  In regexp
+search mode, the list is a single element containing the entire
+filter regexp.  Therefore, in both cases, only the car of
+`deft-filter-regexp' is modified."
   (interactive)
-  (cond ((> (length (car deft-filter-regexp)) 0)
-	 (deft-filter (substring (car deft-filter-regexp) 0 -1)))
-	((> (length deft-filter-regexp) 1)
-	 (deft-filter nil))
-	(t (deft-filter-clear))))
+  (let ((str (car deft-filter-regexp)))
+    (deft-filter
+      (if (> (length str) 0)
+          ;; If the last string element has at least one character,
+          ;; simply remove the last character.
+          (substring str 0 -1)
+        ;; Otherwise, return nil
+        nil))))
 
 (defun deft-complete ()
   "Complete the current action.
