@@ -101,6 +101,9 @@
 ;; argument, `C-u C-o`, to open the file in another window and switch
 ;; to that window.
 
+;; To edit the filter string, press `DEL` (backspace) to remove the
+;; last character or `M-DEL` to remove the last "word".
+
 ;; Press `C-c C-c` to clear the filter string and display all files
 ;; and `C-c C-g` to refresh the file browser using the current filter
 ;; string.
@@ -922,6 +925,25 @@ filter regexp.  Therefore, in both cases, only the car of
         ;; Otherwise, return nil
         nil))))
 
+(defun deft-filter-decrement-word ()
+  "Remove last word from the filter, if possible, and update."
+  (interactive)
+  (deft-filter
+    (if deft-incremental-search
+        ;; In incremental search mode, remove the car
+        nil
+      ;; In regexp search mode, remove last "word" component
+      ;(replace-regexp-in-string "[[:space:]\n]*$" "" s)
+      (let ((str (car deft-filter-regexp)))
+        (if (> (length str) 0)
+            (with-temp-buffer
+              (insert (concat "\"" str "\""))
+              (lisp-interaction-mode)
+              (goto-char (- (point-max) 1))
+              (backward-word 1)
+              (buffer-substring 2 (point)))
+          nil)))))
+
 (defun deft-complete ()
   "Complete the current action.
 If there is a widget at the point, press it.  If a filter is
@@ -982,6 +1004,7 @@ Otherwise, quick create a new file."
       (setq i (1+ i)))
     ;; Handle backspace and delete
     (define-key map (kbd "DEL") 'deft-filter-decrement)
+    (define-key map (kbd "M-DEL") 'deft-filter-decrement-word)
     ;; Handle return via completion or opening file
     (define-key map (kbd "RET") 'deft-complete)
     ;; Filtering
