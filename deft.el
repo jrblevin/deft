@@ -102,7 +102,9 @@
 ;; to that window.
 
 ;; To edit the filter string, press `DEL` (backspace) to remove the
-;; last character or `M-DEL` to remove the last "word".
+;; last character or `M-DEL` to remove the last "word".  To yank
+;; (paste) the most recently killed (cut or copied) text into the
+;; filter string, press `C-y`.
 
 ;; Press `C-c C-c` to clear the filter string and display all files
 ;; and `C-c C-g` to refresh the file browser using the current filter
@@ -944,6 +946,12 @@ filter regexp.  Therefore, in both cases, only the car of
               (buffer-substring 2 (point)))
           nil)))))
 
+(defun deft-filter-yank ()
+  "Append the most recently killed or yanked text to the filter."
+  (interactive)
+  (deft-filter
+    (concat (deft-whole-filter-regexp) (current-kill 0 t)) t))
+
 (defun deft-complete ()
   "Complete the current action.
 If there is a widget at the point, press it.  If a filter is
@@ -1010,6 +1018,7 @@ Otherwise, quick create a new file."
     ;; Filtering
     (define-key map (kbd "C-c C-l") 'deft-filter)
     (define-key map (kbd "C-c C-c") 'deft-filter-clear)
+    (define-key map (kbd "C-y") 'deft-filter-yank)
     ;; File creation
     (define-key map (kbd "C-c C-n") 'deft-new-file)
     (define-key map (kbd "C-c C-m") 'deft-new-file-named)
