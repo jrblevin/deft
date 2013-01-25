@@ -95,6 +95,8 @@
 
 ;; To open files other than the first match, navigate up and down
 ;; using `C-p` and `C-n` and press `RET` on the file you want to open.
+;; When opening a file, Deft searches forward and leaves the point
+;; at the end of the first match of the filter string.
 
 ;; You can also press `C-o` to open a file in another window, without
 ;; switching to the other window.  Issue the same command with a prefix
@@ -726,8 +728,7 @@ OTHER and SWITCH are both non-nil, switch to the other window."
       (when (not (eq major-mode deft-text-mode))
         (funcall deft-text-mode))
       (when deft-filter-regexp
-        (when (re-search-forward (deft-filter-regexp-as-regexp) nil t)
-          (goto-char (match-beginning 0))))
+        (re-search-forward (deft-filter-regexp-as-regexp) nil t))
       (add-to-list 'deft-auto-save-buffers buffer)
       (add-hook 'after-save-hook
                 (lambda () (save-excursion
