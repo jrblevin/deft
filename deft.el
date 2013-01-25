@@ -108,8 +108,8 @@
 ;; By default, Deft filters files in incremental string search mode,
 ;; where "search string" will match all files containing both "search"
 ;; and "string" in any order.  Alternatively, Deft supports direct
-;; regex filtering.  Pressing `C-c C-t` will toggle between these two
-;; modes of operation.  Regex mode is indicated by an "R" in the mode
+;; regexp filtering.  Pressing `C-c C-t` will toggle between these two
+;; modes of operation.  Regexp mode is indicated by an "R" in the mode
 ;; line.
 
 ;; Static filtering is also possible by pressing `C-c C-l`.  This is
@@ -201,20 +201,20 @@
 
 ;; Incremental string search is the default method of filtering on
 ;; startup, but you can set `deft-incremental-search' to nil to make
-;; regex search the default.
+;; regexp search the default.
 
 ;; The title of each file is taken to be the first line of the file,
 ;; with certain characters removed from the beginning (hash
 ;; characters, as used in Markdown headers, and asterisks, as in Org
 ;; Mode headers).  The substrings to remove are specified in
-;; `deft-strip-title-regex'.
+;; `deft-strip-title-regexp'.
 
 ;; More generally, the title post-processing function itself can be
 ;; customized by setting `deft-parse-title-function', which accepts
 ;; the first line of the file as an argument and returns the parsed
 ;; title to display in the file browser.  The default function is
 ;; `deft-strip-title', which removes all occurrences of
-;; `deft-strip-title-regex' as described above.
+;; `deft-strip-title-regexp' as described above.
 
 ;; Acknowledgments
 ;; ---------------
@@ -296,10 +296,10 @@ Set to nil to hide."
   :group 'deft)
 
 (defcustom deft-incremental-search t
-  "Use incremental string search when non-nil and regex search when nil.
+  "Use incremental string search when non-nil and regexp search when nil.
 During incremental string search, substrings separated by spaces are
 treated as subfilters, each of which must match a file.  They need
-not be adjacent and may appear in any order.  During regex search, the
+not be adjacent and may appear in any order.  During regexp search, the
 entire filter string is interpreted as a single regular expression."
   :type 'boolean
   :group 'deft)
@@ -309,7 +309,7 @@ entire filter string is interpreted as a single regular expression."
   :type 'function
   :group 'deft)
 
-(defcustom deft-strip-title-regex "^[#\* ]*"
+(defcustom deft-strip-title-regexp "^[#\* ]*"
   "Regular expression to remove from file titles."
   :type 'regexp
   :safe 'stringp
@@ -422,7 +422,7 @@ is non-nil and `re-search-forward' otherwise."
   (cond
    (deft-incremental-search
     (setq deft-incremental-search nil)
-    (message "Regex search"))
+    (message "Regexp search"))
    (t
     (setq deft-incremental-search t)
     (message "Incremental string search")))
@@ -468,8 +468,8 @@ is the complete regexp."
         result)))
 
 (defun deft-strip-title (title)
-  "Remove all strings matching `deft-strip-title-regex' from TITLE."
-  (replace-regexp-in-string deft-strip-title-regex "" title))
+  "Remove all strings matching `deft-strip-title-regexp' from TITLE."
+  (replace-regexp-in-string deft-strip-title-regexp "" title))
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
@@ -842,7 +842,7 @@ If the point is not on a file widget, do nothing."
   "Update the filter string with STR and update the file browser.
 In incremental search mode, STR will be added to the list of
 filter strings.  If STR has zero length, one element is removed
-from the list.  In regex search mode, the current filter string
+from the list.  In regexp search mode, the current filter string
 will be replaced with STR.  When called interactively, or when
 RESET is non-nil, always replace the entire filter string."
   (interactive "sFilter: ")
