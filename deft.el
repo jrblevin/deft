@@ -387,8 +387,8 @@ entire filter string is interpreted as a single regular expression."
 
 (defconst deft-version "0.5")
 
-(defconst deft-buffer "*Deft*"
-  "Deft buffer name.")
+(defconst deft-default-buffer "*Deft*"
+  "Default Deft buffer name.")
 
 (defconst deft-separator " --- "
   "Text used to separate file titles and summaries.")
@@ -400,6 +400,14 @@ entire filter string is interpreted as a single regular expression."
 
 (defvar deft-mode-hook nil
   "Hook run when entering Deft mode.")
+
+(defvar deft-auto-save-buffers nil
+  "List of buffers that will be automatically saved.")
+
+;; Buffer local variables
+
+(defvar deft-buffer deft-default-buffer
+  "Deft buffer name.")
 
 (defvar deft-filter-regexp nil
   "A list of string representing the current filter used by Deft.
@@ -430,9 +438,6 @@ regexp.")
 
 (defvar deft-hash-summaries nil
   "Hash containing cached file summaries, keyed by filename.")
-
-(defvar deft-auto-save-buffers nil
-  "List of buffers that will be automatically saved.")
 
 (defvar deft-window-width nil
   "Width of Deft buffer.")
@@ -483,6 +488,16 @@ is the complete regexp."
   (if deft-incremental-search
       (mapconcat 'regexp-quote (reverse deft-filter-regexp) "\\|")
     (car deft-filter-regexp)))
+
+(defun deft-get-buffer-name (directory)
+  "Find a unique Deft buffer name for DIRECTORY."
+  (let (buffer)
+    (setq directory (abbreviate-file-name directory))
+    (setq directory (nth 1 (reverse (split-string directory "/"))))
+    (setq buffer (format "*Deft %s*" directory))
+    (while (get-buffer buffer)
+      (setq buffer (generate-new-buffer-name buffer)))
+    buffer))
 
 ;; File processing
 
@@ -739,12 +754,15 @@ Call this function after any actions which update the filter and file list."
   "Open FILE in a new buffer and setting its mode.
 When OTHER is non-nil, open the file in another window.  When
 OTHER and SWITCH are both non-nil, switch to the other window."
-  (let ((buffer (find-file-noselect file)))
+  (let ((buffer (find-file-noselect file))
+        (deft-buf deft-buffer)
+        (regexp (deft-filter-regexp-as-regexp)))
     (with-current-buffer buffer
       (when (not (eq major-mode deft-text-mode))
         (funcall deft-text-mode))
-      (when deft-filter-regexp
-        (re-search-forward (deft-filter-regexp-as-regexp) nil t))
+      (setq deft-buffer deft-buf)
+      (when regexp
+        (re-search-forward regexp nil t))
       (add-to-list 'deft-auto-save-buffers buffer)
       (add-hook 'after-save-hook
                 (lambda () (save-excursion
@@ -1095,16 +1113,34 @@ Otherwise, quick create a new file."
     map)
   "Keymap for Deft mode.")
 
-(defun deft-mode ()
+(defun deft-mode (&optional directory)
   "Major mode for quickly browsing, filtering, and editing plain text notes.
 Turning on `deft-mode' runs the hook `deft-mode-hook'.
+
+When DIRECTORY is non-nil, open a new Deft instance at DIRECTORY.
+For example:
+
+    (deft \"~/drafts/\")
 
 \\{deft-mode-map}."
   (kill-all-local-variables)
   (setq truncate-lines t)
   (setq buffer-read-only t)
-  (setq deft-directory (expand-file-name deft-directory))
-  (setq default-directory deft-directory)
+  (let ((default deft-directory))
+     (make-local-variable 'deft-directory)
+     (setq deft-directory (expand-file-name (or directory default))))
+  (make-local-variable 'deft-buffer)
+  (setq deft-buffer (current-buffer))
+  (make-local-variable 'deft-filter-regexp)
+  (make-local-variable 'deft-current-files)
+  (make-local-variable 'deft-all-files)
+  (make-local-variable 'deft-hash-contents)
+  (make-local-variable 'deft-hash-mtimes)
+  (make-local-variable 'deft-hash-titles)
+  (make-local-variable 'deft-hash-summaries)
+  (make-local-variable 'deft-window-width)
+  (make-local-variable 'deft-filter-history)
+  (make-local-variable 'deft-regexp-error)
   (use-local-map deft-mode-map)
   (deft-cache-initialize)
   (deft-cache-update-all)
@@ -1120,11 +1156,19 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
 
 ;;;###autoload
 (defun deft ()
-  "Switch to *Deft* buffer and load files."
+  "Switch to default Deft buffer and load files."
   (interactive)
-  (switch-to-buffer deft-buffer)
+  (switch-to-buffer deft-default-buffer)
   (if (not (eq major-mode 'deft-mode))
       (deft-mode)))
+
+;;;###autoload
+(defun deft-open-dir (directory &optional buffer)
+  "Open a Deft instance at DIRECTORY."
+  (interactive "Ddir: ")
+  (setq buffer (or buffer (deft-get-buffer-name directory)))
+  (switch-to-buffer buffer)
+  (deft-mode directory))
 
 (provide 'deft)
 
