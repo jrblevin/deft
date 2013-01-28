@@ -1029,7 +1029,7 @@ Otherwise, quick create a new file."
 (defun deft-auto-save ()
   (save-excursion
     (dolist (buf deft-auto-save-buffers)
-      (if (get-buffer buf)
+      (if (buffer-name buf)
           ;; Save open buffers that have been modified.
           (progn
             (set-buffer buf)
