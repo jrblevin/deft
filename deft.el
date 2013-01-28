@@ -239,7 +239,7 @@
 
 ;; Version 0.5.1 (2013-01-28):
 
-;; * Bug fix: creating files with C-c C-n when both the filter string and
+;; * Bug fix: creating files with `C-c C-n` when both the filter string and
 ;;   `deft-use-filename-as-title' are non-nil resulted in an invalid path.
 ;; * Bug fix: killed buffers would persist in `deft-auto-save-buffers'.
 
