@@ -26,7 +26,7 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
-;;; Version: 0.5
+;;; Version: 0.5.1
 ;;; Author: Jason R. Blevins <jrblevin@sdf.org>
 ;;; Keywords: plain text, notes, Simplenote, Notational Velocity
 ;;; URL: http://jblevins.org/projects/deft/
@@ -43,8 +43,8 @@
 ;; creating new files and saving files.
 
 ;; Deft is open source software and may be freely distributed and
-;; modified under the BSD license.  Version 0.5 is the latest stable
-;; version, released on January 25, 2013.  You may download it
+;; modified under the BSD license.  Version 0.5.1 is the latest stable
+;; version, released on January 28, 2013.  You may download it
 ;; directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
@@ -237,6 +237,12 @@
 ;; History
 ;; -------
 
+;; Version 0.5.1 (2013-01-28):
+
+;; * Bug fix: creating files with C-c C-n when both the filter string and
+;;   `deft-use-filename-as-title' are non-nil resulted in an invalid path.
+;; * Bug fix: killed buffers would persist in `deft-auto-save-buffers'.
+
 ;; Version 0.5 (2013-01-25):
 
 ;; * Implement incremental string search (default) and regex search.
@@ -385,7 +391,7 @@ entire filter string is interpreted as a single regular expression."
 
 ;; Constants
 
-(defconst deft-version "0.5")
+(defconst deft-version "0.5.1")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
