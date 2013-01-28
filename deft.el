@@ -764,6 +764,7 @@ OTHER and SWITCH are both non-nil, switch to the other window."
 
 (defun deft-new-file-named (file)
   "Create a new file named FILE (or interactively prompt for a filename).
+FILE must be a short name, without a path or a file extension.
 If the filter string is non-nil and title is not from file name,
 use it as the title."
   (interactive "sNew filename (without extension): ")
@@ -792,8 +793,7 @@ as the title."
     (if (and deft-filter-regexp deft-use-filename-as-title)
         ;; If the filter string is non-emtpy and titles are taken from
         ;; filenames is set, construct filename from filter string.
-	(setq file (concat (file-name-as-directory deft-directory)
-                           (deft-whole-filter-regexp) "." deft-extension))
+	(setq file (deft-whole-filter-regexp))
       ;; If the filter string is empty, or titles are taken from file
       ;; contents, then use an automatically generated unique filename.
       (setq file (deft-unused-filename)))
