@@ -744,7 +744,8 @@ Call this function after any actions which update the filter and file list."
 (defun deft-open-file (file &optional other switch)
   "Open FILE in a new buffer and setting its mode.
 When OTHER is non-nil, open the file in another window.  When
-OTHER and SWITCH are both non-nil, switch to the other window."
+OTHER and SWITCH are both non-nil, switch to the other window.
+FILE must be the complete path to the file, with extension."
   (let ((buffer (find-file-noselect file)))
     (with-current-buffer buffer
       (when (not (eq major-mode deft-text-mode))
