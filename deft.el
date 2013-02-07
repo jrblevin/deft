@@ -319,7 +319,7 @@ Set to zero to disable."
   "Format string for modification times in the Deft browser.
 Set to nil to hide."
   :type '(choice (string :tag "Time format")
-		 (const :tag "Hide" nil))
+                 (const :tag "Hide" nil))
   :group 'deft)
 
 (defcustom deft-use-filename-as-title nil
@@ -657,18 +657,18 @@ title."
   "Add a line to the file browser for the given FILE."
   (when file
     (let* ((key (file-name-nondirectory file))
-	   (text (deft-file-contents file))
-	   (title (deft-file-title file))
-	   (summary (deft-file-summary file))
-	   (mtime (when deft-time-format
-		    (format-time-string deft-time-format (deft-file-mtime file))))
-	   (mtime-width (length mtime))
-	   (line-width (- deft-window-width mtime-width))
-	   (title-width (min line-width (length title)))
-	   (summary-width (min (length summary)
-			       (- line-width
-				  title-width
-				  (length deft-separator)))))
+           (text (deft-file-contents file))
+           (title (deft-file-title file))
+           (summary (deft-file-summary file))
+           (mtime (when deft-time-format
+                    (format-time-string deft-time-format (deft-file-mtime file))))
+           (mtime-width (length mtime))
+           (line-width (- deft-window-width mtime-width))
+           (title-width (min line-width (length title)))
+           (summary-width (min (length summary)
+                               (- line-width
+                                  title-width
+                                  (length deft-separator)))))
       (widget-create 'link
                      :button-prefix ""
                      :button-suffix ""
@@ -683,16 +683,16 @@ title."
       (when (> summary-width 0)
         (widget-insert (propertize deft-separator 'face 'deft-separator-face))
         (widget-insert (propertize (substring summary 0 summary-width)
-				   'face 'deft-summary-face)))
+                                   'face 'deft-summary-face)))
       (when mtime
-	(while (< (current-column) line-width)
-	  (widget-insert " "))
-	(widget-insert (propertize mtime 'face 'deft-time-face)))
+        (while (< (current-column) line-width)
+          (widget-insert " "))
+        (widget-insert (propertize mtime 'face 'deft-time-face)))
       (widget-insert "\n"))))
 
 (add-hook 'window-configuration-change-hook
-	  (lambda ()
-	    (when (and (eq (current-buffer) (get-buffer deft-buffer))
+          (lambda ()
+            (when (and (eq (current-buffer) (get-buffer deft-buffer))
                        (not (eq deft-window-width (window-width))))
               (deft-buffer-setup))))
 
@@ -800,7 +800,7 @@ as the title."
     (if (and deft-filter-regexp deft-use-filename-as-title)
         ;; If the filter string is non-emtpy and titles are taken from
         ;; filenames is set, construct filename from filter string.
-	(setq file (deft-whole-filter-regexp))
+        (setq file (deft-whole-filter-regexp))
       ;; If the filter string is empty, or titles are taken from file
       ;; contents, then use an automatically generated unique filename.
       (setq file (deft-unused-filename)))
