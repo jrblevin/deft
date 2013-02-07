@@ -133,6 +133,10 @@
 ;; `C-c C-m` for a filename prompt.  You can leave Deft at any time
 ;; with `C-c C-q`.
 
+;; Archiving unused files can be carried out by pressing `C-c C-a`.
+;; Files will be moved to `deft-archive-directory', which is a
+;; directory named `archive` within your `deft-directory' by default.
+
 ;; Files opened with deft are automatically saved after Emacs has been
 ;; idle for a customizable number of seconds.  This value is a floating
 ;; point number given by `deft-auto-save-interval' (default: 1.0).
@@ -344,6 +348,13 @@ entire filter string is interpreted as a single regular expression."
 (defcustom deft-strip-title-regexp "^[#\* ]*"
   "Regular expression to remove from file titles."
   :type 'regexp
+  :safe 'stringp
+  :group 'deft)
+
+(defcustom deft-archive-directory nil
+  "Deft archive directory.
+When nil, use a directory named archive/ inside `deft-directory'."
+  :type 'directory
   :safe 'stringp
   :group 'deft)
 
@@ -843,6 +854,25 @@ If the point is not on a file widget, do nothing."
       (rename-file old-filename new-filename)
       (deft-refresh))))
 
+(defun deft-archive-file ()
+  "Archive the file represented by the widget at the point.
+If the point is not on a file widget, do nothing."
+  (interactive)
+  (let (old new name-ext)
+    (setq old (widget-get (widget-at) :tag))
+    (when old
+      (setq name-ext (file-name-nondirectory old))
+      (setq new (concat deft-archive-directory name-ext))
+      (when (y-or-n-p (concat "Archive file " name-ext "? "))
+        ;; if the filename already exists ask for a new name
+        (while (file-exists-p new)
+          (setq name-ext (read-string "File exists, choose a new name: " name-ext))
+          (setq new (concat deft-archive-directory name-ext)))
+        (when (not (file-exists-p deft-archive-directory))
+          (make-directory deft-archive-directory t))
+        (rename-file old new)
+        (deft-refresh)))))
+
 ;; File list filtering
 
 (defun deft-sort-files (files)
@@ -1087,6 +1117,7 @@ Otherwise, quick create a new file."
     (define-key map (kbd "C-c C-d") 'deft-delete-file)
     (define-key map (kbd "C-c C-r") 'deft-rename-file)
     (define-key map (kbd "C-c C-f") 'deft-find-file)
+    (define-key map (kbd "C-c C-a") 'deft-archive-file)
     ;; Settings
     (define-key map (kbd "C-c C-t") 'deft-toggle-incremental-search)
     ;; Miscellaneous
@@ -1111,6 +1142,9 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (setq truncate-lines t)
   (setq buffer-read-only t)
   (setq deft-directory (expand-file-name deft-directory))
+  (setq deft-archive-directory
+        (expand-file-name (or deft-archive-directory
+                              (concat deft-directory "archive/"))))
   (setq default-directory deft-directory)
   (use-local-map deft-mode-map)
   (deft-cache-initialize)
