@@ -752,6 +752,15 @@ Call this function after any actions which update the filter and file list."
       (setq file (concat dir slug "." deft-extension)))
     slug))
 
+(defun deft-update-visiting-buffers (old new)
+  "Rename visited file of buffers visiting file OLD to NEW."
+  (let ((buffer (get-file-buffer old)))
+    (when buffer
+      (with-current-buffer (get-file-buffer old)
+        (set-visited-file-name new nil t)
+        (when (not (eq major-mode deft-text-mode))
+          (funcall deft-text-mode))))))
+
 (defun deft-open-file (file &optional other switch)
   "Open FILE in a new buffer and setting its mode.
 When OTHER is non-nil, open the file in another window.  When
@@ -852,6 +861,7 @@ If the point is not on a file widget, do nothing."
             (concat (file-name-as-directory deft-directory)
                     new-name "." deft-extension))
       (rename-file old-filename new-filename)
+      (deft-update-visiting-buffers old-filename new-filename)
       (deft-refresh))))
 
 (defun deft-archive-file ()
@@ -871,6 +881,7 @@ If the point is not on a file widget, do nothing."
         (when (not (file-exists-p deft-archive-directory))
           (make-directory deft-archive-directory t))
         (rename-file old new)
+        (deft-update-visiting-buffers old new)
         (deft-refresh)))))
 
 ;; File list filtering
