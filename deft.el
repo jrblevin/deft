@@ -447,7 +447,7 @@ regexp.")
   "List of files matching current filter.")
 
 (defvar deft-all-files nil
-  "List of files matching current filter.")
+  "List of all files in `deft-directory'.")
 
 (defvar deft-hash-contents nil
   "Hash containing complete cached file contents, keyed by filename.")
@@ -529,7 +529,13 @@ is the complete regexp."
   file)
 
 (defun deft-find-all-files ()
-  "Return a list of all files in the Deft directory."
+  "Return a list of all files in the Deft directory.
+
+It is important to note that the return value is a list of
+absolute filenames.  These absolute filenames are used as keys
+for the various hash tables used for storing file metadata and
+contents.  So, any functions looking up values in these hash
+tables should use `expand-file-name' on filenames first."
   (if (file-exists-p deft-directory)
       (let (files result)
         ;; List all files
