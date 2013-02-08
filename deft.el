@@ -208,6 +208,19 @@
 
 ;;     (global-set-key [f8] 'deft)
 
+;; Deft also provides a function for opening files without using the
+;; Deft buffer directly.  Calling `deft-find-file' will prompt for a
+;; file to open, just like `find-file', but starting from
+;; `deft-directory'.  If the file selected is in `deft-directory', it
+;; is opened with the usual deft features (using `deft-text-mode',
+;; automatic saving, automatic updating of the Deft buffer, etc.).
+;; Otherwise, the file will be opened by `find-file' as usual.
+;; Therefore, you can set up a global keybinding for this function to
+;; open Deft files anywhere.  For example, to use `C-x C-g`, a
+;; neighbor of `C-x C-f`, use the following:
+
+;;     (global-set-key (kbd "C-x C-g") 'deft-find-file)
+
 ;; The faces used for highlighting various parts of the screen can
 ;; also be customized.  By default, these faces inherit their
 ;; properties from the standard font-lock faces defined by your current
@@ -765,13 +778,19 @@ Call this function after any actions which update the filter and file list."
   "Open FILE in a new buffer and setting its mode.
 When OTHER is non-nil, open the file in another window.  When
 OTHER and SWITCH are both non-nil, switch to the other window.
-FILE must be the complete path to the file, with extension."
+FILE must be a relative or absolute path, with extension."
   (let ((buffer (find-file-noselect file)))
     (with-current-buffer buffer
+      ;; Set the mode and search forward for the filter string
       (when (not (eq major-mode deft-text-mode))
         (funcall deft-text-mode))
       (when deft-filter-regexp
         (re-search-forward (deft-filter-regexp-as-regexp) nil t))
+      ;; Ensure that Deft has been initialized
+      (when (not (get-buffer deft-buffer))
+        (with-current-buffer (get-buffer-create deft-buffer)
+          (deft-mode)))
+      ;; Set up auto save hooks
       (add-to-list 'deft-auto-save-buffers buffer)
       (add-hook 'after-save-hook
                 (lambda () (save-excursion
@@ -784,10 +803,17 @@ FILE must be the complete path to the file, with extension."
           (display-buffer buffer other))
       (switch-to-buffer buffer))))
 
+;;;###autoload
 (defun deft-find-file (file)
-  "Find FILE interactively using the minibuffer."
-  (interactive "F")
-  (deft-open-file file))
+  "Find FILE interactively using the minibuffer.
+FILE must exist and be a relative or absolute path, with extension.
+If FILE is not inside `deft-directory', fall back to using `find-file'."
+  (interactive
+   (list (read-file-name "Deft find file: " deft-directory)))
+  (if (and (file-exists-p file)
+           (string-match (concat "^" (expand-file-name deft-directory)) file))
+      (deft-open-file file)
+    (find-file file)))
 
 (defun deft-new-file-named (file)
   "Create a new file named FILE (or interactively prompt for a filename).
