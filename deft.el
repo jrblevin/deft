@@ -1214,4 +1214,8 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
 
 (provide 'deft)
 
+;; Local Variables:
+;; byte-compile-warnings: (not cl-functions)
+;; End:
+
 ;;; deft.el ends here
