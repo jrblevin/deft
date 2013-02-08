@@ -364,9 +364,9 @@ entire filter string is interpreted as a single regular expression."
   :safe 'stringp
   :group 'deft)
 
-(defcustom deft-archive-directory nil
+(defcustom deft-archive-directory "archive/"
   "Deft archive directory.
-When nil, use a directory named archive/ inside `deft-directory'."
+This may be a relative path from `deft-directory', or an absolute path."
   :type 'directory
   :safe 'stringp
   :group 'deft)
@@ -758,17 +758,22 @@ Call this function after any actions which update the filter and file list."
 
 ;; File list file management actions
 
-(defun deft-unused-filename ()
-  (let (fmt counter slug dir file)
-    (setq fmt (concat "deft-%d"))
-    (setq dir (file-name-as-directory deft-directory))
-    (setq counter 0)
-    (setq slug (format fmt counter))
-    (setq file (concat dir slug "." deft-extension))
+(defun deft-absolute-filename (slug &optional extension)
+  "Return an absolute filename to file named SLUG with optional EXTENSION.
+If EXTENSION is not given, `deft-extension' is assumed."
+  (concat (file-name-as-directory (expand-file-name deft-directory))
+          slug "." (or extension deft-extension)))
+
+(defun deft-unused-slug ()
+  "Return an unused filename slug (short name) in `deft-directory'."
+  (let* ((fmt "deft-%d")
+         (counter 0)
+         (slug (format fmt counter))
+         (file (deft-absolute-filename slug)))
     (while (or (file-exists-p file) (get-file-buffer file))
       (setq counter (1+ counter))
       (setq slug (format fmt counter))
-      (setq file (concat dir slug "." deft-extension)))
+      (setq file (deft-absolute-filename slug)))
     slug))
 
 (defun deft-update-visiting-buffers (old new)
@@ -821,24 +826,23 @@ If FILE is not inside `deft-directory', fall back to using `find-file'."
       (deft-open-file file)
     (find-file file)))
 
-(defun deft-new-file-named (file)
-  "Create a new file named FILE (or interactively prompt for a filename).
-FILE must be a short name, without a path or a file extension.
+(defun deft-new-file-named (slug)
+  "Create a new file named SLUG.
+SLUG is the short filename, without a path or a file extension.
 If the filter string is non-nil and title is not from file name,
 use it as the title."
   (interactive "sNew filename (without extension): ")
-  (setq file (concat (file-name-as-directory deft-directory)
-                     file "." deft-extension))
-  (if (file-exists-p file)
-      (message (concat "Aborting, file already exists: " file))
-    ;; Insert the contents of the filter string in the file.
-    (when (and deft-filter-regexp (not deft-use-filename-as-title))
-      (write-region (concat (deft-whole-filter-regexp) "\n\n") nil file nil))
-    (deft-cache-update-file file)
-    (deft-refresh-filter)
-    (deft-open-file file)
-    (with-current-buffer (get-file-buffer file)
-      (goto-char (point-max)))))
+  (let ((file (deft-absolute-filename slug)))
+    (if (file-exists-p file)
+        (message "Aborting, file already exists: %s" file)
+      ;; Insert the contents of the filter string in the file.
+      (when (and deft-filter-regexp (not deft-use-filename-as-title))
+        (write-region (concat (deft-whole-filter-regexp) "\n\n") nil file nil))
+      (deft-cache-update-file file)
+      (deft-refresh-filter)
+      (deft-open-file file)
+      (with-current-buffer (get-file-buffer file)
+        (goto-char (point-max))))))
 
 ;;;###autoload
 (defun deft-new-file ()
@@ -848,15 +852,15 @@ string if non-nil and `deft-use-filename-as-title' is set.  If the
 filter string is non-nil and title is not from filename, use it
 as the title."
   (interactive)
-  (let (file)
+  (let (slug)
     (if (and deft-filter-regexp deft-use-filename-as-title)
         ;; If the filter string is non-emtpy and titles are taken from
         ;; filenames is set, construct filename from filter string.
-        (setq file (deft-whole-filter-regexp))
+        (setq slug (deft-whole-filter-regexp))
       ;; If the filter string is empty, or titles are taken from file
       ;; contents, then use an automatically generated unique filename.
-      (setq file (deft-unused-filename)))
-    (deft-new-file-named file)))
+      (setq slug (deft-unused-slug)))
+    (deft-new-file-named slug)))
 
 (defun deft-open-file-other-window (&optional arg)
   "When the point is at a widget, open the file in the other window."
@@ -1184,11 +1188,7 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (kill-all-local-variables)
   (setq truncate-lines t)
   (setq buffer-read-only t)
-  (setq deft-directory (expand-file-name deft-directory))
-  (setq deft-archive-directory
-        (expand-file-name (or deft-archive-directory
-                              (concat deft-directory "archive/"))))
-  (setq default-directory deft-directory)
+  (setq default-directory (expand-file-name deft-directory))
   (use-local-map deft-mode-map)
   (deft-cache-initialize)
   (deft-cache-update-all)
