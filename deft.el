@@ -1185,6 +1185,7 @@ Otherwise, quick create a new file."
 Turning on `deft-mode' runs the hook `deft-mode-hook'.
 
 \\{deft-mode-map}."
+  (message "Deft initializing...")
   (kill-all-local-variables)
   (setq truncate-lines t)
   (setq buffer-read-only t)
@@ -1198,7 +1199,8 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (deft-buffer-setup)
   (when (> deft-auto-save-interval 0)
     (run-with-idle-timer deft-auto-save-interval t 'deft-auto-save))
-  (run-mode-hooks 'deft-mode-hook))
+  (run-mode-hooks 'deft-mode-hook)
+  (message "Deft loaded %d files." (length deft-all-files)))
 
 (put 'deft-mode 'mode-class 'special)
 
