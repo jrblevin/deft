@@ -518,8 +518,7 @@ is the complete regexp."
 
 (defun deft-chomp (str)
   "Trim leading and trailing whitespace from STR."
-  (let ((s str))
-    (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
+  (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" str))
 
 (defun deft-base-filename (file)
   "Strip the path and extension from filename FILE."
