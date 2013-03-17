@@ -1179,6 +1179,9 @@ Otherwise, quick create a new file."
     map)
   "Keymap for Deft mode.")
 
+;; Deft mode is suitable only for specially-prepared text
+(put 'deft-mode 'mode-class 'special)
+
 (defun deft-mode ()
   "Major mode for quickly browsing, filtering, and editing plain text notes.
 Turning on `deft-mode' runs the hook `deft-mode-hook'.
