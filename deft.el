@@ -786,7 +786,8 @@ If EXTENSION is not given, `deft-extension' is assumed."
       (with-current-buffer (get-file-buffer old)
         (set-visited-file-name new nil t)
         (when (not (eq major-mode deft-text-mode))
-          (funcall deft-text-mode))))))
+          (funcall deft-text-mode)
+          (hack-local-variables))))))
 
 (defun deft-open-file (file &optional other switch)
   "Open FILE in a new buffer and setting its mode.
@@ -797,7 +798,8 @@ FILE must be a relative or absolute path, with extension."
     (with-current-buffer buffer
       ;; Set the mode and search forward for the filter string
       (when (not (eq major-mode deft-text-mode))
-        (funcall deft-text-mode))
+        (funcall deft-text-mode)
+        (hack-local-variables))
       (when deft-filter-regexp
         (re-search-forward (deft-filter-regexp-as-regexp) nil t))
       ;; Ensure that Deft has been initialized
