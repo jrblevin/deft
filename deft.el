@@ -358,8 +358,12 @@ entire filter string is interpreted as a single regular expression."
   :type 'function
   :group 'deft)
 
-(defcustom deft-strip-title-regexp "^[#\* ]*"
-  "Regular expression to remove from file titles."
+(defcustom deft-strip-title-regexp "\\(?:^%+\\|^[#* ]+\\|-\\*-[[:alpha:]]+-\\*-\\|#+$\\)"
+  "Regular expression to remove from file titles.
+Presently, it removes leading LaTeX comment delimiters, leading
+and trailing hash marks from Markdown ATX headings, leading
+astersisks from Org Mode headings, and Emacs mode lines of the
+form -*-mode-*-."
   :type 'regexp
   :safe 'stringp
   :group 'deft)
