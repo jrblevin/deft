@@ -554,7 +554,7 @@ tables should use `expand-file-name' on filenames first."
 
 (defun deft-strip-title (title)
   "Remove all strings matching `deft-strip-title-regexp' from TITLE."
-  (replace-regexp-in-string deft-strip-title-regexp "" title))
+  (deft-chomp (replace-regexp-in-string deft-strip-title-regexp "" title)))
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
