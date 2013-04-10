@@ -301,6 +301,7 @@
 
 ;;; Code:
 
+(require 'cl)
 (require 'widget)
 
 ;; Customization
