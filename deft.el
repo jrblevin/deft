@@ -802,6 +802,7 @@ FILE must be a relative or absolute path, with extension."
         (funcall deft-text-mode)
         (hack-local-variables))
       (when deft-filter-regexp
+        (goto-char (point-min))
         (re-search-forward (deft-filter-regexp-as-regexp) nil t))
       ;; Ensure that Deft has been initialized
       (when (not (get-buffer deft-buffer))
