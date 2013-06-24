@@ -303,6 +303,7 @@
 
 (require 'cl)
 (require 'widget)
+(require 'wid-edit)
 
 ;; Customization
 
@@ -477,6 +478,52 @@ regexp.")
 
 (defvar deft-regexp-error nil
   "Flag for indicating invalid regexp errors.")
+
+;; Keymap definition
+
+(defvar deft-mode-map
+  (let ((i 0)
+        (map (make-keymap)))
+    ;; Make multibyte characters extend the filter string.
+    (set-char-table-range (nth 1 map) (cons #x100 (max-char))
+                          'deft-filter-increment)
+    ;; Extend the filter string by default.
+    (setq i ?\s)
+    (while (< i 256)
+      (define-key map (vector i) 'deft-filter-increment)
+      (setq i (1+ i)))
+    ;; Handle backspace and delete
+    (define-key map (kbd "DEL") 'deft-filter-decrement)
+    (define-key map (kbd "M-DEL") 'deft-filter-decrement-word)
+    ;; Handle return via completion or opening file
+    (define-key map (kbd "RET") 'deft-complete)
+    ;; Filtering
+    (define-key map (kbd "C-c C-l") 'deft-filter)
+    (define-key map (kbd "C-c C-c") 'deft-filter-clear)
+    (define-key map (kbd "C-y") 'deft-filter-yank)
+    ;; File creation
+    (define-key map (kbd "C-c C-n") 'deft-new-file)
+    (define-key map (kbd "C-c C-m") 'deft-new-file-named)
+    (define-key map (kbd "<C-return>") 'deft-new-file-named)
+    ;; File management
+    (define-key map (kbd "C-c C-d") 'deft-delete-file)
+    (define-key map (kbd "C-c C-r") 'deft-rename-file)
+    (define-key map (kbd "C-c C-f") 'deft-find-file)
+    (define-key map (kbd "C-c C-a") 'deft-archive-file)
+    ;; Settings
+    (define-key map (kbd "C-c C-t") 'deft-toggle-incremental-search)
+    ;; Miscellaneous
+    (define-key map (kbd "C-c C-g") 'deft-refresh)
+    (define-key map (kbd "C-c C-q") 'quit-window)
+    ;; Widgets
+    (define-key map [down-mouse-1] 'widget-button-click)
+    (define-key map [down-mouse-2] 'widget-button-click)
+    (define-key map (kbd "<tab>") 'widget-forward)
+    (define-key map (kbd "<backtab>") 'widget-backward)
+    (define-key map (kbd "<S-tab>") 'widget-backward)
+    (define-key map (kbd "C-o") 'deft-open-file-other-window)
+    map)
+  "Keymap for Deft mode.")
 
 ;; Helpers
 
@@ -1142,50 +1189,6 @@ Otherwise, quick create a new file."
   (when (not (file-exists-p deft-directory))
     (make-directory deft-directory t))
   (deft-refresh))
-
-(defvar deft-mode-map
-  (let ((i 0)
-        (map (make-keymap)))
-    ;; Make multibyte characters extend the filter string.
-    (set-char-table-range (nth 1 map) (cons #x100 (max-char))
-                          'deft-filter-increment)
-    ;; Extend the filter string by default.
-    (setq i ?\s)
-    (while (< i 256)
-      (define-key map (vector i) 'deft-filter-increment)
-      (setq i (1+ i)))
-    ;; Handle backspace and delete
-    (define-key map (kbd "DEL") 'deft-filter-decrement)
-    (define-key map (kbd "M-DEL") 'deft-filter-decrement-word)
-    ;; Handle return via completion or opening file
-    (define-key map (kbd "RET") 'deft-complete)
-    ;; Filtering
-    (define-key map (kbd "C-c C-l") 'deft-filter)
-    (define-key map (kbd "C-c C-c") 'deft-filter-clear)
-    (define-key map (kbd "C-y") 'deft-filter-yank)
-    ;; File creation
-    (define-key map (kbd "C-c C-n") 'deft-new-file)
-    (define-key map (kbd "C-c C-m") 'deft-new-file-named)
-    (define-key map (kbd "<C-return>") 'deft-new-file-named)
-    ;; File management
-    (define-key map (kbd "C-c C-d") 'deft-delete-file)
-    (define-key map (kbd "C-c C-r") 'deft-rename-file)
-    (define-key map (kbd "C-c C-f") 'deft-find-file)
-    (define-key map (kbd "C-c C-a") 'deft-archive-file)
-    ;; Settings
-    (define-key map (kbd "C-c C-t") 'deft-toggle-incremental-search)
-    ;; Miscellaneous
-    (define-key map (kbd "C-c C-g") 'deft-refresh)
-    (define-key map (kbd "C-c C-q") 'quit-window)
-    ;; Widgets
-    (define-key map [down-mouse-1] 'widget-button-click)
-    (define-key map [down-mouse-2] 'widget-button-click)
-    (define-key map (kbd "<tab>") 'widget-forward)
-    (define-key map (kbd "<backtab>") 'widget-backward)
-    (define-key map (kbd "<S-tab>") 'widget-backward)
-    (define-key map (kbd "C-o") 'deft-open-file-other-window)
-    map)
-  "Keymap for Deft mode.")
 
 ;; Deft mode is suitable only for specially-prepared text
 (put 'deft-mode 'mode-class 'special)
