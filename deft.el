@@ -946,7 +946,8 @@ If the point is not on a file widget, do nothing."
     (when old-filename
       (setq old-name (deft-base-filename old-filename))
       (setq new-name (read-string
-                      (concat "Rename " old-name " to (without extension): ")))
+                      (concat "Rename " old-name " to (without extension): ")
+                      old-name))
       (setq new-filename
             (concat (file-name-as-directory deft-directory)
                     new-name "." deft-extension))
