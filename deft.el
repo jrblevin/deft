@@ -743,10 +743,10 @@ title."
            (summary (deft-file-summary file))
            (mtime (when deft-time-format
                     (format-time-string deft-time-format (deft-file-mtime file))))
-           (mtime-width (length mtime))
+           (mtime-width (string-width mtime))
            (line-width (- deft-window-width mtime-width))
-           (title-width (min line-width (length title)))
-           (summary-width (min (length summary)
+           (title-width (min line-width (string-width title)))
+           (summary-width (min (string-width summary)
                                (- line-width
                                   title-width
                                   (length deft-separator)))))
@@ -759,11 +759,11 @@ title."
                      :help-echo "Edit this file"
                      :notify (lambda (widget &rest ignore)
                                (deft-open-file (widget-get widget :tag)))
-                     (if title (substring title 0 title-width)
+                     (if title (truncate-string-to-width title title-width)
                        deft-empty-file-title))
       (when (> summary-width 0)
         (widget-insert (propertize deft-separator 'face 'deft-separator-face))
-        (widget-insert (propertize (substring summary 0 summary-width)
+        (widget-insert (propertize (truncate-string-to-width summary summary-width)
                                    'face 'deft-summary-face)))
       (when mtime
         (while (< (current-column) line-width)
