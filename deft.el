@@ -734,6 +734,14 @@ title."
   (goto-char 1)
   (forward-line 2))
 
+(defun deft-string-width (str)
+  "A wrapper function for the original string-width which does
+not handle nil.  This function return 0 if the given STR is nil,
+call the original string-width otherwise"
+  (if str
+      (string-width str)
+    0))
+
 (defun deft-file-widget (file)
   "Add a line to the file browser for the given FILE."
   (when file
@@ -743,10 +751,10 @@ title."
            (summary (deft-file-summary file))
            (mtime (when deft-time-format
                     (format-time-string deft-time-format (deft-file-mtime file))))
-           (mtime-width (string-width mtime))
+           (mtime-width (deft-string-width mtime))
            (line-width (- deft-window-width mtime-width))
-           (title-width (min line-width (string-width title)))
-           (summary-width (min (string-width summary)
+           (title-width (min line-width (deft-string-width title)))
+           (summary-width (min (deft-string-width summary)
                                (- line-width
                                   title-width
                                   (length deft-separator)))))
