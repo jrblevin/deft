@@ -61,8 +61,8 @@
 ;; all text files in the Deft directory followed by short summaries
 ;; and last modified times.  The title is taken to be the first line
 ;; of the file and the summary is extracted from the text that
-;; follows.  Files are sorted in terms of the last modified date, from
-;; newest to oldest.
+;; follows.  Files are, by default, sorted in terms of the last
+;; modified date, from newest to oldest.
 
 ;; All Deft files or notes are simple plain text files where the first
 ;; line contains a title.  As an example, the following directory
@@ -126,6 +126,11 @@
 ;; foo or bar at the beginning of a line.  Pressing `C-c C-t` will
 ;; toggle between incremental and regexp search modes.  Regexp
 ;; search mode is indicated by an "R" in the mode line.
+
+;; Deft, by default, lists files from newest to oldest.  You can set
+;; `deft-current-sort-method' to 'title to sort by file titles, case
+;; ignored.  Or, you can toggle sorting method using
+;; `deft-toggle-sort-method'.
 
 ;; Common file operations can also be carried out from within Deft.
 ;; Files can be renamed using `C-c C-r` or deleted using `C-c C-d`.
@@ -452,6 +457,10 @@ regexp.")
 (defvar deft-current-files nil
   "List of files matching current filter.")
 
+(defvar deft-current-sort-method 'mtime
+  "Current file soft method.
+Available methods are 'mtime and 'title.")
+
 (defvar deft-all-files nil
   "List of all files in `deft-directory'.")
 
@@ -512,6 +521,7 @@ regexp.")
     (define-key map (kbd "C-c C-a") 'deft-archive-file)
     ;; Settings
     (define-key map (kbd "C-c C-t") 'deft-toggle-incremental-search)
+    (define-key map (kbd "C-c C-s") 'deft-toggle-sort-method)
     ;; Miscellaneous
     (define-key map (kbd "C-c C-g") 'deft-refresh)
     (define-key map (kbd "C-c C-q") 'quit-window)
@@ -556,6 +566,13 @@ is non-nil and `re-search-forward' otherwise."
     (message "Incremental string search")))
   (deft-filter (deft-whole-filter-regexp) t)
   (deft-set-mode-name))
+
+(defun deft-toggle-sort-method ()
+  "Toggle file sorting method defined in `deft-current-sort-method'."
+  (interactive)
+  (setq deft-current-sort-method
+        (if (eq deft-current-sort-method 'mtime) 'title 'mtime))
+  (deft-refresh))
 
 (defun deft-filter-regexp-as-regexp ()
   "Return a regular expression corresponding to the current filter string.
@@ -659,6 +676,15 @@ title."
     (setq time1 (deft-file-mtime file1))
     (setq time2 (deft-file-mtime file2))
     (time-less-p time2 time1)))
+
+(defun deft-file-title-lessp (file1 file2)
+  "Return non-nil if the title of FILE1 is less than FILE2's in
+lexicographic order.
+Case is ignored."
+  (let ((t1 (deft-file-title file1))
+        (t2 (deft-file-title file2)))
+    (string-lessp (and t1 (downcase t1))
+                  (and t2 (downcase t2)))))
 
 (defun deft-cache-initialize ()
   "Initialize hash tables for caching files."
@@ -985,9 +1011,20 @@ If the point is not on a file widget, do nothing."
 
 ;; File list filtering
 
-(defun deft-sort-files (files)
+(defun deft-sort-files-by-mtime (files)
   "Sort FILES in reverse order by modified time."
   (sort files (lambda (f1 f2) (deft-file-newer-p f1 f2))))
+
+(defun deft-sort-files-by-title (files)
+  "Sort FILES by title. Case is ignored"
+  (sort files (lambda (f1 f2) (deft-file-title-lessp f1 f2))))
+
+(defun deft-sort-files (files)
+  "Sort FILES by sort methods selected by
+`deft-current-sort-method'."
+  (funcall (if (eq deft-current-sort-method 'title)
+               'deft-sort-files-by-title
+             'deft-sort-files-by-mtime) files))
 
 (defun deft-filter-initialize ()
   "Initialize the filter string (nil) and files list (all files)."
