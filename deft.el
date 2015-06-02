@@ -209,10 +209,10 @@
 ;; If `deft-use-filename-as-title' is `nil', the string will be inserted as
 ;; title into the document.
 
-;;     (setq deft-create-file-from-filter-string t)
+;;     (setq deft-use-filter-string-for-filename t)
 
-;; If `deft-create-file-from-filter-string' is `nil', file name will be
-;; auto generated with a common prefix like `deft-' and incrementing numbers
+;; If `deft-use-filter-string-for-filename' is `nil' (default), file name will
+;; be auto generated with a common prefix like `deft-' and incrementing numbers
 ;; following the prefix. Example: `deft-0.EXT', `deft-1.EXT', ..
 
 ;; You can easily set up a global keyboard binding for Deft.  For
@@ -359,14 +359,13 @@ Set to nil to hide."
   :type 'boolean
   :group 'deft)
 
-(defcustom deft-create-file-from-filter-string nil
+(defcustom deft-use-filter-string-for-filename nil
   "Use the filter string to generate name for the new file."
   :type 'boolean
   :group 'deft)
 
 (defcustom deft-org-mode-title-prefix t
-  "Prefix the auto generated title in a new org-mode deft file with the
-#+TITLE: prefix."
+  "Prefix the auto generated title in a new org-mode deft file with #+TITLE:."
   :type 'boolean
   :group 'deft)
 
@@ -969,13 +968,12 @@ SLUG is the short filename, without a path or a file extension. "
 ;;;###autoload
 (defun deft-new-file ()
   "Create a new file quickly.
-Use either an automatically generated filename or the filter
-string if non-nil and `deft-create-file-from-filter-string' is set.  If the
-filter string is non-nil and title is not from filename, use it
-as the title."
+Use either an automatically generated filename or the filter string if non-nil
+and `deft-use-filter-string-for-filename' is set.  If the filter string is
+non-nil and title is not from filename, use it as the title."
   (interactive)
   (let (slug)
-    (if (and deft-filter-regexp deft-create-file-from-filter-string)
+    (if (and deft-filter-regexp deft-use-filter-string-for-filename)
         ;; If the filter string is non-emtpy and titles are taken from
         ;; filenames is set, construct filename from filter string.
         (setq slug (deft-whole-filter-regexp))
