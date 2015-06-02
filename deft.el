@@ -199,13 +199,21 @@
 
 ;; For compatibility with other applications which take the title from
 ;; the filename, rather than from first line of the file, set the
-;; `deft-use-filename-as-title' flag to a non-nil value.  This also
-;; changes the default behavior for creating new files when the filter
-;; is non-empty: the filter string will be used as the new filename
-;; rather than inserted into the new file.  To enable this
+;; `deft-use-filename-as-title' flag to a non-nil value. To enable this
 ;; functionality, simply add the following to your `.emacs` file:
 
 ;;     (setq deft-use-filename-as-title t)
+
+;; Below changes the default behavior for creating new files when the filter
+;; is non-empty: the filter string will be used to generate the new filename
+;; If `deft-use-filename-as-title' is `nil', the string will be inserted as
+;; title into the document.
+
+;;     (setq deft-create-file-from-filter-string t)
+
+;; If `deft-create-file-from-filter-string' is `nil', file name will be
+;; auto generated with a common prefix like `deft-' and incrementing numbers
+;; following the prefix. Example: `deft-0.EXT', `deft-1.EXT', ..
 
 ;; You can easily set up a global keyboard binding for Deft.  For
 ;; example, to bind it to F8, add the following code to your `.emacs`
@@ -347,7 +355,18 @@ Set to nil to hide."
   :group 'deft)
 
 (defcustom deft-use-filename-as-title nil
-  "Use filename as title, instead of the first line of the contents."
+  "Use filename as title in the *Deft* buffer."
+  :type 'boolean
+  :group 'deft)
+
+(defcustom deft-create-file-from-filter-string nil
+  "Use the filter string to generate name for the new file."
+  :type 'boolean
+  :group 'deft)
+
+(defcustom deft-org-mode-title-prefix t
+  "Prefix the auto generated title in a new org-mode deft file with the
+#+TITLE: prefix."
   :type 'boolean
   :group 'deft)
 
@@ -365,7 +384,14 @@ entire filter string is interpreted as a single regular expression."
   :type 'function
   :group 'deft)
 
-(defcustom deft-strip-title-regexp "\\(?:^%+\\|^[#* ]+\\|-\\*-[[:alpha:]]+-\\*-\\|#+$\\)"
+(defcustom deft-strip-title-regexp
+  (concat "\\(?:"
+          "^%+" ; line beg with %
+          "\\|^#\\+TITLE: *" ; org-mode title
+          "\\|^[#* ]+" ; line beg with #, * and/or space
+          "\\|-\\*-[[:alpha:]]+-\\*-" ; -*- .. -*- lines
+          "\\|#+" ; line with just # chars
+          "$\\)")
   "Regular expression to remove from file titles.
 Presently, it removes leading LaTeX comment delimiters, leading
 and trailing hash marks from Markdown ATX headings, leading
@@ -623,8 +649,9 @@ tables should use `expand-file-name' on filenames first."
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
-According to `deft-use-filename-as-title', the title is taken to
-be the first non-empty line of a file or the file name."
+If `deft-use-filename-as-title' is `nil', the title is taken to
+be the first non-empty line of the FILE. Else the base name of the FILE is
+used as title."
   (if deft-use-filename-as-title
       (deft-base-filename file)
     (let ((begin (string-match "^.+$" contents)))
@@ -914,18 +941,25 @@ If FILE is not inside `deft-directory', fall back to using `find-file'."
       (deft-open-file file)
     (find-file file)))
 
+(defun deft-auto-populate-title-maybe (file)
+  "If the filter string is non-nil and `deft-use-filename-as-title' is `nil'
+use the filter string to populate the title line in the newly created FILE."
+  (when (and deft-filter-regexp (not deft-use-filename-as-title))
+    (write-region (concat (when (and deft-org-mode-title-prefix
+                                     (equal deft-text-mode 'org-mode))
+                            "#+TITLE: ")
+                          (deft-whole-filter-regexp)
+                          "\n\n")
+                  nil file nil)))
+
 (defun deft-new-file-named (slug)
   "Create a new file named SLUG.
-SLUG is the short filename, without a path or a file extension.
-If the filter string is non-nil and title is not from file name,
-use it as the title."
+SLUG is the short filename, without a path or a file extension. "
   (interactive "sNew filename (without extension): ")
   (let ((file (deft-absolute-filename slug)))
     (if (file-exists-p file)
         (message "Aborting, file already exists: %s" file)
-      ;; Insert the contents of the filter string in the file.
-      (when (and deft-filter-regexp (not deft-use-filename-as-title))
-        (write-region (concat (deft-whole-filter-regexp) "\n\n") nil file nil))
+      (deft-auto-populate-title-maybe file)
       (deft-cache-update-file file)
       (deft-refresh-filter)
       (deft-open-file file)
@@ -936,12 +970,12 @@ use it as the title."
 (defun deft-new-file ()
   "Create a new file quickly.
 Use either an automatically generated filename or the filter
-string if non-nil and `deft-use-filename-as-title' is set.  If the
+string if non-nil and `deft-create-file-from-filter-string' is set.  If the
 filter string is non-nil and title is not from filename, use it
 as the title."
   (interactive)
   (let (slug)
-    (if (and deft-filter-regexp deft-use-filename-as-title)
+    (if (and deft-filter-regexp deft-create-file-from-filter-string)
         ;; If the filter string is non-emtpy and titles are taken from
         ;; filenames is set, construct filename from filter string.
         (setq slug (deft-whole-filter-regexp))
