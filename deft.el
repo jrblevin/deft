@@ -407,6 +407,41 @@ This may be a relative path from `deft-directory', or an absolute path."
   :safe 'stringp
   :group 'deft)
 
+(defcustom deft-file-naming-rules '()
+  "Alist of cons cells (SYMBOL . VALUE) for `deft-absolute-filename'.
+
+Supported cons car values: `nospace', `case-fn'.
+
+Value of `nospace' is a string which should replace the space characters in the
+file name. Below example replaces spaces with underscores in the file names:
+
+   (setq deft-file-naming-rules '((nospace . \"_\")))
+
+Value of `case-fn' is a function name that takes a string as input that has to
+be applied on the file name. Below example makes the file name all lower case:
+
+   (setq deft-file-naming-rules '((case-fn . downcase)))
+
+It is also possible to use a combination of the above cons cells to get file
+name in various case styles like,
+
+snake_case:
+
+    (setq deft-file-naming-rules '((nospace . \"_\")
+                                   (case-fn . downcase)))
+
+or CamelCase
+
+    (setq deft-file-naming-rules '((nospace . \"\")
+                                   (case-fn . capitalize)))
+
+or kebab-case
+
+    (setq deft-file-naming-rules '((nospace . \"-\")
+                                   (case-fn . downcase)))
+"
+  :group 'deft)
+
 ;; Faces
 
 (defgroup deft-faces nil
@@ -871,9 +906,19 @@ Call this function after any actions which update the filter and file list."
 
 (defun deft-absolute-filename (slug &optional extension)
   "Return an absolute filename to file named SLUG with optional EXTENSION.
-If EXTENSION is not given, `deft-extension' is assumed."
-  (concat (file-name-as-directory (expand-file-name deft-directory))
-          slug "." (or extension deft-extension)))
+If EXTENSION is not given, `deft-extension' is assumed.
+
+Refer to `deft-file-naming-rules' for setting rules for formatting the file
+name."
+  (let* ((slug (deft-chomp slug)) ; remove leading/trailing spaces
+         (space-replacement (cdr (assq 'nospace deft-file-naming-rules)))
+         (case-fn           (cdr (assq 'case-fn deft-file-naming-rules))))
+    (when space-replacement
+      (setq slug (replace-regexp-in-string " " space-replacement slug)))
+    (when case-fn
+      (setq slug (funcall case-fn slug)))
+    (concat (file-name-as-directory (expand-file-name deft-directory))
+            slug "." (or extension deft-extension))))
 
 (defun deft-unused-slug ()
   "Return an unused filename slug (short name) in `deft-directory'."
