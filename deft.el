@@ -401,10 +401,16 @@ This may be a relative path from `deft-directory', or an absolute path."
   :safe 'stringp
   :group 'deft)
 
-(defcustom deft-file-naming-rules '()
+(defcustom deft-file-naming-rules '( (noslash . \"-\") )
   "Alist of cons cells (SYMBOL . VALUE) for `deft-absolute-filename'.
 
-Supported cons car values: `nospace', `case-fn'.
+Supported cons car values: `noslash', `nospace', `case-fn'.
+
+Value of `slash' is a string which should replace the forward slash characters
+in the file name. The default behavior is to replace slashes with hyphens in the
+file name. To change the replacement charcter to an underscore, one could use:
+
+   (setq deft-file-naming-rules '((noslash . \"_\")))
 
 Value of `nospace' is a string which should replace the space characters in the
 file name. Below example replaces spaces with underscores in the file names:
@@ -421,17 +427,20 @@ name in various case styles like,
 
 snake_case:
 
-    (setq deft-file-naming-rules '((nospace . \"_\")
+    (setq deft-file-naming-rules '((noslash . \"_\")
+                                   (nospace . \"_\")
                                    (case-fn . downcase)))
 
 or CamelCase
 
-    (setq deft-file-naming-rules '((nospace . \"\")
+    (setq deft-file-naming-rules '((noslash . \"\")
+                                   (nospace . \"\")
                                    (case-fn . capitalize)))
 
 or kebab-case
 
-    (setq deft-file-naming-rules '((nospace . \"-\")
+    (setq deft-file-naming-rules '((noslash . \"-\")
+                                   (nospace . \"-\")
                                    (case-fn . downcase)))
 "
   :group 'deft)
@@ -928,8 +937,11 @@ If EXTENSION is not given, `deft-extension' is assumed.
 Refer to `deft-file-naming-rules' for setting rules for formatting the file
 name."
   (let* ((slug (deft-chomp slug)) ; remove leading/trailing spaces
+         (slash-replacement (cdr (assq 'noslash deft-file-naming-rules)))
          (space-replacement (cdr (assq 'nospace deft-file-naming-rules)))
          (case-fn           (cdr (assq 'case-fn deft-file-naming-rules))))
+    (when slash-replacement
+      (setq slug (replace-regexp-in-string "\/" slash-replacement slug)))
     (when space-replacement
       (setq slug (replace-regexp-in-string " " space-replacement slug)))
     (when case-fn
