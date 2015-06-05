@@ -382,6 +382,7 @@ entire filter string is interpreted as a single regular expression."
           "\\|^#\\+TITLE: *" ; org-mode title
           "\\|^[#* ]+" ; line beg with #, * and/or space
           "\\|-\\*-[[:alpha:]]+-\\*-" ; -*- .. -*- lines
+          "\\|^Title:[	 ]*" ; MultiMarkdown metadata
           "\\|#+" ; line with just # chars
           "$\\)")
   "Regular expression to remove from file titles.
