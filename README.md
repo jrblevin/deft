@@ -142,29 +142,17 @@ Customization
 Customize the `deft` group to change the functionality.
 
 By default, Deft looks for notes by searching for files with the
-extension `.txt` in the `~/.deft` directory.  You can customize
-both the file extension and the Deft directory by running
-<kbd>M-x customize-group</kbd> and typing `deft`.  Alternatively, you can
-configure them in your `.emacs` file:
+extensions `.txt`, `text`, `md`, `markdown`, or `org` in the
+`~/.deft` directory.  You can customize both the file extension and
+the Deft directory by running <kbd>M-x customize-group</kbd> and typing
+`deft`.  Alternatively, you can configure them in your `.emacs`
+file:
 
-    (setq deft-extension "txt")
-    (setq deft-directory "~/Dropbox/notes")
+    (setq deft-extensions '("txt" "tex" "org")
+    (setq deft-directory "~/Dropbox/notes"))
 
-You can also customize the major mode that Deft uses to edit files,
-either through <kbd>M-x customize-group</kbd> or by adding something like
-the following to your `.emacs` file:
-
-    (setq deft-text-mode 'markdown-mode)
-
-Note that the mode need not be a traditional text mode.  If you
-prefer to write notes as LaTeX fragments, for example, you could
-set `deft-extension` to "tex" and `deft-text-mode` to `latex-mode`.
-
-If you prefer `org-mode`, then simply use
-
-    (setq deft-extension "org")
-    (setq deft-text-mode 'org-mode)
-
+The first element of `deft-extensions` (or in Lisp parlance, the
+car) is the default extension used to create new files.
 For compatibility with other applications which take the title from
 the filename, rather than from first line of the file, set the
 `deft-use-filename-as-title` flag to a non-nil value. To enable this
@@ -181,7 +169,7 @@ title into the document.
 
 If `deft-use-filter-string-for-filename` is `nil` (default), file name will
 be auto generated with a common prefix like `deft-` and incrementing numbers
-following the prefix. Example: `deft-0.EXT`, `deft-1.EXT`, ..
+following the prefix, as in `deft-0.txt`, `deft-1.txt`, ...
 
 By default, Deft only searches for files in `deft-directory` but
 not in any subdirectories. Set `deft-recursive` to a non-nil value
@@ -199,12 +187,12 @@ Deft also provides a function for opening files without using the
 Deft buffer directly.  Calling `deft-find-file` will prompt for a
 file to open, just like `find-file`, but starting from
 `deft-directory`.  If the file selected is in `deft-directory`, it
-is opened with the usual deft features (using `deft-text-mode`,
-automatic saving, automatic updating of the Deft buffer, etc.).
-Otherwise, the file will be opened by `find-file` as usual.
-Therefore, you can set up a global keybinding for this function to
-open Deft files anywhere.  For example, to use <kbd>C-x C-g</kbd>, a
-neighbor of <kbd>C-x C-f</kbd>, use the following:
+is opened with the usual deft features (automatic saving, automatic
+updating of the Deft buffer, etc.).  Otherwise, the file will be
+opened by `find-file` as usual.  Therefore, you can set up a global
+keybinding for this function to open Deft files anywhere.  For
+example, to use <kbd>C-x C-g</kbd>, a neighbor of <kbd>C-x C-f</kbd>, use the
+following:
 
     (global-set-key (kbd "C-x C-g") 'deft-find-file)
 
