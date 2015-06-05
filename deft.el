@@ -215,6 +215,12 @@
 ;; be auto generated with a common prefix like `deft-' and incrementing numbers
 ;; following the prefix. Example: `deft-0.EXT', `deft-1.EXT', ..
 
+;; By default, Deft only searches for files in `deft-directory' but
+;; not in any subdirectories. Set `deft-recursive' to a non-nil value
+;; to enable recursive searching for files in subdirectories:
+
+;;     (setq deft-recursive t)
+
 ;; You can easily set up a global keyboard binding for Deft.  For
 ;; example, to bind it to F8, add the following code to your `.emacs`
 ;; file:
@@ -375,6 +381,11 @@ During incremental string search, substrings separated by spaces are
 treated as subfilters, each of which must match a file.  They need
 not be adjacent and may appear in any order.  During regexp search, the
 entire filter string is interpreted as a single regular expression."
+  :type 'boolean
+  :group 'deft)
+
+(defcustom deft-recursive nil
+  "Recursively search for files in subdirectories when non-nil."
   :type 'boolean
   :group 'deft)
 
@@ -650,31 +661,54 @@ is the complete regexp."
   (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" str))
 
 (defun deft-base-filename (file)
-  "Strip the path and extension from filename FILE."
-  (setq file (file-name-nondirectory file))
-  (if (> (length deft-extension) 0)
-      (setq file (replace-regexp-in-string (concat "\." deft-extension "$") "" file)))
-  file)
+  "Strip `deft-directory' and `deft-extension' from filename FILE."
+  (let* ((deft-dir (file-name-as-directory (expand-file-name deft-directory)))
+         (len (length deft-dir))
+         (file (substring file len)))
+    (if (> (length deft-extension) 0)
+        (setq file (replace-regexp-in-string
+                    (concat "\." deft-extension "$") "" file)))
+    file))
 
 (defun deft-find-all-files ()
   "Return a list of all files in the Deft directory.
+
+See `deft-find-files'."
+  (deft-find-files deft-directory))
+
+(defun deft-find-files (dir)
+  "Return a list of all files in the directory DIR.
 
 It is important to note that the return value is a list of
 absolute filenames.  These absolute filenames are used as keys
 for the various hash tables used for storing file metadata and
 contents.  So, any functions looking up values in these hash
-tables should use `expand-file-name' on filenames first."
-  (if (file-exists-p deft-directory)
-      (let (files result)
-        ;; List all files
-        (setq files
-              (directory-files deft-directory t
-                               (concat "\." deft-extension "$") t))
-        ;; Filter out files that are not readable or are directories
+tables should use `expand-file-name' on filenames first.
+
+If `deft-recursive' is non-nil, then search recursively in
+subdirectories of `deft-directory' (with the exception of
+`deft-archive-directory').
+
+See `deft-find-all-files'."
+  (if (file-exists-p dir)
+      (let ((archive-dir (expand-file-name (concat deft-directory "/"
+                                                   deft-archive-directory "/")))
+            (files (directory-files dir t "." t))
+            result)
         (dolist (file files)
-          (when (and (file-readable-p file)
-                     (not (file-directory-p file)))
-            (setq result (cons file result))))
+          (cond
+           ;; Recurse into subdirectory if `deft-recursive' is non-nil
+           ;; and the directory is not ".", "..", or `deft-archive-directory'.
+           ((file-directory-p file)
+            (when (and deft-recursive
+                       (not (string-match "/\\(\\.\\|\\.\\.\\)$" file))
+                       (not (string-prefix-p archive-dir
+                                             (expand-file-name (concat file "/")))))
+              (setq result (append (deft-find-files file) result))))
+           ;; Collect names of readable files ending in `deft-extension'
+           ((and (file-readable-p file)
+                 (string-match (concat "\." deft-extension "$") file))
+            (setq result (cons file result)))))
         result)))
 
 (defun deft-strip-title (title)
@@ -1052,16 +1086,16 @@ proceeding."
   "Rename the file represented by the widget at the point.
 If the point is not on a file widget, do nothing."
   (interactive)
-  (let (old-filename new-filename old-name new-name)
-    (setq old-filename (widget-get (widget-at) :tag))
+  (let ((old-filename (widget-get (widget-at) :tag))
+        (deft-dir (file-name-as-directory deft-directory))
+        new-filename old-name new-name)
     (when old-filename
       (setq old-name (deft-base-filename old-filename))
       (setq new-name (read-string
                       (concat "Rename " old-name " to (without extension): ")
                       old-name))
       (setq new-filename
-            (concat (file-name-as-directory deft-directory)
-                    new-name "." deft-extension))
+            (concat deft-dir new-name "." deft-extension))
       (rename-file old-filename new-filename)
       (deft-update-visiting-buffers old-filename new-filename)
       (deft-refresh))))
