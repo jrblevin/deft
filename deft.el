@@ -1,6 +1,6 @@
 ;;; deft.el --- quickly browse, filter, and edit plain text notes
 
-;;; Copyright (C) 2011-2013 Jason R. Blevins <jrblevin@sdf.org>
+;;; Copyright (C) 2011-2015 Jason R. Blevins <jrblevin@sdf.org>
 ;; All rights reserved.
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -26,7 +26,7 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
-;;; Version: 0.5.1
+;;; Version: 0.6
 ;;; Author: Jason R. Blevins <jrblevin@sdf.org>
 ;;; Keywords: plain text, notes, Simplenote, Notational Velocity
 ;;; URL: http://jblevins.org/projects/deft/
@@ -43,8 +43,8 @@
 ;; creating new files and saving files.
 
 ;; Deft is open source software and may be freely distributed and
-;; modified under the BSD license.  Version 0.5.1 is the latest stable
-;; version, released on January 28, 2013.  You may download it
+;; modified under the BSD license.  Version 0.6 is the latest stable
+;; version, released on June 26, 2015.  You may download it
 ;; directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
@@ -55,7 +55,7 @@
 
 ;;     git clone git://jblevins.org/git/deft.git
 
-;; ![File Browser](http://jblevins.org/projects/deft/browser.png)
+;; ![Deft 0.6 Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
 
 ;; The Deft buffer is simply a file browser which lists the titles of
 ;; all text files in the Deft directory followed by short summaries
@@ -70,15 +70,13 @@
 ;;
 ;;     % ls ~/.deft
 ;;     about.txt    browser.txt     directory.txt   operations.txt
-;;     ack.txt      completion.txt  extensions.txt  text-mode.txt
+;;     ack.txt      completion.txt  extensions.org
 ;;     binding.txt  creation.txt    filtering.txt
 ;;
 ;;     % cat ~/.deft/about.txt
-;;     About
+;;     # About
 ;;
 ;;     An Emacs mode for slicing and dicing plain text files.
-
-;; ![Filtering](http://jblevins.org/projects/deft/filter.png)
 
 ;; Deft's primary operation is searching and filtering.  The list of
 ;; files can be limited or filtered using a search string, which will
@@ -127,20 +125,15 @@
 ;; toggle between incremental and regexp search modes.  Regexp
 ;; search mode is indicated by an "R" in the mode line.
 
-;; Deft, by default, lists files from newest to oldest.  You can set
-;; `deft-current-sort-method' to 'title to sort by file titles, case
-;; ignored.  Or, you can toggle sorting method using
-;; `deft-toggle-sort-method'.
-
 ;; Common file operations can also be carried out from within Deft.
 ;; Files can be renamed using `C-c C-r` or deleted using `C-c C-d`.
 ;; New files can also be created using `C-c C-n` for quick creation or
 ;; `C-c C-m` for a filename prompt.  You can leave Deft at any time
 ;; with `C-c C-q`.
 
-;; Archiving unused files can be carried out by pressing `C-c C-a`.
-;; Files will be moved to `deft-archive-directory', which is a
-;; directory named `archive` within your `deft-directory' by default.
+;; Unused files can be archived by pressing `C-c C-a`. Files will be
+;; moved to `deft-archive-directory', which is a directory named
+;; `archive` within your `deft-directory' by default.
 
 ;; Files opened with deft are automatically saved after Emacs has been
 ;; idle for a customizable number of seconds.  This value is a floating
@@ -165,16 +158,25 @@
 
 ;; One useful way to use Deft is to keep a directory of notes in a
 ;; Dropbox folder.  This can be used with other applications and
-;; mobile devices, for example, Notational Velocity or Simplenote
-;; on OS X, Elements on iOS, or Epistle on Android.
+;; mobile devices, for example, [nvALT][], [Notational Velocity][], or
+;; [Simplenote][] on OS X or [Editorial][], [Byword][], or [1Writer][]
+;; on iOS.
 
-;; Customization
-;; -------------
+;; [nvALT]: http://brettterpstra.com/projects/nvalt/
+;; [Notational Velocity]: http://notational.net/
+;; [Simplenote]: http://simplenote.com/
+;; [Editorial]: https://geo.itunes.apple.com/us/app/editorial/id673907758?mt=8&uo=6&at=11l5Vs&ct=deft
+;; [Byword]: https://geo.itunes.apple.com/us/app/byword/id482063361?mt=8&uo=6&at=11l5Vs&ct=deft
+;; [1Writer]: https://geo.itunes.apple.com/us/app/1writer-note-taking-writing/id680469088?mt=8&uo=6&at=11l5Vs&ct=deft
 
-;; Customize the `deft` group to change the functionality.
+;; Basic Customization
+;; -------------------
+
+;; You can customize items in the `deft` group to change the default
+;; functionality.
 
 ;; By default, Deft looks for notes by searching for files with the
-;; extensions `.txt`, `text`, `md`, `markdown`, or `org` in the
+;; extensions `.txt`, `.text`, `.md`, `.markdown`, or `.org` in the
 ;; `~/.deft` directory.  You can customize both the file extension and
 ;; the Deft directory by running `M-x customize-group` and typing
 ;; `deft`.  Alternatively, you can configure them in your `.emacs`
@@ -185,23 +187,6 @@
 
 ;; The first element of `deft-extensions' (or in Lisp parlance, the
 ;; car) is the default extension used to create new files.
-;; For compatibility with other applications which take the title from
-;; the filename, rather than from first line of the file, set the
-;; `deft-use-filename-as-title' flag to a non-nil value. To enable this
-;; functionality, simply add the following to your `.emacs` file:
-
-;;     (setq deft-use-filename-as-title t)
-
-;; Below changes the default behavior for creating new files when the filter
-;; is non-empty: the filter string will be used to generate the new filename
-;; If `deft-use-filename-as-title' is `nil', the string will be inserted as
-;; title into the document.
-
-;;     (setq deft-use-filter-string-for-filename t)
-
-;; If `deft-use-filter-string-for-filename' is `nil' (default), file name will
-;; be auto generated with a common prefix like `deft-' and incrementing numbers
-;; following the prefix, as in `deft-0.txt', `deft-1.txt', ...
 
 ;; By default, Deft only searches for files in `deft-directory' but
 ;; not in any subdirectories. Set `deft-recursive' to a non-nil value
@@ -214,6 +199,99 @@
 ;; file:
 
 ;;     (global-set-key [f8] 'deft)
+
+;; Reading Files
+;; -------------
+
+;; The displayed title of each file is taken to be the first line of
+;; the file, with certain characters removed from the beginning. Hash
+;; characters, as used in Markdown headers, and asterisks, as in Org
+;; Mode headers, are removed.  Additionally, Org mode `#+TITLE:` tags,
+;; MultiMarkdown `Title:` tags, LaTeX comment markers (`%`), and
+;; Emacs mode-line declarations (e.g., `-*-mode-*-`) are stripped from
+;; displayed titles.  This can be customized by changing
+;; `deft-strip-title-regexp'.
+
+;; More generally, the title post-processing function itself can be
+;; customized by setting `deft-parse-title-function', which accepts
+;; the first line of the file as an argument and returns the parsed
+;; title to display in the file browser.  The default function is
+;; `deft-strip-title', which removes all occurrences of
+;; `deft-strip-title-regexp' as described above.
+
+;; For compatibility with other applications which use the filename as
+;; the title of a note (rather than the first line of the file), set the
+;; `deft-use-filename-as-title' flag to a non-`nil' value. Deft will then
+;; use note filenames to generate the displayed titles in the Deft
+;; file browser. To enable this, add the following to your `.emacs` file:
+
+;;     (setq deft-use-filename-as-title t)
+
+;; Creating Files
+;; --------------
+
+;; Filenames for newly created files are generated by Deft automatically.
+;; The process for doing so is determined by the variables
+;; `deft-use-filename-as-title' and `deft-use-filter-string-for-filename'
+;; as well as the rules in the `deft-file-naming-rules' alist.
+;; The possible cases are as follows:
+
+;; 1.  **Default** (`deft-use-filename-as-title' and
+;;     `deft-use-filter-string-for-filename' are both `nil'):
+
+;;     The filename will be automatically generated with prefix `deft-`
+;;     and a numerical suffix as in `deft-0.ext', `deft-1.ext', ...
+;;     The filter string will be inserted as the first line of the file
+;;     (which is also used as the display title).
+
+;; 2.  **Filenames as titles** (`deft-use-filename-as-title' is non-`nil'):
+
+;;     When `deft-use-filename-as-title' is non-`nil', the filter string
+;;     will be used as the filename for new files (with the appropriate
+;;     file extension appended to the end).
+
+;; 3.  **Readable filenames** (`deft-use-filename-as-title' is
+;;     `nil' but `deft-use-filter-string-for-filename' is non-`nil'):
+
+;;     In this case you can choose to display the title as parsed from
+;;     the first line of the file while also generating readable
+;;     filenames for new files based on the filter string. The
+;;     variable `deft-use-filter-string-for-filename' controls this
+;;     behavior and decouples the title display
+;;     (`deft-use-filename-as-title') from the actual filename. New
+;;     filenames will be generated from the filter string and
+;;     processed according to the rules defined in the
+;;     `deft-file-naming-rules' alist. By default, slashes are removed
+;;     and replaced by hyphens, but many other options are possible
+;;     (camel case, replacing spaces by hyphens, and so on). See the
+;;     documentation for `deft-file-naming-rules' for additional
+;;     details.
+
+;; Titles inserted into files from the filter string can also be
+;; customized for two common modes, `markdown-mode' and `org-mode', by
+;; setting the following variables:
+
+;; * `deft-markdown-mode-title-level' - When set to a positive
+;;   integer, determines how many hash marks will be added to titles
+;;   in new Markdown files. In other words, setting
+;;   `deft-markdown-mode-title-level' to `2` will result in new files
+;;   being created with level-2 headings of the form `## Title`.
+
+;; * `deft-org-mode-title-prefix' - When non-nil, automatically
+;;   generated titles in new `org-mode' files will be prefixed with
+;;   `#+TITLE:`.
+
+;; Other Customizations
+;; --------------------
+
+;; Deft, by default, lists files from newest to oldest.  You can set
+;; `deft-current-sort-method' to 'title to sort by file titles, case
+;; ignored.  Or, you can toggle sorting method using
+;; `deft-toggle-sort-method'.
+
+;; Incremental string search is the default method of filtering on
+;; startup, but you can set `deft-incremental-search' to nil to make
+;; regexp search the default.
 
 ;; Deft also provides a function for opening files without using the
 ;; Deft buffer directly.  Calling `deft-find-file' will prompt for a
@@ -233,33 +311,49 @@
 ;; properties from the standard font-lock faces defined by your current
 ;; color theme.
 
-;; Incremental string search is the default method of filtering on
-;; startup, but you can set `deft-incremental-search' to nil to make
-;; regexp search the default.
-
-;; The title of each file is taken to be the first line of the file,
-;; with certain characters removed from the beginning (hash
-;; characters, as used in Markdown headers, and asterisks, as in Org
-;; Mode headers).  The substrings to remove are specified in
-;; `deft-strip-title-regexp'.
-
-;; More generally, the title post-processing function itself can be
-;; customized by setting `deft-parse-title-function', which accepts
-;; the first line of the file as an argument and returns the parsed
-;; title to display in the file browser.  The default function is
-;; `deft-strip-title', which removes all occurrences of
-;; `deft-strip-title-regexp' as described above.
-
 ;; Acknowledgments
 ;; ---------------
 
-;; Thanks to Konstantinos Efstathiou for writing simplnote.el, from
+;; Thanks to Konstantinos Efstathiou for writing simplenote.el, from
 ;; which I borrowed liberally, and to Zachary Schneirov for writing
 ;; Notational Velocity, whose functionality and spirit I wanted to
 ;; bring to Emacs.
 
 ;; History
 ;; -------
+
+;; Version 0.6 (2015-06-26):
+
+;; * Recursive search in subdirectories (optional). Set
+;;   `deft-recursive' to a non-nil value to enable.
+;; * Support for multiple extensions via the `deft-extensions' list.
+;;   As such, `deft-extension' is now deprecated.
+;; * New variable `deft-create-file-from-filter-string' can enable
+;;   generation of new filenames based on the filter string. This decouples
+;;   the title display (`deft-use-filename-as-title') from the actual filename
+;;   generation.
+;; * New variable `deft-file-naming-rules' allows customizing generation
+;;   of filenames with regard to letter case and handling of spaces.
+;; * New variables `deft-markdown-mode-title-level' and
+;;   `deft-org-mode-title-prefix' for automatic insertion of title markup.
+;; * Archiving of files in `deft-archive-directory'.
+;; * Ability to sort by either title or modification time via
+;;   `deft-current-sort-method'.
+;; * Update default `deft-strip-title-regexp' to remove the following:
+;;     - org-mode `#+TITLE:` tags
+;;     - MultiMarkdown `Title:` tags
+;;     - LaTeX comment markers (i.e., `%`)
+;;     - Emacs mode-line declarations (e.g., `-*-mode-*-`)
+;; * Remove leading and trailing whitespace from titles.
+;; * Disable visual line mode to prevent lines from wrapping.
+;; * Enable line truncation to avoid displaying truncation characters.
+;; * Show the old filename as the default prompt when renaming a file.
+;; * Call `hack-local-variables' to read file-local variables when
+;;   opening files.
+;; * Fixed several byte-compilation warnings.
+;; * Bug fix: more robust handling of relative and absolute filenames.
+;; * Bug fix: use width instead of length of strings for calculations.
+;; * Bug fix: fix `string-width' error with empty file.
 
 ;; Version 0.5.1 (2013-01-28):
 
@@ -269,7 +363,7 @@
 
 ;; Version 0.5 (2013-01-25):
 
-;; * Implement incremental string search (default) and regex search.
+;; * Implement incremental string search (default) and regexp search.
 ;;   These search modes can be toggled by pressing `C-c C-t`.
 ;; * Default search method can be changed by setting `deft-incremental-search'.
 ;; * Support custom `deft-parse-title-function' for post-processing titles.
@@ -494,7 +588,7 @@ or kebab-case
 
 ;; Constants
 
-(defconst deft-version "0.5.1")
+(defconst deft-version "0.6")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
