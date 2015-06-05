@@ -298,11 +298,15 @@
 
 ;; 1.  **Default** (`deft-use-filename-as-title' and
 ;;     `deft-use-filter-string-for-filename' are both `nil'):
-
-;;     The filename will be automatically generated with prefix `deft-`
-;;     and a numerical suffix as in `deft-0.ext', `deft-1.ext', ...
-;;     The filter string will be inserted as the first line of the file
-;;     (which is also used as the display title).
+;;
+;;     The filename will be automatically generated using an short,
+;;     ISO-like timestamp as in `2016-05-12T09:00.txt'.  The format
+;;     can be customized by setting the variable
+;;     `deft-new-file-format'.  The filter string will be inserted as
+;;     the first line of the file (which is also used as the display
+;;     title).  In case of file name conflicts, an underscore and a
+;;     numerical suffix (e.g., `_2') will be appended before the
+;;     extension.
 
 ;; 2.  **Filenames as titles** (`deft-use-filename-as-title' is non-`nil'):
 
@@ -552,6 +556,15 @@ Set to zero to disable."
 Set to nil to hide."
   :type '(choice (string :tag "Time format")
                  (const :tag "Hide" nil))
+  :group 'deft)
+
+(defcustom deft-new-file-format "%Y-%m-%dT%H:%M"
+  "Format string for new file names.
+The default value yields a short ISO-like timestamp, as in
+\"2016-05-12T09:00\".  To use a full ISO 8601 time stamp, for
+example, set this variable to \"%FT%T%z\".  See
+`format-time-string' for possible format controls."
+  :type 'string
   :group 'deft)
 
 (defcustom deft-use-filename-as-title nil
@@ -1291,9 +1304,9 @@ name."
 
 (defun deft-unused-slug ()
   "Return an unused filename slug (short name) in `deft-directory'."
-  (let* ((fmt "deft-%d")
-         (counter 0)
-         (slug (format fmt counter))
+  (let* ((slug (format-time-string deft-new-file-format))
+         (fmt (concat slug "_%d"))
+         (counter 1)
          (file (deft-absolute-filename slug)))
     (while (or (file-exists-p file) (get-file-buffer file))
       (setq counter (1+ counter))

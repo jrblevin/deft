@@ -273,10 +273,14 @@ The possible cases are as follows:
 1.  **Default** (`deft-use-filename-as-title` and
     `deft-use-filter-string-for-filename` are both `nil`):
 
-    The filename will be automatically generated with prefix `deft-`
-    and a numerical suffix as in `deft-0.ext`, `deft-1.ext`, ...
-    The filter string will be inserted as the first line of the file
-    (which is also used as the display title).
+    The filename will be automatically generated using an short,
+    ISO-like timestamp as in `2016-05-12T09:00.txt`.  The format
+    can be customized by setting the variable
+    `deft-new-file-format`.  The filter string will be inserted as
+    the first line of the file (which is also used as the display
+    title).  In case of file name conflicts, an underscore and a
+    numerical suffix (e.g., `_2`) will be appended before the
+    extension.
 
 2.  **Filenames as titles** (`deft-use-filename-as-title` is non-`nil`):
 
