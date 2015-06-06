@@ -352,6 +352,11 @@ Set to nil to hide."
   :type 'boolean
   :group 'deft)
 
+(defcustom deft-markdown-mode-title-level 0
+  "Prefix titles in new Markdown files with required number of hash marks."
+  :type 'integer
+  :group 'deft)
+
 (defcustom deft-org-mode-title-prefix t
   "Prefix the auto generated title in a new org-mode deft file with #+TITLE:."
   :type 'boolean
@@ -1014,12 +1019,19 @@ If FILE is not inside `deft-directory', fall back to using `find-file'."
   "If the filter string is non-nil and `deft-use-filename-as-title' is `nil'
 use the filter string to populate the title line in the newly created FILE."
   (when (and deft-filter-regexp (not deft-use-filename-as-title))
-    (write-region (concat (when (and deft-org-mode-title-prefix
-                                     (string-equal deft-default-extension "org"))
-                            "#+TITLE: ")
-                          (deft-whole-filter-regexp)
-                          "\n\n")
-                  nil file nil)))
+    (write-region
+     (concat
+      (cond
+       ((and (> deft-markdown-mode-title-level 0)
+             (string-match "^\\(txt\\|text\\|md\\|mdown\\|markdown\\)"
+			   deft-default-extension))
+        (concat (make-string deft-markdown-mode-title-level ?#) " "))
+       ((and deft-org-mode-title-prefix
+	     (string-equal deft-default-extension "org"))
+	"#+TITLE: "))
+      (deft-whole-filter-regexp)
+      "\n\n")
+     nil file nil)))
 
 (defun deft-new-file-named (slug)
   "Create a new file named SLUG.
