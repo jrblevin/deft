@@ -699,6 +699,7 @@ See `deft-find-all-files'."
               (setq result (append (deft-find-files file) result))))
            ;; Collect names of readable files ending in `deft-extension'
            ((and (file-readable-p file)
+                 (not (backup-file-name-p file))
                  (member (file-name-extension file) deft-extensions))
             (setq result (cons file result)))))
         result)))
