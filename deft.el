@@ -227,6 +227,11 @@
 
 ;;     (setq deft-use-filename-as-title t)
 
+;; Finally, the short summary that is displayed following the file
+;; title can be customized by changing `deft-strip-summary-regexp'. By
+;; default, this is set to remove certain org-mode metadata statements
+;; such as `#+OPTIONS:` and `#+AUTHOR:'.
+
 ;; Creating Files
 ;; --------------
 
@@ -503,7 +508,7 @@ form -*-mode-*-."
            "\\|^#\\+STARTUP:.*$" ;; org-mode-metadata
            "\\|^#\\+AUTHOR:.*$" ;; org-mode-metadata
            "\\)")
-   "Regular expression to remove file contents displayed in summary. 
+   "Regular expression to remove file contents displayed in summary.
    Presently removes blank lines and org-mode metadata statements."
    :type 'regexp
    :safe 'stringp

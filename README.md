@@ -195,6 +195,11 @@ file browser. To enable this, add the following to your `.emacs` file:
 
     (setq deft-use-filename-as-title t)
 
+Finally, the short summary that is displayed following the file
+title can be customized by changing `deft-strip-summary-regexp`. By
+default, this is set to remove certain org-mode metadata statements
+such as `#+OPTIONS:` and `#+AUTHOR:`.
+
 Creating Files
 --------------
 
