@@ -493,6 +493,22 @@ form -*-mode-*-."
   :safe 'stringp
   :group 'deft)
 
+(defcustom deft-strip-summary-regexp
+  (concat "\\("
+           "[\n\t]" ;; blank
+           "\\|^#\\+OPTIONS:.*$" ;; org-mode metadata
+           "\\|^#\\+LATEX_CMD:.*$" ;; org-mode-metadata
+           "\\|^#\\+LATEX_CLASS:.*$" ;; org-mode-metadata
+           "\\|^#\\+LATEX_HEADER:.*$" ;; org-mode-metadata
+           "\\|^#\\+STARTUP:.*$" ;; org-mode-metadata
+           "\\|^#\\+AUTHOR:.*$" ;; org-mode-metadata
+           "\\)")
+   "Regular expression to remove file contents displayed in summary. 
+   Presently removes blank lines and org-mode metadata statements."
+   :type 'regexp
+   :safe 'stringp
+   :group 'deft)
+
 (defcustom deft-archive-directory "archive/"
   "Deft archive directory.
 This may be a relative path from `deft-directory', or an absolute path."
@@ -823,7 +839,7 @@ used as title."
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
 The summary is a string extracted from the contents following the
 title."
-  (let ((summary (replace-regexp-in-string "[\n\t]" " " contents)))
+  (let ((summary (replace-regexp-in-string deft-strip-summary-regexp " " contents)))
     (if (and (not deft-use-filename-as-title) title)
         (if (string-match (regexp-quote title) summary)
             (deft-chomp (substring summary (match-end 0) nil))
