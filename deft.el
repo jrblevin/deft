@@ -501,7 +501,7 @@ form -*-mode-*-."
 (defcustom deft-strip-summary-regexp
   (concat "\\("
            "[\n\t]" ;; blank
-           "\\|^#\\+[[:upper:]_]:.*$" ;; org-mode metadata
+           "\\|^#\\+[[:upper:]_]+:.*$" ;; org-mode metadata
            "\\)")
    "Regular expression to remove file contents displayed in summary.
    Presently removes blank lines and org-mode metadata statements."
@@ -841,11 +841,12 @@ The summary is a string extracted from the contents following the
 title."
   (let ((summary (let ((case-fold-search nil))
                    (replace-regexp-in-string deft-strip-summary-regexp " " contents))))
-    (if (and (not deft-use-filename-as-title) title)
-        (if (string-match (regexp-quote title) summary)
-            (deft-chomp (substring summary (match-end 0) nil))
-          "")
-      summary)))
+    (deft-chomp
+      (if (and title
+               (not deft-use-filename-as-title)
+               (string-match (regexp-quote title) summary))
+          (substring summary (match-end 0) nil)
+        summary))))
 
 (defun deft-cache-file (file)
   "Update file cache if FILE exists."
