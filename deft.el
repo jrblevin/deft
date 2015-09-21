@@ -423,8 +423,16 @@
   :safe 'stringp
   :group 'deft)
 
-(defcustom deft-extensions '("txt" "text" "md" "markdown" "org")
-  "Any files with these extensions will be listed."
+
+(make-obsolete-variable 'deft-extension 'deft-extensions "v0.6")
+
+(defcustom deft-extensions
+  (if (boundp 'deft-extension)
+      (cons deft-extension '())
+    '("txt" "text" "md" "markdown" "org"))
+  "Any files with these extensions will be listed.  The first
+element of the list is used as the default file extension of
+newly created files, if `deft-default-extension` is not set."
   :type '(repeat string)
   :group 'deft)
 
@@ -666,7 +674,7 @@ Available methods are 'mtime and 'title.")
 (defvar deft-regexp-error nil
   "Flag for indicating invalid regexp errors.")
 
-(defvar deft-default-extension nil
+(defvar deft-default-extension (copy-sequence (car deft-extensions))
   "Default file extension of newly created files.")
 
 ;; Keymap definition
@@ -1480,11 +1488,6 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (when (fboundp 'visual-line-mode)
     (visual-line-mode 0))
 
-  ;; Backwards compatibility with deft-extension
-  (when (boundp 'deft-extension)
-    (setq deft-extensions (cons deft-extension '())))
-
-  (setq deft-default-extension (car deft-extensions))
   (use-local-map deft-mode-map)
   (deft-cache-initialize)
   (deft-cache-update-all)
