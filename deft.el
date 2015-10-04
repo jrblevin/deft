@@ -524,7 +524,7 @@ This may be a relative path from `deft-directory', or an absolute path."
   :safe 'stringp
   :group 'deft)
 
-(defcustom deft-file-naming-rules '( (noslash . \"-\") )
+(defcustom deft-file-naming-rules '( (noslash . "-") )
   "Alist of cons cells (SYMBOL . VALUE) for `deft-absolute-filename'.
 
 Supported cons car values: `noslash', `nospace', `case-fn'.
