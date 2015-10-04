@@ -1445,16 +1445,14 @@ Otherwise, quick create a new file."
 ;;; Automatic File Saving
 
 (defun deft-auto-save ()
-  (save-excursion
-    (dolist (buf deft-auto-save-buffers)
-      (if (buffer-name buf)
-          ;; Save open buffers that have been modified.
-          (progn
-            (set-buffer buf)
-            (when (buffer-modified-p)
-              (basic-save-buffer)))
-        ;; If a buffer is no longer open, remove it from auto save list.
-        (delq buf deft-auto-save-buffers)))))
+  (dolist (buf deft-auto-save-buffers)
+    (if (buffer-name buf)
+        ;; Save open buffers that have been modified.
+        (with-current-buffer buf
+          (when (buffer-modified-p)
+            (basic-save-buffer)))
+      ;; If a buffer is no longer open, remove it from auto save list.
+      (delq buf deft-auto-save-buffers))))
 
 ;;; Mode definition
 
