@@ -483,6 +483,26 @@ entire filter string is interpreted as a single regular expression."
   :type 'boolean
   :group 'deft)
 
+(defcustom deft-recursive-ignore-dir-regexp
+  (concat "\\(?:"
+          "\\."
+          "\\|\\.\\."
+          "\\)$")
+  "Regular expression for directories to be ignored when recursively finding
+files. This variable is effection only if `deft-recursive' it non-nil."
+  :type 'regexp
+  :safe 'stringp
+  :group 'deft)
+
+(defcustom deft-ignore-file-regexp
+  (concat "\\(?:"
+          "^$"
+          "\\)")
+  "Regular expression for files to be ignored."
+  :type 'regexp
+  :safe 'stringp
+  :group 'deft)
+
 (defcustom deft-parse-title-function 'deft-strip-title
   "Function for post-processing file titles."
   :type 'function
@@ -816,12 +836,13 @@ See `deft-find-all-files'."
            ;; and the directory is not ".", "..", or `deft-archive-directory'.
            ((file-directory-p file)
             (when (and deft-recursive
-                       (not (string-match "/\\(\\.\\|\\.\\.\\)$" file))
+                       (not (string-match deft-recursive-ignore-dir-regexp file))
                        (not (string-prefix-p archive-dir
                                              (expand-file-name (concat file "/")))))
               (setq result (append (deft-find-files file) result))))
            ;; Collect names of readable files ending in `deft-extension'
            ((and (file-readable-p file)
+                 (not (string-match deft-ignore-file-regexp file))
                  (not (backup-file-name-p file))
                  (member (file-name-extension file) deft-extensions))
             (setq result (cons file result)))))
@@ -1406,7 +1427,7 @@ filter regexp.  Therefore, in both cases, only the car of
         ;; In incremental search mode, remove the car
         nil
       ;; In regexp search mode, remove last "word" component
-      ;(replace-regexp-in-string "[[:space:]\n]*$" "" s)
+      ;; (replace-regexp-in-string "[[:space:]\n]*$" "" s)
       (let ((str (car deft-filter-regexp)))
         (if (> (length str) 0)
             (with-temp-buffer
