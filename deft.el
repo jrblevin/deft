@@ -991,7 +991,7 @@ call the original string-width otherwise"
            (mtime (when deft-time-format
                     (format-time-string deft-time-format (deft-file-mtime file))))
            (mtime-width (deft-string-width mtime))
-           (line-width (- deft-window-width mtime-width))
+           (line-width (- deft-window-width mtime-width 1))
            (title-width (min line-width (deft-string-width title)))
            (summary-width (min (deft-string-width summary)
                                (- line-width
