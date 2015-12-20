@@ -150,15 +150,18 @@ the Deft directory by running <kbd>M-x customize-group</kbd> and typing
 `deft`.  Alternatively, you can configure them in your `.emacs`
 file:
 
-    (setq deft-extensions '("txt" "tex" "org"))
+    (setq deft-extensions '("txt" "tex" "org")
     (setq deft-directory "~/Dropbox/notes"))
 
 The first element of `deft-extensions` (or in Lisp parlance, the
 car) is the default extension used to create new files.
 
 By default, Deft only searches for files in `deft-directory` but
-not in any subdirectories. Set `deft-recursive` to a non-nil value
-to enable recursive searching for files in subdirectories:
+not in any subdirectories. All files in `deft-directory` with one
+of the specified extensions will be included except for those
+matching `deft-ignore-file-regexp`. Set `deft-recursive` to a
+non-nil value to enable searching for files in subdirectories
+(those not matching `deft-recursive-ignore-dir-regexp`):
 
     (setq deft-recursive t)
 
