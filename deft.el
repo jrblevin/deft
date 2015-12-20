@@ -49,11 +49,18 @@
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
 
-;; To follow or contribute to Deft development, you can either
-;; [browse](http://jblevins.org/git/deft.git) or clone the Git
-;; repository:
+;; To follow or contribute to Deft development, you can browse or
+;; clone the Git repository at [jblevins.org][] or [GitHub][]:
 
 ;;     git clone git://jblevins.org/git/deft.git
+;;     git clone https://github.com/jrblevin/deft.git
+
+;; [![Build Status][status]][travis]
+
+;; [jblevins.org]: http://jblevins.org/git/deft.git
+;; [GitHub]: https://github.com/jrblevin/deft
+;; [travis]: https://travis-ci.org/jrblevin/deft
+;; [status]: https://travis-ci.org/jrblevin/deft.svg?branch=master
 
 ;; ![Deft 0.6 Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
 
