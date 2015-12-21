@@ -883,7 +883,11 @@ title."
     (deft-chomp
       (if (and title
                (not deft-use-filename-as-title)
-               (string-match (regexp-quote title) summary))
+               (string-match (regexp-quote
+                              (if deft-org-mode-title-prefix
+                                  (concat "^#+TITLE: " title)
+                                title))
+                             summary))
           (substring summary (match-end 0) nil)
         summary))))
 
