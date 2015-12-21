@@ -433,7 +433,6 @@
   :safe 'stringp
   :group 'deft)
 
-
 (make-obsolete-variable 'deft-extension 'deft-extensions "v0.6")
 
 (defcustom deft-extensions
@@ -524,7 +523,7 @@ files. This variable is effection only if `deft-recursive' it non-nil."
           "\\|^#\\+TITLE: *" ; org-mode title
           "\\|^[#* ]+" ; line beg with #, * and/or space
           "\\|-\\*-[[:alpha:]]+-\\*-" ; -*- .. -*- lines
-          "\\|^Title:[	 ]*" ; MultiMarkdown metadata
+          "\\|^Title:[\t ]*" ; MultiMarkdown metadata
           "\\|#+" ; line with just # chars
           "$\\)")
   "Regular expression to remove from file titles.
@@ -642,7 +641,7 @@ or kebab-case
 
 ;; Constants
 
-(defconst deft-version "0.6")
+(defconst deft-version "0.7")
 
 (defconst deft-buffer "*Deft*"
   "Deft buffer name.")
@@ -1180,11 +1179,11 @@ use the filter string to populate the title line in the newly created FILE."
       (cond
        ((and (> deft-markdown-mode-title-level 0)
              (string-match "^\\(txt\\|text\\|md\\|mdown\\|markdown\\)"
-			   deft-default-extension))
+                           deft-default-extension))
         (concat (make-string deft-markdown-mode-title-level ?#) " "))
        ((and deft-org-mode-title-prefix
-	     (string-equal deft-default-extension "org"))
-	"#+TITLE: "))
+             (string-equal deft-default-extension "org"))
+        "#+TITLE: "))
       (deft-whole-filter-regexp)
       "\n\n")
      nil file nil)))
@@ -1311,14 +1310,14 @@ If the point is not on a file widget, do nothing."
       (when title (insert title))
       (when contents (insert contents)))
     (if batch
-	(if (every (lambda (filter)
-		     (goto-char (point-min))
+        (if (every (lambda (filter)
+                     (goto-char (point-min))
                      (deft-search-forward filter))
-		   deft-filter-regexp)
-	    file)
+                   deft-filter-regexp)
+            file)
       (goto-char (point-min))
       (if (deft-search-forward (car deft-filter-regexp))
-	  file))))
+          file))))
 
 (defun deft-filter-files (files)
   "Update `deft-current-files' given a list of paths, FILES.
@@ -1404,17 +1403,17 @@ replace the entire filter string."
   (interactive)
   (let ((char last-command-event))
     (if (= char ?\S-\ )
-	(setq char ?\s))
+        (setq char ?\s))
     (setq char (char-to-string char))
     (if (and deft-incremental-search (string= char " "))
-	(setq deft-filter-regexp (cons "" deft-filter-regexp))
+        (setq deft-filter-regexp (cons "" deft-filter-regexp))
       (progn
-	(if (car deft-filter-regexp)
-	    (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
-	  (setq deft-filter-regexp (list char)))
-	(setq deft-current-files (deft-filter-files deft-current-files))
-	(setq deft-current-files (delq nil deft-current-files))
-	(deft-refresh-browser)))))
+        (if (car deft-filter-regexp)
+            (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
+          (setq deft-filter-regexp (list char)))
+        (setq deft-current-files (deft-filter-files deft-current-files))
+        (setq deft-current-files (delq nil deft-current-files))
+        (deft-refresh-browser)))))
 
 (defun deft-filter-decrement ()
   "Remove last character from the filter, if possible, and update.
@@ -1548,6 +1547,7 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
 
 ;; Local Variables:
 ;; byte-compile-warnings: (not cl-functions)
+;; indent-tabs-mode: nil
 ;; End:
 
 ;;; deft.el ends here
