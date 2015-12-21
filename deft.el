@@ -26,7 +26,7 @@
 ;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;; POSSIBILITY OF SUCH DAMAGE.
 
-;;; Version: 0.6
+;;; Version: 0.7
 ;;; Author: Jason R. Blevins <jrblevin@sdf.org>
 ;;; Keywords: plain text, notes, Simplenote, Notational Velocity
 ;;; URL: http://jblevins.org/projects/deft/
@@ -43,8 +43,8 @@
 ;; creating new files and saving files.
 
 ;; Deft is open source software and may be freely distributed and
-;; modified under the BSD license.  Version 0.6 is the latest stable
-;; version, released on June 26, 2015.  You may download it
+;; modified under the BSD license.  Version 0.7 is the latest stable
+;; version, released on December 21, 2015.  You may download it
 ;; directly here:
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
@@ -62,7 +62,7 @@
 ;; [travis]: https://travis-ci.org/jrblevin/deft
 ;; [status]: https://travis-ci.org/jrblevin/deft.svg?branch=master
 
-;; ![Deft 0.6 Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
+;; ![Deft Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
 
 ;; The Deft buffer is simply a file browser which lists the titles of
 ;; all text files in the Deft directory followed by short summaries
@@ -336,6 +336,23 @@
 
 ;; History
 ;; -------
+
+;; Version 0.7 (2015-12-21):
+
+;; * Add custom regular expression `deft-strip-summary-regexp' for
+;;   stripping extraneous text for generating the summary line. Strip
+;;   all `org-mode' metadata by default.
+;; * New customizable regular expressions for ignoring files and
+;;   directories. See `deft-recursive-ignore-dir-regexp' and
+;;   `deft-ignore-file-regexp'.
+;; * Bug fix: Prevent lines from wrapping in console mode.
+;; * Bug fix: Setup `deft-extensions` and `deft-default-extension` at
+;;   load time.
+;; * Bug fix: Try to prevent false title matches in org-mode notes
+;;   where the string `#+TITLE:` might also appear in the body.
+;; * Bug fix: Use `with-current-buffer` instead of `save-excursion`
+;;   while auto-saving files since we do not want to save the point.
+;; * Bug fix: Don't escape quotes in `deft-file-naming-rules'.
 
 ;; Version 0.6 (2015-06-26):
 
