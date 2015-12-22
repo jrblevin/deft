@@ -158,7 +158,7 @@ the Deft directory by running <kbd>M-x customize-group</kbd> and typing
 file:
 
     (setq deft-extensions '("txt" "tex" "org"))
-    (setq deft-directory "~/Dropbox/notes"))
+    (setq deft-directory "~/Dropbox/notes")
 
 The first element of `deft-extensions` (or in Lisp parlance, the
 car) is the default extension used to create new files.
