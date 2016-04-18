@@ -1110,7 +1110,7 @@ Call this function after any actions which update the filter and file list."
 
 (defun deft-absolute-filename (slug &optional extension)
   "Return an absolute filename to file named SLUG with optional EXTENSION.
-If EXTENSION is not given, `deft-extension' is assumed.
+If EXTENSION is not given, `deft-default-extension' is assumed.
 
 Refer to `deft-file-naming-rules' for setting rules for formatting the file
 name."
