@@ -1024,34 +1024,36 @@ Case is ignored."
          (propertize "Deft" 'face 'deft-header-face)))
   (widget-insert "\n\n"))
 
-(defun deft-buffer-setup ()
-  "Render the file browser in the *Deft* buffer."
-  (setq deft-window-width (window-width))
-  (let ((inhibit-read-only t))
-    (erase-buffer))
-  (remove-overlays)
-  (deft-print-header)
+(defun deft-buffer-setup (&optional refresh)
+  "Render the file browser in the *Deft* buffer.
+When REFRESH is true, attempt to restore the point afterwards."
+  (let ((orig-point (point)))
+    (setq deft-window-width (window-width))
+    (let ((inhibit-read-only t))
+      (erase-buffer))
+    (remove-overlays)
+    (deft-print-header)
 
-  ;; Print the files list
-  (if (not (file-exists-p deft-directory))
-      (widget-insert (deft-no-directory-message))
-    (if deft-current-files
-        (progn
-          (mapc 'deft-file-widget deft-current-files))
-      (widget-insert (deft-no-files-message))))
+    ;; Print the files list
+    (if (not (file-exists-p deft-directory))
+        (widget-insert (deft-no-directory-message))
+      (if deft-current-files
+          (progn
+            (mapc 'deft-file-widget deft-current-files))
+        (widget-insert (deft-no-files-message))))
 
-  (use-local-map deft-mode-map)
-  (widget-setup)
-  (goto-char 1)
-  (forward-line 2))
+    (use-local-map deft-mode-map)
+    (widget-setup)
+    (if refresh
+        (goto-char orig-point)
+      (goto-char 1)
+      (forward-line 2))))
 
 (defun deft-string-width (str)
-  "A wrapper function for the original string-width which does
-not handle nil.  This function return 0 if the given STR is nil,
-call the original string-width otherwise"
-  (if str
-      (string-width str)
-    0))
+  "Return 0 if STR is nil and call `string-width` otherwise.
+This is simply a wrapper function for `string-width' which
+handles nil values gracefully."
+  (if str (string-width str) 0))
 
 (defun deft-file-widget (file)
   "Add a line to the file browser for the given FILE."
@@ -1094,7 +1096,7 @@ call the original string-width otherwise"
           (lambda ()
             (when (and (eq (current-buffer) (get-buffer deft-buffer))
                        (not (eq deft-window-width (window-width))))
-              (deft-buffer-setup))))
+              (deft-buffer-setup t))))
 
 (defun deft-refresh ()
   "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
@@ -1114,7 +1116,7 @@ Call this after any actions which update the cache."
 Call this function after any actions which update the filter and file list."
   (when (get-buffer deft-buffer)
     (with-current-buffer deft-buffer
-      (deft-buffer-setup))))
+      (deft-buffer-setup t))))
 
 (defun deft-no-directory-message ()
   "Return a short message to display when the Deft directory does not exist."
