@@ -834,7 +834,7 @@ is the complete regexp."
   (let* ((deft-dir (file-name-as-directory (expand-file-name deft-directory)))
          (len (length deft-dir))
          (file (substring file len)))
-    (file-name-base file)))
+    (file-name-sans-extension file)))
 
 (defun deft-find-all-files ()
   "Return a list of all files in the Deft directory.
