@@ -728,6 +728,14 @@ Available methods are 'mtime and 'title.")
 (defvar deft-default-extension (copy-sequence (car deft-extensions))
   "Default file extension of newly created files.")
 
+(defvar deft-width-offset (if (display-graphic-p) 0 1)
+  "Number of characters of width to trim relative to `window-width`.
+Defaults to 1 in console mode and 0 in graphical mode.  This
+variable may be changed if for some reason the default
+calculation results in line wrap in the Deft browser window.
+Setting this to a positive value decreases the summary line width
+by that amount.")
+
 ;; Keymap definition
 
 (defvar deft-mode-map
@@ -1055,8 +1063,7 @@ call the original string-width otherwise"
            (mtime (when deft-time-format
                     (format-time-string deft-time-format (deft-file-mtime file))))
            (mtime-width (deft-string-width mtime))
-           (line-width (- deft-window-width mtime-width
-                          (if (display-graphic-p) 0 1)))
+           (line-width (- deft-window-width mtime-width deft-width-offset))
            (title-width (min line-width (deft-string-width title)))
            (summary-width (min (deft-string-width summary)
                                (- line-width
