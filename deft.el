@@ -138,7 +138,7 @@
 ;; `C-c C-m` for a filename prompt.  You can leave Deft at any time
 ;; with `C-c C-q`.
 
-;; Unused files can be archived by pressing `C-c C-a`. Files will be
+;; Unused files can be archived by pressing `C-c C-a`.  Files will be
 ;; moved to `deft-archive-directory', which is a directory named
 ;; `archive` within your `deft-directory' by default.
 
@@ -196,9 +196,9 @@
 ;; car) is the default extension used to create new files.
 
 ;; By default, Deft only searches for files in `deft-directory' but
-;; not in any subdirectories. All files in `deft-directory' with one
+;; not in any subdirectories.  All files in `deft-directory' with one
 ;; of the specified extensions will be included except for those
-;; matching `deft-ignore-file-regexp'. Set `deft-recursive' to a
+;; matching `deft-ignore-file-regexp'.  Set `deft-recursive' to a
 ;; non-nil value to enable searching for files in subdirectories
 ;; (those not matching `deft-recursive-ignore-dir-regexp'):
 
@@ -214,7 +214,7 @@
 ;; -------------
 
 ;; The displayed title of each file is taken to be the first line of
-;; the file, with certain characters removed from the beginning. Hash
+;; the file, with certain characters removed from the beginning.  Hash
 ;; characters, as used in Markdown headers, and asterisks, as in Org
 ;; Mode headers, are removed.  Additionally, Org mode `#+TITLE:` tags,
 ;; MultiMarkdown `Title:` tags, LaTeX comment markers (`%`), and
@@ -231,14 +231,14 @@
 
 ;; For compatibility with other applications which use the filename as
 ;; the title of a note (rather than the first line of the file), set the
-;; `deft-use-filename-as-title' flag to a non-`nil' value. Deft will then
+;; `deft-use-filename-as-title' flag to a non-`nil' value.  Deft will then
 ;; use note filenames to generate the displayed titles in the Deft
-;; file browser. To enable this, add the following to your `.emacs` file:
+;; file browser.  To enable this, add the following to your `.emacs` file:
 
 ;;     (setq deft-use-filename-as-title t)
 
 ;; Finally, the short summary that is displayed following the file
-;; title can be customized by changing `deft-strip-summary-regexp'. By
+;; title can be customized by changing `deft-strip-summary-regexp'.  By
 ;; default, this is set to remove certain org-mode metadata statements
 ;; such as `#+OPTIONS:` and `#+AUTHOR:'.
 
@@ -270,15 +270,15 @@
 
 ;;     In this case you can choose to display the title as parsed from
 ;;     the first line of the file while also generating readable
-;;     filenames for new files based on the filter string. The
+;;     filenames for new files based on the filter string.  The
 ;;     variable `deft-use-filter-string-for-filename' controls this
 ;;     behavior and decouples the title display
-;;     (`deft-use-filename-as-title') from the actual filename. New
+;;     (`deft-use-filename-as-title') from the actual filename.  New
 ;;     filenames will be generated from the filter string and
 ;;     processed according to the rules defined in the
-;;     `deft-file-naming-rules' alist. By default, slashes are removed
+;;     `deft-file-naming-rules' alist.  By default, slashes are removed
 ;;     and replaced by hyphens, but many other options are possible
-;;     (camel case, replacing spaces by hyphens, and so on). See the
+;;     (camel case, replacing spaces by hyphens, and so on).  See the
 ;;     documentation for `deft-file-naming-rules' for additional
 ;;     details.
 
@@ -288,7 +288,7 @@
 
 ;; * `deft-markdown-mode-title-level' - When set to a positive
 ;;   integer, determines how many hash marks will be added to titles
-;;   in new Markdown files. In other words, setting
+;;   in new Markdown files.  In other words, setting
 ;;   `deft-markdown-mode-title-level' to `2` will result in new files
 ;;   being created with level-2 headings of the form `## Title`.
 
@@ -315,7 +315,7 @@
 ;; matching `deft-extensions`).  Unlike `find-file`, a list of all
 ;; such files is provided and the desired file name can be completed
 ;; using `completing-read' (and, as a result, `deft-find-file` will
-;; read/complete filenames using ido, helm, etc. when enabled).  If
+;; read/complete filenames using ido, helm, etc.  when enabled).  If
 ;; the selected file is in `deft-directory', it is opened with the
 ;; usual Deft features (automatic saving, automatic updating of the
 ;; Deft buffer, etc.).  Otherwise, the file will be opened by
@@ -345,10 +345,10 @@
 ;; Version 0.7 (2015-12-21):
 
 ;; * Add custom regular expression `deft-strip-summary-regexp' for
-;;   stripping extraneous text for generating the summary line. Strip
+;;   stripping extraneous text for generating the summary line.  Strip
 ;;   all `org-mode' metadata by default.
 ;; * New customizable regular expressions for ignoring files and
-;;   directories. See `deft-recursive-ignore-dir-regexp' and
+;;   directories.  See `deft-recursive-ignore-dir-regexp' and
 ;;   `deft-ignore-file-regexp'.
 ;; * Bug fix: Prevent lines from wrapping in console mode.
 ;; * Bug fix: Setup `deft-extensions` and `deft-default-extension` at
@@ -361,12 +361,12 @@
 
 ;; Version 0.6 (2015-06-26):
 
-;; * Recursive search in subdirectories (optional). Set
+;; * Recursive search in subdirectories (optional).  Set
 ;;   `deft-recursive' to a non-nil value to enable.
 ;; * Support for multiple extensions via the `deft-extensions' list.
 ;;   As such, `deft-extension' is now deprecated.
 ;; * New variable `deft-create-file-from-filter-string' can enable
-;;   generation of new filenames based on the filter string. This decouples
+;;   generation of new filenames based on the filter string.  This decouples
 ;;   the title display (`deft-use-filename-as-title') from the actual filename
 ;;   generation.
 ;; * New variable `deft-file-naming-rules' allows customizing generation
@@ -461,9 +461,10 @@
   (if (boundp 'deft-extension)
       (cons deft-extension '())
     '("txt" "text" "md" "markdown" "org"))
-  "Any files with these extensions will be listed.  The first
-element of the list is used as the default file extension of
-newly created files, if `deft-default-extension` is not set."
+  "Files with these extensions will be listed.
+The first element of the list is used as the default file
+extension of newly created files, if `deft-default-extension' is
+not set."
   :type '(repeat string)
   :group 'deft)
 
@@ -496,7 +497,7 @@ Set to nil to hide."
   :group 'deft)
 
 (defcustom deft-org-mode-title-prefix t
-  "Prefix the auto generated title in a new org-mode deft file with #+TITLE:."
+  "Prefix the generated title in new `org-mode' files with #+TITLE:."
   :type 'boolean
   :group 'deft)
 
@@ -519,8 +520,9 @@ entire filter string is interpreted as a single regular expression."
           "\\."
           "\\|\\.\\."
           "\\)$")
-  "Regular expression for directories to be ignored when recursively finding
-files. This variable is effection only if `deft-recursive' it non-nil."
+  "Regular expression for subdirectories to be ignored.
+This variable is only effective when searching for files
+recursively, that is, when `deft-recursive' is non-nil."
   :type 'regexp
   :safe 'stringp
   :group 'deft)
@@ -563,7 +565,7 @@ form -*-mode-*-."
            "\\|^#\\+[[:upper:]_]+:.*$" ;; org-mode metadata
            "\\)")
    "Regular expression to remove file contents displayed in summary.
-   Presently removes blank lines and org-mode metadata statements."
+Presently removes blank lines and `org-mode' metadata statements."
    :type 'regexp
    :safe 'stringp
    :group 'deft)
@@ -580,24 +582,27 @@ This may be a relative path from `deft-directory', or an absolute path."
 
 Supported cons car values: `noslash', `nospace', `case-fn'.
 
-Value of `slash' is a string which should replace the forward slash characters
-in the file name. The default behavior is to replace slashes with hyphens in the
-file name. To change the replacement charcter to an underscore, one could use:
+Value of `slash' is a string which should replace the forward
+slash characters in the file name.  The default behavior is to
+replace slashes with hyphens in the file name.  To change the
+replacement charcter to an underscore, one could use:
 
    (setq deft-file-naming-rules '((noslash . \"_\")))
 
-Value of `nospace' is a string which should replace the space characters in the
-file name. Below example replaces spaces with underscores in the file names:
+Value of `nospace' is a string which should replace the space
+characters in the file name.  Below example replaces spaces with
+underscores in the file names:
 
    (setq deft-file-naming-rules '((nospace . \"_\")))
 
-Value of `case-fn' is a function name that takes a string as input that has to
-be applied on the file name. Below example makes the file name all lower case:
+Value of `case-fn' is a function name that takes a string as
+input that has to be applied on the file name.  Below example
+makes the file name all lower case:
 
    (setq deft-file-naming-rules '((case-fn . downcase)))
 
-It is also possible to use a combination of the above cons cells to get file
-name in various case styles like,
+It is also possible to use a combination of the above cons cells
+to get file name in various case styles like,
 
 snake_case:
 
@@ -615,8 +620,7 @@ or kebab-case
 
     (setq deft-file-naming-rules '((noslash . \"-\")
                                    (nospace . \"-\")
-                                   (case-fn . downcase)))
-"
+                                   (case-fn . downcase)))"
   :group 'deft)
 
 ;; Faces
@@ -729,7 +733,7 @@ Available methods are 'mtime and 'title.")
   "Default file extension of newly created files.")
 
 (defvar deft-width-offset (if (display-graphic-p) 0 1)
-  "Number of characters of width to trim relative to `window-width`.
+  "Number of characters of width to trim relative to `window-width'.
 Defaults to 1 in console mode and 0 in graphical mode.  This
 variable may be changed if for some reason the default
 calculation results in line wrap in the Deft browser window.
@@ -790,7 +794,7 @@ by that amount.")
   (mapconcat 'identity (reverse deft-filter-regexp) " "))
 
 (defun deft-search-forward (str)
-  "Function to use when matching files against filter strings.
+  "Function to use when matching files against filter strings STR.
 This function calls `search-forward' when `deft-incremental-search'
 is non-nil and `re-search-forward' otherwise."
   (if deft-incremental-search
@@ -798,6 +802,7 @@ is non-nil and `re-search-forward' otherwise."
     (re-search-forward str nil t)))
 
 (defun deft-set-mode-name ()
+  "Set the mode line text based on search mode."
   (if deft-incremental-search
       (setq mode-name "Deft")
     (setq mode-name "Deft/R")))
@@ -901,8 +906,8 @@ See `deft-find-all-files'."
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
-If `deft-use-filename-as-title' is `nil', the title is taken to
-be the first non-empty line of the FILE. Else the base name of the FILE is
+If `deft-use-filename-as-title' is nil, the title is taken to
+be the first non-empty line of the FILE.  Else the base name of the FILE is
 used as title."
   (if deft-use-filename-as-title
       (deft-base-filename file)
@@ -963,8 +968,7 @@ title."
     (time-less-p time2 time1)))
 
 (defun deft-file-title-lessp (file1 file2)
-  "Return non-nil if the title of FILE1 is less than FILE2's in
-lexicographic order.
+  "Return non-nil if FILE1 title is lexicographically less than FILE2's.
 Case is ignored."
   (let ((t1 (deft-file-title file1))
         (t2 (deft-file-title file2)))
@@ -985,7 +989,7 @@ Case is ignored."
   (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
 
 (defun deft-cache-update-file (file)
-  "Update cached information for a single file."
+  "Update cached information for a single file named FILE."
   (deft-cache-file file)                                  ; Cache contents
   (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
 
@@ -1211,8 +1215,10 @@ If FILE is not inside `deft-directory', fall back to using `find-file'."
     (deft-open-file file)))
 
 (defun deft-auto-populate-title-maybe (file)
-  "If the filter string is non-nil and `deft-use-filename-as-title' is `nil'
-use the filter string to populate the title line in the newly created FILE."
+  "Possibly populate title line for FILE using filter string.
+If the filter string is non-nil and `deft-use-filename-as-title'
+is nil, then use the filter string to populate the title line in
+the newly created FILE."
   (when (and deft-filter-regexp (not deft-use-filename-as-title))
     (write-region
      (concat
@@ -1230,7 +1236,7 @@ use the filter string to populate the title line in the newly created FILE."
 
 (defun deft-new-file-named (slug)
   "Create a new file named SLUG.
-SLUG is the short filename, without a path or a file extension. "
+SLUG is the short file name, without a path or a file extension."
   (interactive "sNew filename (without extension): ")
   (let ((file (deft-absolute-filename slug)))
     (if (file-exists-p file)
@@ -1260,7 +1266,8 @@ non-nil and title is not from filename, use it as the title."
     (deft-new-file-named slug)))
 
 (defun deft-open-file-other-window (&optional arg)
-  "When the point is at a widget, open the file in the other window."
+  "When the point is at a widget, open the file in the other window.
+The argument ARG is passed to `deft-open-file'."
   (interactive "P")
   (let ((file (widget-get (widget-at) :tag)))
     (when file
@@ -1325,12 +1332,11 @@ If the point is not on a file widget, do nothing."
   (sort files (lambda (f1 f2) (deft-file-newer-p f1 f2))))
 
 (defun deft-sort-files-by-title (files)
-  "Sort FILES by title. Case is ignored"
+  "Sort FILES by title, ignoring case."
   (sort files (lambda (f1 f2) (deft-file-title-lessp f1 f2))))
 
 (defun deft-sort-files (files)
-  "Sort FILES by sort methods selected by
-`deft-current-sort-method'."
+  "Sort FILES using method specified in `deft-current-sort-method'."
   (funcall (if (eq deft-current-sort-method 'title)
                'deft-sort-files-by-title
              'deft-sort-files-by-mtime) files))
@@ -1342,7 +1348,9 @@ If the point is not on a file widget, do nothing."
   (setq deft-current-files deft-all-files))
 
 (defun deft-filter-match-file (file &optional batch)
-  "Return FILE if FILE matches the current filter regexp."
+  "Return FILE if it is a match against the current filter regexp.
+If BATCH is non-nil, treat `deft-filter-regexp' as a list and match
+all elements."
   (with-temp-buffer
     (insert file)
     (let ((title (deft-file-title file))
@@ -1520,6 +1528,7 @@ Otherwise, quick create a new file."
 ;;; Automatic File Saving
 
 (defun deft-auto-save ()
+  "Save any modified files in the list of auto-save files."
   (dolist (buf deft-auto-save-buffers)
     (if (buffer-name buf)
         ;; Save open buffers that have been modified.
