@@ -485,6 +485,11 @@ Set to nil to hide."
   :type 'boolean
   :group 'deft)
 
+(defcustom deft-prefix-filename-title-with-subdirectory nil
+  "Prefix filename title with the subdirectory, if any, that the file is in."
+  :type 'boolean
+  :group 'deft)
+
 (defcustom deft-use-filter-string-for-filename nil
   "Use the filter string to generate name for the new file."
   :type 'boolean
@@ -830,11 +835,16 @@ is the complete regexp."
   (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" str))
 
 (defun deft-base-filename (file)
-  "Strip `deft-directory' and `deft-extension' from filename FILE."
+  "Strip `deft-directory' and `deft-extension' from filename FILE.
+
+If `deft-prefix-filename-title-with-subdirectory' is set, leave
+the subdirectories, relative to `deft-directory'."
   (let* ((deft-dir (file-name-as-directory (expand-file-name deft-directory)))
          (len (length deft-dir))
          (file (substring file len)))
-    (file-name-base file)))
+    (if deft-prefix-filename-title-with-subdirectory
+        file
+        (file-name-base file))))
 
 (defun deft-find-all-files ()
   "Return a list of all files in the Deft directory.
