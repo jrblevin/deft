@@ -278,11 +278,16 @@ regexp search the default.
 
 Deft also provides a function for opening files without using the
 Deft buffer directly.  Calling `deft-find-file` will prompt for a
-file to open, just like `find-file`, but starting from
-`deft-directory`.  If the file selected is in `deft-directory`, it
-is opened with the usual deft features (automatic saving, automatic
-updating of the Deft buffer, etc.).  Otherwise, the file will be
-opened by `find-file` as usual.  Therefore, you can set up a global
+file to open, much like `find-file`, but limits consideration to
+files in `deft-directory` that are known to Deft (i.e., those files
+matching `deft-extensions`).  Unlike `find-file`, a list of all
+such files is provided and the desired file name can be completed
+using `completing-read` (and, as a result, `deft-find-file` will
+read/complete filenames using ido, helm, etc. when enabled).  If
+the selected file is in `deft-directory`, it is opened with the
+usual Deft features (automatic saving, automatic updating of the
+Deft buffer, etc.).  Otherwise, the file will be opened by
+`find-file` as usual.  Therefore, you can set up a global
 keybinding for this function to open Deft files anywhere.  For
 example, to use <kbd>C-x C-g</kbd>, a neighbor of <kbd>C-x C-f</kbd>, use the
 following:

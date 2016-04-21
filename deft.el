@@ -1,6 +1,6 @@
 ;;; deft.el --- quickly browse, filter, and edit plain text notes
 
-;;; Copyright (C) 2011-2015 Jason R. Blevins <jrblevin@sdf.org>
+;;; Copyright (C) 2011-2016 Jason R. Blevins <jrblevin@sdf.org>
 ;; All rights reserved.
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -310,11 +310,16 @@
 
 ;; Deft also provides a function for opening files without using the
 ;; Deft buffer directly.  Calling `deft-find-file' will prompt for a
-;; file to open, just like `find-file', but starting from
-;; `deft-directory'.  If the file selected is in `deft-directory', it
-;; is opened with the usual deft features (automatic saving, automatic
-;; updating of the Deft buffer, etc.).  Otherwise, the file will be
-;; opened by `find-file' as usual.  Therefore, you can set up a global
+;; file to open, much like `find-file', but limits consideration to
+;; files in `deft-directory' that are known to Deft (i.e., those files
+;; matching `deft-extensions`).  Unlike `find-file`, a list of all
+;; such files is provided and the desired file name can be completed
+;; using `completing-read' (and, as a result, `deft-find-file` will
+;; read/complete filenames using ido, helm, etc. when enabled).  If
+;; the selected file is in `deft-directory', it is opened with the
+;; usual Deft features (automatic saving, automatic updating of the
+;; Deft buffer, etc.).  Otherwise, the file will be opened by
+;; `find-file' as usual.  Therefore, you can set up a global
 ;; keybinding for this function to open Deft files anywhere.  For
 ;; example, to use `C-x C-g`, a neighbor of `C-x C-f`, use the
 ;; following:
@@ -837,6 +842,14 @@ is the complete regexp."
 See `deft-find-files'."
   (deft-find-files deft-directory))
 
+(defun deft-find-all-files-no-prefix ()
+  "List files in Deft directory with the Deft directory prefix removed.
+See `deft-find-files' and `deft-find-all-files'."
+  (let* ((dir (expand-file-name deft-directory))
+         (files (mapcar (lambda (f) (replace-regexp-in-string dir "" f))
+                        (deft-find-all-files))))
+    files))
+
 (defun deft-find-files (dir)
   "Return a list of all files in the directory DIR.
 
@@ -1181,11 +1194,12 @@ FILE must be a relative or absolute path, with extension."
 FILE must exist and be a relative or absolute path, with extension.
 If FILE is not inside `deft-directory', fall back to using `find-file'."
   (interactive
-   (list (read-file-name "Deft find file: " deft-directory)))
-  (if (and (file-exists-p file)
-           (string-match (concat "^" (expand-file-name deft-directory)) file))
-      (deft-open-file file)
-    (find-file file)))
+   (list (completing-read "Deft find file: " (deft-find-all-files-no-prefix))))
+  (let* ((dir (expand-file-name deft-directory)))
+    ;; If missing, add full deft-directory prefix back
+    (unless (string-match (concat "^" dir) file)
+      (setq file (concat dir file)))
+    (deft-open-file file)))
 
 (defun deft-auto-populate-title-maybe (file)
   "If the filter string is non-nil and `deft-use-filename-as-title' is `nil'
