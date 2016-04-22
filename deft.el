@@ -796,6 +796,9 @@ calculation results in line wrap in the Deft browser window.
 Setting this to a positive value decreases the summary line width
 by that amount.")
 
+(defvar deft-pending-updates nil
+  "Indicator of pending updates due to automatic saves, etc.")
+
 ;; Keymap definition
 
 (defvar deft-mode-map
@@ -1110,6 +1113,7 @@ When REFRESH is true, attempt to restore the point afterwards."
 
     (use-local-map deft-mode-map)
     (widget-setup)
+    (setq deft-pending-updates nil)
     (if refresh
         (goto-char orig-point)
       (goto-char 1)
@@ -1164,11 +1168,13 @@ handles nil values gracefully."
 
 (defun deft-window-size-change-function (frame)
   "Possibly refresh Deft buffer when size of a window in FRAME is changed.
-Check to see that some window is displaying the Deft buffer and that
-the width has actually changed."
+If there are pending updates, refresh the filtered files list and
+update the Deft browser.  Otherwise, if the window width changed,
+only update the Deft browser."
   (when (deft-buffer-visible-p)
-    (unless (eq deft-window-width (deft-current-window-width))
-      (deft-refresh-browser))))
+    (cond (deft-pending-updates (deft-refresh-filter))
+          ((/= deft-window-width (deft-current-window-width))
+           (deft-refresh-browser)))))
 
 (defun deft-window-configuration-change-function ()
   "Possibly refresh Deft browser when window configuration is changed."
@@ -1265,7 +1271,9 @@ FILE must be a relative or absolute path, with extension."
       (add-hook 'after-save-hook
                 (lambda () (save-excursion
                              (deft-cache-update-file buffer-file-name)
-                             (deft-refresh-filter)))
+                             (if (deft-buffer-visible-p)
+                                 (deft-refresh-filter)
+                               (setq deft-pending-updates t))))
                 nil t))
     (run-hooks 'deft-open-file-hook)
     (if other
