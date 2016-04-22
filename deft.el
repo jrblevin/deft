@@ -42,27 +42,54 @@
 ;; right time and by automating many of the usual tasks such as
 ;; creating new files and saving files.
 
+;; ![Deft Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
+
+;; Obtaining Deft
+;; --------------
+
 ;; Deft is open source software and may be freely distributed and
-;; modified under the BSD license.  Version 0.7 is the latest stable
-;; version, released on December 21, 2015.  You may download it
-;; directly here:
+;; modified under the BSD license.  The latest stable release is
+;; version 0.7, released on December 21, 2015.
+
+;; **Installation via MELPA Stable**
+
+;; The recommended way to install Deft is to obtain the stable version
+;; from [MELPA Stable](https://stable.melpa.org/#/deft) using
+;; `package.el'.  First, configure `package.el' and the MELPA Stable
+;; repository by adding the following to your `.emacs', `init.el', or
+;; equivalent startup file:
+
+;;     (require 'package)
+;;     (add-to-list 'package-archives
+;;                  '("melpa-stable" . "https://stable.melpa.org/packages/"))
+;;     (package-initialize)
+
+;; Then, after restarting Emacs or evaluating the above statements, issue
+;; the following command: `M-x package-install RET deft RET`.
+
+;; [MELPA Stable]: http://stable.melpa.org/
+
+;; **Direct Download**
+
+;; Alternatively you can manually download and install Deft.
+;; First, download the latest stable version of and save the file
+;; where Emacs can find it---a directory in your `load-path':
 
 ;;   * [deft.el](http://jblevins.org/projects/deft/deft.el)
 
-;; To follow or contribute to Deft development, you can browse or
-;; clone the Git repository at [jblevins.org][] or [GitHub][]:
+;; Then, add the following line to your startup file:
 
-;;     git clone git://jblevins.org/git/deft.git
+;;     (require 'deft)
+
+;; **Development Version**
+
+;; To follow or contribute to Deft development, you can browse or
+;; clone the Git repository [on GitHub](https://github.com/jrblevin/deft):
+
 ;;     git clone https://github.com/jrblevin/deft.git
 
-;; [![Build Status][status]][travis]
-
-;; [jblevins.org]: http://jblevins.org/git/deft.git
-;; [GitHub]: https://github.com/jrblevin/deft
-;; [travis]: https://travis-ci.org/jrblevin/deft
-;; [status]: https://travis-ci.org/jrblevin/deft.svg?branch=master
-
-;; ![Deft Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
+;; Overview
+;; --------
 
 ;; The Deft buffer is simply a file browser which lists the titles of
 ;; all text files in the Deft directory followed by short summaries
@@ -149,13 +176,9 @@
 ;; Getting Started
 ;; ---------------
 
-;; To start using it, place it somewhere in your Emacs load-path and
-;; add the line
-
-;;     (require 'deft)
-
-;; in your `.emacs` file.  Then run `M-x deft` to start.  It is useful
-;; to create a global keybinding for the `deft` function (e.g., a
+;; Once you have installed Deft following one of the above methods,
+;; you can simply run `M-x deft` to start Deft.  It is useful
+;; to create a global keybinding for the `deft' function (e.g., a
 ;; function key) to start it quickly (see below for details).
 
 ;; When you first run Deft, it will complain that it cannot find the
