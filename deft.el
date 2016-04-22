@@ -240,7 +240,7 @@
 ;; the file, with certain characters removed from the beginning.  Hash
 ;; characters, as used in Markdown headers, and asterisks, as in Org
 ;; Mode headers, are removed.  Additionally, Org mode `#+TITLE:` tags,
-;; MultiMarkdown `Title:` tags, LaTeX comment markers (`%`), and
+;; MultiMarkdown `Title:` tags, LaTeX comment markers, and
 ;; Emacs mode-line declarations (e.g., `-*-mode-*-`) are stripped from
 ;; displayed titles.  This can be customized by changing
 ;; `deft-strip-title-regexp'.
@@ -402,7 +402,7 @@
 ;; * Update default `deft-strip-title-regexp' to remove the following:
 ;;     - org-mode `#+TITLE:` tags
 ;;     - MultiMarkdown `Title:` tags
-;;     - LaTeX comment markers (i.e., `%`)
+;;     - LaTeX comment markers
 ;;     - Emacs mode-line declarations (e.g., `-*-mode-*-`)
 ;; * Remove leading and trailing whitespace from titles.
 ;; * Disable visual line mode to prevent lines from wrapping.

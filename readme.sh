@@ -5,8 +5,14 @@ STOPRE='^;;; Code:$'
 DATE=$(date +"%B %e, %Y %H:%M %Z")
 
 # Produce README.md for GitHub
-echo "Deft for Emacs
-==============
+echo "# Deft for Emacs [![MELPA badge][melpa-badge]][melpa-link] [![MELPA stable badge][melpa-stable-badge]][melpa-stable-link] [![Travis CI Build Status][travis-badge]][travis-link]
+
+  [melpa-link]: https://melpa.org/#/deft
+  [melpa-stable-link]: https://stable.melpa.org/#/deft
+  [melpa-badge]: https://melpa.org/packages/deft-badge.svg
+  [melpa-stable-badge]: https://stable.melpa.org/packages/deft-badge.svg
+  [travis-link]: https://travis-ci.org/jrblevin/deft
+  [travis-badge]: https://travis-ci.org/jrblevin/deft.svg?branch=master
 
 <!-- Automatically generated from comments in deft.el. -->" > README.md
 

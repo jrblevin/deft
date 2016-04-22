@@ -1,5 +1,11 @@
-Deft for Emacs
-==============
+# Deft for Emacs [![MELPA badge][melpa-badge]][melpa-link] [![MELPA stable badge][melpa-stable-badge]][melpa-stable-link] [![Travis CI Build Status][travis-badge]][travis-link]
+
+  [melpa-link]: https://melpa.org/#/deft
+  [melpa-stable-link]: https://stable.melpa.org/#/deft
+  [melpa-badge]: https://melpa.org/packages/deft-badge.svg
+  [melpa-stable-badge]: https://stable.melpa.org/packages/deft-badge.svg
+  [travis-link]: https://travis-ci.org/jrblevin/deft
+  [travis-badge]: https://travis-ci.org/jrblevin/deft.svg?branch=master
 
 <!-- Automatically generated from comments in deft.el. -->
 
@@ -10,27 +16,54 @@ notes by making it fast and simple to find the right file at the
 right time and by automating many of the usual tasks such as
 creating new files and saving files.
 
+![Deft Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
+
+Obtaining Deft
+--------------
+
 Deft is open source software and may be freely distributed and
-modified under the BSD license.  Version 0.7 is the latest stable
-version, released on December 21, 2015.  You may download it
-directly here:
+modified under the BSD license.  The latest stable release is
+version 0.7, released on December 21, 2015.
+
+**Installation via MELPA Stable**
+
+The recommended way to install Deft is to obtain the stable version
+from [MELPA Stable](https://stable.melpa.org/#/deft) using
+`package.el`.  First, configure `package.el` and the MELPA Stable
+repository by adding the following to your `.emacs`, `init.el`, or
+equivalent startup file:
+
+    (require 'package)
+    (add-to-list 'package-archives
+                 '("melpa-stable" . "https://stable.melpa.org/packages/"))
+    (package-initialize)
+
+Then, after restarting Emacs or evaluating the above statements, issue
+the following command: <kbd>M-x package-install RET deft RET</kbd>.
+
+[MELPA Stable]: http://stable.melpa.org/
+
+**Direct Download**
+
+Alternatively you can manually download and install Deft.
+First, download the latest stable version of and save the file
+where Emacs can find it---a directory in your `load-path`:
 
   * [deft.el](http://jblevins.org/projects/deft/deft.el)
 
-To follow or contribute to Deft development, you can browse or
-clone the Git repository at [jblevins.org][] or [GitHub][]:
+Then, add the following line to your startup file:
 
-    git clone git://jblevins.org/git/deft.git
+    (require 'deft)
+
+**Development Version**
+
+To follow or contribute to Deft development, you can browse or
+clone the Git repository [on GitHub](https://github.com/jrblevin/deft):
+
     git clone https://github.com/jrblevin/deft.git
 
-[![Build Status][status]][travis]
-
-[jblevins.org]: http://jblevins.org/git/deft.git
-[GitHub]: https://github.com/jrblevin/deft
-[travis]: https://travis-ci.org/jrblevin/deft
-[status]: https://travis-ci.org/jrblevin/deft.svg?branch=master
-
-![Deft Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
+Overview
+--------
 
 The Deft buffer is simply a file browser which lists the titles of
 all text files in the Deft directory followed by short summaries
@@ -106,7 +139,7 @@ New files can also be created using <kbd>C-c C-n</kbd> for quick creation or
 <kbd>C-c C-m</kbd> for a filename prompt.  You can leave Deft at any time
 with <kbd>C-c C-q</kbd>.
 
-Unused files can be archived by pressing <kbd>C-c C-a</kbd>. Files will be
+Unused files can be archived by pressing <kbd>C-c C-a</kbd>.  Files will be
 moved to `deft-archive-directory`, which is a directory named
 `archive` within your `deft-directory` by default.
 
@@ -117,12 +150,8 @@ point number given by `deft-auto-save-interval` (default: 1.0).
 Getting Started
 ---------------
 
-To start using it, place it somewhere in your Emacs load-path and
-add the line
-
-    (require 'deft)
-
-in your `.emacs` file.  Then run <kbd>M-x deft</kbd> to start.  It is useful
+Once you have installed Deft following one of the above methods,
+you can simply run <kbd>M-x deft</kbd> to start Deft.  It is useful
 to create a global keybinding for the `deft` function (e.g., a
 function key) to start it quickly (see below for details).
 
@@ -164,9 +193,9 @@ The first element of `deft-extensions` (or in Lisp parlance, the
 car) is the default extension used to create new files.
 
 By default, Deft only searches for files in `deft-directory` but
-not in any subdirectories. All files in `deft-directory` with one
+not in any subdirectories.  All files in `deft-directory` with one
 of the specified extensions will be included except for those
-matching `deft-ignore-file-regexp`. Set `deft-recursive` to a
+matching `deft-ignore-file-regexp`.  Set `deft-recursive` to a
 non-nil value to enable searching for files in subdirectories
 (those not matching `deft-recursive-ignore-dir-regexp`):
 
@@ -182,10 +211,10 @@ Reading Files
 -------------
 
 The displayed title of each file is taken to be the first line of
-the file, with certain characters removed from the beginning. Hash
+the file, with certain characters removed from the beginning.  Hash
 characters, as used in Markdown headers, and asterisks, as in Org
 Mode headers, are removed.  Additionally, Org mode `#+TITLE:` tags,
-MultiMarkdown `Title:` tags, LaTeX comment markers (<kbd>%</kbd>), and
+MultiMarkdown `Title:` tags, LaTeX comment markers, and
 Emacs mode-line declarations (e.g., `-*-mode-*-`) are stripped from
 displayed titles.  This can be customized by changing
 `deft-strip-title-regexp`.
@@ -199,14 +228,14 @@ title to display in the file browser.  The default function is
 
 For compatibility with other applications which use the filename as
 the title of a note (rather than the first line of the file), set the
-`deft-use-filename-as-title` flag to a non-`nil` value. Deft will then
+`deft-use-filename-as-title` flag to a non-`nil` value.  Deft will then
 use note filenames to generate the displayed titles in the Deft
-file browser. To enable this, add the following to your `.emacs` file:
+file browser.  To enable this, add the following to your `.emacs` file:
 
     (setq deft-use-filename-as-title t)
 
 Finally, the short summary that is displayed following the file
-title can be customized by changing `deft-strip-summary-regexp`. By
+title can be customized by changing `deft-strip-summary-regexp`.  By
 default, this is set to remove certain org-mode metadata statements
 such as `#+OPTIONS:` and `#+AUTHOR:`.
 
@@ -238,15 +267,15 @@ The possible cases are as follows:
 
     In this case you can choose to display the title as parsed from
     the first line of the file while also generating readable
-    filenames for new files based on the filter string. The
+    filenames for new files based on the filter string.  The
     variable `deft-use-filter-string-for-filename` controls this
     behavior and decouples the title display
-    (`deft-use-filename-as-title`) from the actual filename. New
+    (`deft-use-filename-as-title`) from the actual filename.  New
     filenames will be generated from the filter string and
     processed according to the rules defined in the
-    `deft-file-naming-rules` alist. By default, slashes are removed
+    `deft-file-naming-rules` alist.  By default, slashes are removed
     and replaced by hyphens, but many other options are possible
-    (camel case, replacing spaces by hyphens, and so on). See the
+    (camel case, replacing spaces by hyphens, and so on).  See the
     documentation for `deft-file-naming-rules` for additional
     details.
 
@@ -256,7 +285,7 @@ setting the following variables:
 
 * `deft-markdown-mode-title-level` - When set to a positive
   integer, determines how many hash marks will be added to titles
-  in new Markdown files. In other words, setting
+  in new Markdown files.  In other words, setting
   `deft-markdown-mode-title-level` to <kbd>2</kbd> will result in new files
   being created with level-2 headings of the form `## Title`.
 
@@ -283,7 +312,7 @@ files in `deft-directory` that are known to Deft (i.e., those files
 matching `deft-extensions`).  Unlike `find-file`, a list of all
 such files is provided and the desired file name can be completed
 using `completing-read` (and, as a result, `deft-find-file` will
-read/complete filenames using ido, helm, etc. when enabled).  If
+read/complete filenames using ido, helm, etc.  when enabled).  If
 the selected file is in `deft-directory`, it is opened with the
 usual Deft features (automatic saving, automatic updating of the
 Deft buffer, etc.).  Otherwise, the file will be opened by
@@ -313,10 +342,10 @@ History
 Version 0.7 (2015-12-21):
 
 * Add custom regular expression `deft-strip-summary-regexp` for
-  stripping extraneous text for generating the summary line. Strip
+  stripping extraneous text for generating the summary line.  Strip
   all `org-mode` metadata by default.
 * New customizable regular expressions for ignoring files and
-  directories. See `deft-recursive-ignore-dir-regexp` and
+  directories.  See `deft-recursive-ignore-dir-regexp` and
   `deft-ignore-file-regexp`.
 * Bug fix: Prevent lines from wrapping in console mode.
 * Bug fix: Setup `deft-extensions` and `deft-default-extension` at
@@ -329,12 +358,12 @@ Version 0.7 (2015-12-21):
 
 Version 0.6 (2015-06-26):
 
-* Recursive search in subdirectories (optional). Set
+* Recursive search in subdirectories (optional).  Set
   `deft-recursive` to a non-nil value to enable.
 * Support for multiple extensions via the `deft-extensions` list.
   As such, `deft-extension` is now deprecated.
 * New variable `deft-create-file-from-filter-string` can enable
-  generation of new filenames based on the filter string. This decouples
+  generation of new filenames based on the filter string.  This decouples
   the title display (`deft-use-filename-as-title`) from the actual filename
   generation.
 * New variable `deft-file-naming-rules` allows customizing generation
@@ -347,7 +376,7 @@ Version 0.6 (2015-06-26):
 * Update default `deft-strip-title-regexp` to remove the following:
     - org-mode `#+TITLE:` tags
     - MultiMarkdown `Title:` tags
-    - LaTeX comment markers (i.e., `%`)
+    - LaTeX comment markers
     - Emacs mode-line declarations (e.g., `-*-mode-*-`)
 * Remove leading and trailing whitespace from titles.
 * Disable visual line mode to prevent lines from wrapping.
