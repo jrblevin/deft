@@ -1119,7 +1119,8 @@ Case is ignored."
 (defun deft-buffer-setup (&optional refresh)
   "Render the file browser in the *Deft* buffer.
 When REFRESH is true, attempt to restore the point afterwards."
-  (let ((orig-point (point)))
+  (let ((orig-line (line-number-at-pos))
+        (orig-col (current-column)))
     (when (deft-buffer-visible-p)
       (setq deft-window-width (deft-current-window-width)))
     (let ((inhibit-read-only t))
@@ -1138,10 +1139,11 @@ When REFRESH is true, attempt to restore the point afterwards."
     (use-local-map deft-mode-map)
     (widget-setup)
     (setq deft-pending-updates nil)
-    (if refresh
-        (goto-char orig-point)
-      (goto-char 1)
-      (forward-line 2))))
+
+    ;; Position or reposition point
+    (goto-char (point-min))
+    (forward-line (if refresh (1- orig-line) 2))
+    (forward-char (if refresh orig-col 0))))
 
 (defun deft-string-width (str)
   "Return 0 if STR is nil and call `string-width` otherwise.
