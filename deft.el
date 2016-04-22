@@ -621,6 +621,7 @@ or kebab-case
     (setq deft-file-naming-rules '((noslash . \"-\")
                                    (nospace . \"-\")
                                    (case-fn . downcase)))"
+  :type '(alist :key-type symbol :value-type sexp)
   :group 'deft)
 
 ;; Faces
