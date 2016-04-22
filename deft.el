@@ -308,7 +308,12 @@
 
 ;;     When `deft-use-filename-as-title' is non-`nil', the filter string
 ;;     will be used as the filename for new files (with the appropriate
-;;     file extension appended to the end).
+;;     file extension appended to the end).  An example of new file creation
+;;     in this case:
+
+;;       * Filter string: "My New Project"
+;;       * File name: "My New Project.txt"
+;;       * File contents: [empty]
 
 ;; 3.  **Readable filenames** (`deft-use-filename-as-title' is
 ;;     `nil' but `deft-use-filter-string-for-filename' is non-`nil'):
@@ -326,6 +331,25 @@
 ;;     (camel case, replacing spaces by hyphens, and so on).  See the
 ;;     documentation for `deft-file-naming-rules' for additional
 ;;     details.
+
+;;     As an example, with the following value for
+;;     `deft-file-naming-rules', Deft will replace all slashes and
+;;     spaces with hyphens and will convert the file name to
+;;     lowercase:
+
+;;         (setq deft-file-naming-rules
+;;               '((noslash . "-")
+;;                 (nospace . "-")
+;;                 (case-fn . downcase)))
+
+;;     Below is an example in this case, with the above file naming
+;;     rules.  Notice that the filter string is inserted as the first
+;;     line of the file but it is also used to generate a "readable"
+;;     file name.
+
+;;       * Filter string: "My New Project"
+;;       * File name: "my-new-project.txt"
+;;       * File contents: "My New Project"
 
 ;; Titles inserted into files from the filter string can also be
 ;; customized for two common modes, `markdown-mode' and `org-mode', by
