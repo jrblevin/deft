@@ -1157,11 +1157,17 @@ handles nil values gracefully."
         (widget-insert (propertize mtime 'face 'deft-time-face)))
       (widget-insert "\n"))))
 
+(defun deft-window-size-change-function (frame)
+  "Possibly refresh Deft buffer when size of a window in FRAME is changed.
+Check to see that some window is displaying the Deft buffer and that
+the width has actually changed."
+  (when (get-buffer-window deft-buffer)
+    (unless (eq deft-window-width (deft-current-window-width))
+      (deft-refresh-browser))))
+
 (defun deft-window-configuration-change-function ()
-  "Refresh Deft browser when there is a change in window size."
-  (when (and (eq (current-buffer) (get-buffer deft-buffer))
-             (not (eq deft-window-width (deft-current-window-width))))
-    (deft-refresh-browser)))
+  "Possibly refresh Deft browser when window configuration is changed."
+  (deft-window-size-change-function nil))
 
 (defun deft-refresh ()
   "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
@@ -1647,6 +1653,8 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (setq major-mode 'deft-mode)
   (deft-set-mode-name)
   (deft-buffer-setup)
+  (add-hook 'window-size-change-functions
+            'deft-window-size-change-function t)
   (add-hook 'window-configuration-change-hook
             'deft-window-configuration-change-function t)
   (when (> deft-auto-save-interval 0)
