@@ -1394,6 +1394,8 @@ proceeding."
     (when filename
       (when (y-or-n-p
              (concat "Delete file " (file-name-nondirectory filename) "? "))
+        (let ((buffer (get-file-buffer filename)))
+          (when buffer (kill-buffer buffer)))
         (delete-file filename)
         (delq filename deft-current-files)
         (delq filename deft-all-files)
