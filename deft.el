@@ -88,6 +88,16 @@
 
 ;;     git clone https://github.com/jrblevin/deft.git
 
+;; If you prefer to install and use the development version, which may
+;; become unstable at some times, you can either clone the Git
+;; repository as above or install Deft from
+;; [MELPA](https://melpa.org/#/deft).
+
+;; If you clone the repository directly, then make sure that Emacs can
+;; find it by adding the following line to your startup file:
+
+;;     (add-to-list 'load-path "/path/to/deft/repository")
+
 ;; Overview
 ;; --------
 
@@ -232,6 +242,18 @@
 ;; file:
 
 ;;     (global-set-key [f8] 'deft)
+
+;; If you manage loading packages with [use-package][], then you can
+;; configure by adding a declaration such as this one to your init
+;; file:
+
+;;     (use-package deft
+;;       :bind ("<f8>" . deft)
+;;       :commands (deft)
+;;       :config (setq deft-directory "~/Dropbox/notes"
+;;                     deft-extensions '("md" "org")))
+
+;; [use-package]: https://github.com/jwiegley/use-package
 
 ;; Reading Files
 ;; -------------
