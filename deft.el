@@ -1084,11 +1084,16 @@ Case is ignored."
          (propertize "Deft" 'face 'deft-header-face)))
   (widget-insert "\n\n"))
 
+(defun deft-current-window-width ()
+  "Return current width of window displaying `deft-buffer'."
+  (let ((window (get-buffer-window deft-buffer)))
+    (when window (window-text-width window))))
+
 (defun deft-buffer-setup (&optional refresh)
   "Render the file browser in the *Deft* buffer.
 When REFRESH is true, attempt to restore the point afterwards."
   (let ((orig-point (point)))
-    (setq deft-window-width (window-width))
+    (setq deft-window-width (deft-current-window-width))
     (let ((inhibit-read-only t))
       (erase-buffer))
     (remove-overlays)
@@ -1152,11 +1157,11 @@ handles nil values gracefully."
         (widget-insert (propertize mtime 'face 'deft-time-face)))
       (widget-insert "\n"))))
 
-(add-hook 'window-configuration-change-hook
-          (lambda ()
-            (when (and (eq (current-buffer) (get-buffer deft-buffer))
-                       (not (eq deft-window-width (window-width))))
-              (deft-buffer-setup t))))
+(defun deft-window-configuration-change-function ()
+  "Refresh Deft browser when there is a change in window size."
+  (when (and (eq (current-buffer) (get-buffer deft-buffer))
+             (not (eq deft-window-width (deft-current-window-width))))
+    (deft-refresh-browser)))
 
 (defun deft-refresh ()
   "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
@@ -1642,6 +1647,8 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (setq major-mode 'deft-mode)
   (deft-set-mode-name)
   (deft-buffer-setup)
+  (add-hook 'window-configuration-change-hook
+            'deft-window-configuration-change-function t)
   (when (> deft-auto-save-interval 0)
     (run-with-idle-timer deft-auto-save-interval t 'deft-auto-save))
   (run-mode-hooks 'deft-mode-hook)
