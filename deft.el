@@ -1323,8 +1323,8 @@ non-nil and title is not from filename, use it as the title."
     (deft-new-file-named slug)))
 
 (defun deft-filename-at-point ()
-  "Return the file name represented by the widget at the point,
-or nil, If the point is not on a file widget."
+  "Return the name of the file represented by the widget at the point.
+Return nil if the point is not on a file widget."
   (widget-get (widget-at) :tag))
 
 (defun deft-open-file-other-window (&optional arg)
