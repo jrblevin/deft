@@ -1093,7 +1093,8 @@ Case is ignored."
   "Render the file browser in the *Deft* buffer.
 When REFRESH is true, attempt to restore the point afterwards."
   (let ((orig-point (point)))
-    (setq deft-window-width (deft-current-window-width))
+    (when (deft-buffer-visible-p)
+      (setq deft-window-width (deft-current-window-width)))
     (let ((inhibit-read-only t))
       (erase-buffer))
     (remove-overlays)
@@ -1157,11 +1158,15 @@ handles nil values gracefully."
         (widget-insert (propertize mtime 'face 'deft-time-face)))
       (widget-insert "\n"))))
 
+(defun deft-buffer-visible-p ()
+  "Return non-nil if a window is displaying `deft-buffer'."
+  (get-buffer-window deft-buffer))
+
 (defun deft-window-size-change-function (frame)
   "Possibly refresh Deft buffer when size of a window in FRAME is changed.
 Check to see that some window is displaying the Deft buffer and that
 the width has actually changed."
-  (when (get-buffer-window deft-buffer)
+  (when (deft-buffer-visible-p)
     (unless (eq deft-window-width (deft-current-window-width))
       (deft-refresh-browser))))
 
