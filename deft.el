@@ -376,6 +376,10 @@
 ;; properties from the standard font-lock faces defined by your current
 ;; color theme.
 
+;; Deft also provides several hooks: `deft-mode-hook',
+;; `deft-filter-hook', and `deft-open-file-hook'.  See the
+;; documentation for these variables for further details.
+
 ;; Acknowledgments
 ;; ---------------
 
@@ -731,6 +735,9 @@ or kebab-case
 
 (defvar deft-filter-hook nil
   "Hook run when the Deft filter string changes.")
+
+(defvar deft-open-file-hook nil
+  "Hook run after Deft opens a file.")
 
 (defvar deft-filter-regexp nil
   "A list of string representing the current filter used by Deft.
@@ -1244,6 +1251,7 @@ FILE must be a relative or absolute path, with extension."
                              (deft-cache-update-file buffer-file-name)
                              (deft-refresh-filter)))
                 nil t))
+    (run-hooks 'deft-open-file-hook)
     (if other
         (if switch
             (switch-to-buffer-other-window buffer)

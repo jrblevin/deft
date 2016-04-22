@@ -350,6 +350,10 @@ also be customized.  By default, these faces inherit their
 properties from the standard font-lock faces defined by your current
 color theme.
 
+Deft also provides several hooks: `deft-mode-hook`,
+`deft-filter-hook`, and `deft-open-file-hook`.  See the
+documentation for these variables for further details.
+
 Acknowledgments
 ---------------
 
