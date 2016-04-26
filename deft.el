@@ -1682,6 +1682,9 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
   (setq truncate-lines t)
   (setq buffer-read-only t)
   (setq default-directory (expand-file-name deft-directory))
+  (setq deft-window-width (if (deft-buffer-visible-p)
+                              (deft-current-window-width)
+                            (frame-text-cols)))
 
   ;; Visual line mode causes lines to wrap, so turn it off.
   (when (fboundp 'visual-line-mode)
