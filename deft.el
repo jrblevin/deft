@@ -831,16 +831,10 @@ Available methods are 'mtime and 'title.")
 (defvar deft-default-extension (copy-sequence (car deft-extensions))
   "Default file extension of newly created files.")
 
-(defvar deft-width-offset (if (display-graphic-p) 0 1)
-  "Number of characters of width to trim relative to `window-width'.
-Defaults to 1 in console mode and 0 in graphical mode.  This
-variable may be changed if for some reason the default
-calculation results in line wrap in the Deft browser window.
-Setting this to a positive value decreases the summary line width
-by that amount.")
-
 (defvar deft-pending-updates nil
   "Indicator of pending updates due to automatic saves, etc.")
+
+(make-obsolete-variable 'deft-width-offset nil "v0.8")
 
 ;; Keymap definition
 
@@ -1157,9 +1151,13 @@ Case is ignored."
   (widget-insert "\n\n"))
 
 (defun deft-current-window-width ()
-  "Return current width of window displaying `deft-buffer'."
-  (let ((window (get-buffer-window deft-buffer)))
-    (when window (window-text-width window))))
+  "Return current width of window displaying `deft-buffer'.
+If the frame has a fringe, it will absorb the newline.
+Otherwise, we reduce the line length by a one-character offset."
+  (let* ((window (get-buffer-window deft-buffer))
+         (offset (if (> (frame-fringe-width) 0) 0 1)))
+    (when window
+      (- (window-text-width window) offset))))
 
 (defun deft-buffer-setup (&optional refresh)
   "Render the file browser in the *Deft* buffer.
@@ -1206,7 +1204,7 @@ handles nil values gracefully."
            (mtime (when deft-time-format
                     (format-time-string deft-time-format (deft-file-mtime file))))
            (mtime-width (deft-string-width mtime))
-           (line-width (- deft-window-width mtime-width deft-width-offset))
+           (line-width (- deft-window-width mtime-width))
            (title-width (min line-width (deft-string-width title)))
            (summary-width (min (deft-string-width summary)
                                (- line-width
