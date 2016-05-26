@@ -1698,6 +1698,27 @@ Otherwise, quick create a new file."
       ;; If a buffer is no longer open, remove it from auto save list.
       (delq buf deft-auto-save-buffers))))
 
+;;; Org-link
+
+(defun org-deft-store-link ()
+  "Store the deft widget at point as an org-mode link."
+  (when (equal major-mode 'deft-mode)
+    (let ((link (concat "deft:" (substring (deft-filename-at-point)
+                                           (1+ (length deft-directory)))))
+          (title (deft-file-title (deft-filename-at-point))))
+      (org-store-link-props
+       :type "deft"
+       :link link
+       :description title))))
+
+(org-add-link-type
+ "deft"
+ (lambda (handle)
+   (org-open-file-with-emacs
+    (expand-file-name handle deft-directory))))
+
+(add-hook 'org-store-link-functions 'org-deft-store-link)
+
 ;;; Mode definition
 
 (defun deft-show-version ()
