@@ -1700,8 +1700,12 @@ Otherwise, quick create a new file."
 
 ;;; Org-link
 
+(declare-function org-store-link-props "org")
+(declare-function org-add-link-type "org")
+(declare-function org-open-file-with-emacs "org")
+
 (defun org-deft-store-link ()
-  "Store the deft widget at point as an org-mode link."
+  "Store the Deft widget at point as an org-mode link."
   (when (equal major-mode 'deft-mode)
     (let ((link (concat "deft:" (substring (deft-filename-at-point)
                                            (1+ (length deft-directory)))))
@@ -1711,11 +1715,12 @@ Otherwise, quick create a new file."
        :link link
        :description title))))
 
-(org-add-link-type
- "deft"
- (lambda (handle)
-   (org-open-file-with-emacs
-    (expand-file-name handle deft-directory))))
+(with-eval-after-load 'org
+  (org-add-link-type
+   "Deft"
+   (lambda (handle)
+     (org-open-file-with-emacs
+      (expand-file-name handle deft-directory)))))
 
 (add-hook 'org-store-link-functions 'org-deft-store-link)
 
