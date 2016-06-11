@@ -1155,7 +1155,8 @@ Case is ignored."
 If the frame has a fringe, it will absorb the newline.
 Otherwise, we reduce the line length by a one-character offset."
   (let* ((window (get-buffer-window deft-buffer))
-         (offset (if (> (fringe-columns 'right) 0) 0 1)))
+         (fringe-right (ceiling (or (cadr (window-fringes)) 0)))
+         (offset (if (> fringe-right 0) 0 1)))
     (when window
       (- (window-text-width window) offset))))
 
