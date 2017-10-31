@@ -393,6 +393,29 @@ bring to Emacs.
 History
 -------
 
+Version 0.8 (_under development_):
+
+* Limit `deft-find-file` to files known to Deft and support
+  completing-read.
+* Keep subdirectory portion when displaying filenames.
+* New variable `deft-width-offset` for custom summary line width
+  offset.
+* Attempt to restore point after refreshing browser and preserve
+  position while filtering.
+* Add hooks: `deft-filter-hook` for filter string changes and
+  `deft-open-file-hook` which runs after opening a file.
+* Prevent spurious Deft browser refreshes, which fixes an issue
+  with `sublimity-mode`.
+* More reliable browser updates when window size changes.
+* Only update width when buffer is visible.
+* Lazily update the Deft buffer after saving files.
+* Close open buffer when deleting a file.
+* Initialize width even when started in background.
+* Omit files generated from org or markdown.
+* Custom format string `deft-new-file-format` for new file names.
+* Reduce summary line width when there is no fringe.
+* Support Org links.
+
 Version 0.7 (2015-12-21):
 
 * Add custom regular expression `deft-strip-summary-regexp` for
