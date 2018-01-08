@@ -739,6 +739,11 @@ For example, .tex files may be generated from `org-mode' or Pandoc."
   :type '(repeat (cons string string))
   :group 'deft)
 
+(defcustom deft-filter-only-filenames nil
+  "Filter on file names only."
+  :type 'boolean
+  :group 'deft)
+
 ;; Faces
 
 (defgroup deft-faces nil
@@ -1535,7 +1540,7 @@ all elements."
   (with-temp-buffer
     (insert file)
     (let ((title (deft-file-title file))
-          (contents (deft-file-contents file)))
+          (contents (if deft-filter-only-filenames "" (deft-file-contents file))))
       (when title (insert title))
       (when contents (insert contents)))
     (if batch
