@@ -16,14 +16,14 @@ notes by making it fast and simple to find the right file at the
 right time and by automating many of the usual tasks such as
 creating new files and saving files.
 
-![Deft Screencast](http://jblevins.org/projects/deft/deft-v0.6.gif)
+![Deft Screencast](https://jblevins.org/projects/deft/deft-v0.6.gif)
 
 Obtaining Deft
 --------------
 
 Deft is open source software and may be freely distributed and
 modified under the BSD license.  The latest stable release is
-version 0.7, released on December 21, 2015.
+version 0.8, released on January 12, 2018.
 
 **Installation via MELPA Stable**
 
@@ -49,7 +49,7 @@ Alternatively you can manually download and install Deft.
 First, download the latest stable version of and save the file
 where Emacs can find it---a directory in your `load-path`:
 
-  * [deft.el](http://jblevins.org/projects/deft/deft.el)
+  * [deft.el](https://jblevins.org/projects/deft/deft.el)
 
 Then, add the following line to your startup file:
 
@@ -393,7 +393,7 @@ bring to Emacs.
 History
 -------
 
-Version 0.8 (_under development_):
+Version 0.8 (2018-01-12):
 
 * Limit `deft-find-file` to files known to Deft and support
   completing-read.
@@ -415,6 +415,7 @@ Version 0.8 (_under development_):
 * Custom format string `deft-new-file-format` for new file names.
 * Reduce summary line width when there is no fringe.
 * Support Org links.
+* Option `deft-filter-only-filenames` to filter only on file names.
 
 Version 0.7 (2015-12-21):
 
@@ -508,6 +509,6 @@ Version 0.2 (2011-08-22):
 * Automatically save opened files (optional).
 * Address some byte-compilation warnings.
 
-Deft was originally written by [Jason Blevins](http://jblevins.org/).
+Deft was originally written by [Jason Blevins](https://jblevins.org/).
 The initial version, 0.1, was released on August 6, 2011.
 
