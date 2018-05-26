@@ -582,7 +582,7 @@ Set to nil to hide."
                  (const :tag "Hide" nil))
   :group 'deft)
 
-(defcustom deft-new-file-format "%Y-%m-%dT%H:%M"
+(defcustom deft-new-file-format "%Y-%m-%dT%H%M"
   "Format string for new file names.
 The default value yields a short ISO-like timestamp, as in
 \"2016-05-12T09:00\".  To use a full ISO 8601 time stamp, for
