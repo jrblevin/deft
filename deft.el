@@ -1373,8 +1373,8 @@ FILE must be a relative or absolute path, with extension."
                              (if (deft-buffer-visible-p)
                                  (deft-refresh-filter)
                                (setq deft-pending-updates t))))
-                nil t))
-    (run-hooks 'deft-open-file-hook)
+                nil t)
+      (run-hooks 'deft-open-file-hook))
     (if other
         (if switch
             (switch-to-buffer-other-window buffer)
