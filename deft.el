@@ -1391,7 +1391,7 @@ If FILE is not inside `deft-directory', fall back to using `find-file'."
   (let* ((dir (expand-file-name deft-directory)))
     ;; If missing, add full deft-directory prefix back
     (unless (string-match (concat "^" dir) file)
-      (setq file (concat dir file)))
+      (setq file (concat dir "/" file)))
     (deft-open-file file)))
 
 (defun deft-auto-populate-title-maybe (file)
