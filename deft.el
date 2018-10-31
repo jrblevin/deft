@@ -543,7 +543,9 @@
 (require 'cl)
 (require 'widget)
 (require 'wid-edit)
-(require 'filenotify)
+(when (version<= "24.4" emacs-version)
+  (require 'filenotify)
+  )
 
 ;; Customization
 
@@ -1834,7 +1836,6 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
             'deft-window-configuration-change-function t)
   (when (> deft-auto-save-interval 0)
     (run-with-idle-timer deft-auto-save-interval t 'deft-auto-save))
-  (deft-enable-auto-refresh)
   (run-mode-hooks 'deft-mode-hook)
   (message "Deft loaded %d files." (length deft-all-files)))
 
