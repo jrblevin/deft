@@ -543,9 +543,7 @@
 (require 'cl)
 (require 'widget)
 (require 'wid-edit)
-(when (version<= "24.4" emacs-version)
-  (require 'filenotify)
-  )
+(featurep 'filenotify)
 
 ;; Customization
 
@@ -1291,21 +1289,26 @@ only update the Deft browser."
 (defun deft-disable-auto-refresh ()
   "To disable auto refresh."
   (interactive)
-  (if (file-notify-valid-p deft-auto-refresh-descriptor)
+  (if (and (fboundp 'file-notify-valid-p) (file-notify-valid-p deft-auto-refresh-descriptor))
       (file-notify-rm-watch deft-auto-refresh-descriptor)
-    (message "%s not valid please make sure auto refresh is enabled" deft-auto-refresh-descriptor))
+    (when (and deft-auto-refresh-descriptor (fboundp 'file-notify-rm-watch))
+      (file-notify-rm-watch deft-auto-refresh-descriptor)
+      )
+    )
   )
 
 (defun deft-enable-auto-refresh ()
   "To enable auto refresh"
   (interactive)
-  (setq deft-auto-refresh-descriptor
-        (file-notify-add-watch
-         deft-directory
-         '(change attribute-change)
-         'deft-auto-refresh
-         )
-        )
+  (when (fboundp 'file-notify-add-watch)
+    (setq deft-auto-refresh-descriptor
+          (file-notify-add-watch
+           deft-directory
+           '(change attribute-change)
+           'deft-auto-refresh
+           )
+          )
+    )
   )
 
 (defun deft-refresh ()
