@@ -543,6 +543,7 @@
 (require 'cl)
 (require 'widget)
 (require 'wid-edit)
+(require 'filenotify)
 
 ;; Customization
 
@@ -862,6 +863,8 @@ Available methods are 'mtime and 'title.")
 
 (defvar deft-pending-updates nil
   "Indicator of pending updates due to automatic saves, etc.")
+
+(defvar deft-auto-refresh-descriptor nil)
 
 (make-obsolete-variable 'deft-width-offset nil "v0.8")
 
@@ -1278,6 +1281,30 @@ only update the Deft browser."
 (defun deft-window-configuration-change-function ()
   "Possibly refresh Deft browser when window configuration is changed."
   (deft-window-size-change-function nil))
+
+(defun deft-auto-refresh (event)
+    (deft-refresh)
+    )
+
+(defun deft-disable-auto-refresh ()
+  "To disable auto refresh."
+  (interactive)
+  (if (file-notify-valid-p deft-auto-refresh-descriptor)
+      (file-notify-rm-watch deft-auto-refresh-descriptor)
+    (message "%s not valid please make sure auto refresh is enabled"))
+  )
+
+(defun deft-enable-auto-refresh ()
+  "To enable auto refresh"
+  (interactive)
+  (setq deft-auto-refresh-descriptor
+        (file-notify-add-watch
+         deft-directory
+         '(change attribute-change)
+         'deft-auto-refresh
+         )
+        )
+  )
 
 (defun deft-refresh ()
   "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
@@ -1807,6 +1834,7 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
             'deft-window-configuration-change-function t)
   (when (> deft-auto-save-interval 0)
     (run-with-idle-timer deft-auto-save-interval t 'deft-auto-save))
+  (deft-enable-auto-refresh)
   (run-mode-hooks 'deft-mode-hook)
   (message "Deft loaded %d files." (length deft-all-files)))
 
