@@ -543,7 +543,8 @@
 (require 'cl)
 (require 'widget)
 (require 'wid-edit)
-(featurep 'filenotify)
+(require 'filenotify nil t)
+
 
 ;; Customization
 
