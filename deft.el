@@ -404,6 +404,12 @@
 ;; properties from the standard font-lock faces defined by your current
 ;; color theme.
 
+;; If you are experiencing slow performance with a large number of
+;; files, you can limit the number of files displayed in the buffer by
+;; seting `deft-file-limit' to a positive integer value.  This limits
+;; the number of file widgets that need to be rendered, making each
+;; update faster.
+
 ;; Deft also provides several hooks: `deft-mode-hook',
 ;; `deft-filter-hook', and `deft-open-file-hook'.  See the
 ;; documentation for these variables for further details.
@@ -744,6 +750,17 @@ For example, .tex files may be generated from `org-mode' or Pandoc."
   "Filter on file names only."
   :type 'boolean
   :group 'deft)
+
+(defcustom deft-file-limit nil
+  "Maximum number of files to list in the Deft browser.
+Set this to an integer value if you have a large number of files
+and are experiencing performance degradation.  This is the
+maximum number of files to display in the Deft buffer.  When
+set to nil, there is no limit."
+  :type '(choice (integer :tag "Limit number of files displayed")
+                 (const :tag "No limit" nil))
+  :group 'deft
+  :package-version '(deft . "0.9"))
 
 ;; Faces
 
@@ -1144,6 +1161,18 @@ Case is ignored."
   (deft-cache-file file)                                  ; Cache contents
   (setq deft-all-files (deft-sort-files deft-all-files))) ; Sort by mtime
 
+(defun deft-current-files ()
+  "Return list `deft-current-files', possibly truncated.
+Whether the list is truncated depends on the value of
+the variable `deft-file-limit'."
+  (let ((len (length deft-current-files)))
+    (if (and (integerp deft-file-limit)
+             (> len 0)
+             (< deft-file-limit len))
+        (reverse (nthcdr (- len deft-file-limit)
+                         (reverse deft-current-files)))
+      deft-current-files)))
+
 ;; Cache access
 
 (defun deft-file-contents (file)
@@ -1206,7 +1235,7 @@ When REFRESH is true, attempt to restore the point afterwards."
         (widget-insert (deft-no-directory-message))
       (if deft-current-files
           (progn
-            (mapc 'deft-file-widget deft-current-files))
+            (mapc 'deft-file-widget (deft-current-files)))
         (widget-insert (deft-no-files-message))))
 
     (use-local-map deft-mode-map)
