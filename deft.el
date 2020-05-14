@@ -1776,7 +1776,8 @@ Otherwise, quick create a new file."
 (with-eval-after-load 'org
   (if (fboundp 'org-link-set-parameters)
       (org-link-set-parameters
-       "deft" :follow 'deft--org-follow-link :store 'org-deft-store-link)
+       "deft" :follow 'deft--org-follow-link :store 'org-deft-store-link
+       :complete 'deft--org-complete)
     (org-add-link-type
      "Deft"
      (lambda (handle)
@@ -1787,6 +1788,10 @@ Otherwise, quick create a new file."
 (defun deft--org-follow-link (handle)
   (org-open-file-with-emacs
    (expand-file-name handle deft-directory)))
+
+(defun deft--org-complete ()
+  (let ((file (completing-read "file" (deft-find-all-files-no-prefix))))
+    (concat "deft:" (substring file 1))))
 
 ;;; Mode definition
 
