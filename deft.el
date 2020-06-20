@@ -1384,7 +1384,7 @@ name."
 When OTHER is non-nil, open the file in another window.  When
 OTHER and SWITCH are both non-nil, switch to the other window.
 FILE must be a relative or absolute path, with extension."
-  (let ((buffer (find-file-noselect file)))
+  (let ((buffer (find-file-noselect (file-truename file))))
     (with-current-buffer buffer
       (hack-local-variables)
       (when deft-filter-regexp
