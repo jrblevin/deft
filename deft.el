@@ -546,7 +546,7 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
 (require 'widget)
 (require 'wid-edit)
 
@@ -1574,7 +1574,7 @@ all elements."
       (when title (insert title))
       (when contents (insert contents)))
     (if batch
-        (if (every (lambda (filter)
+        (if (cl-every (lambda (filter)
                      (goto-char (point-min))
                      (deft-search-forward filter))
                    deft-filter-regexp)
@@ -1857,7 +1857,6 @@ Turning on `deft-mode' runs the hook `deft-mode-hook'.
 (provide 'deft)
 
 ;; Local Variables:
-;; byte-compile-warnings: (not cl-functions)
 ;; indent-tabs-mode: nil
 ;; End:
 
