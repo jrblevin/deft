@@ -1759,8 +1759,9 @@ Otherwise, quick create a new file."
 
 ;;; Org-link
 
+(declare-function org-link-store-props "org")
 (declare-function org-store-link-props "org")
-(declare-function org-add-link-type "org")
+(declare-function org-link-set-parameters "org")
 (declare-function org-open-file-with-emacs "org")
 
 (defun org-deft-store-link ()
@@ -1768,22 +1769,23 @@ Otherwise, quick create a new file."
   (when (equal major-mode 'deft-mode)
     (let ((link (concat "deft:" (file-name-nondirectory (deft-filename-at-point))))
           (title (deft-file-title (deft-filename-at-point))))
-      (org-store-link-props
-       :type "deft"
-       :link link
-       :description title))))
+      (if (fboundp 'org-link-store-props)
+          (org-link-store-props
+           :type "deft"
+           :link link
+           :description title)
+        (with-no-warnings ;; TODO: remove when function is deprecated
+          (org-store-link-props
+           :type "deft"
+           :link link
+           :description title))))))
 
 (with-eval-after-load 'org
-  (if (fboundp 'org-link-set-parameters)
-      (org-link-set-parameters
-       "deft" :follow 'deft--org-follow-link :store 'org-deft-store-link
-       :complete 'deft--org-complete)
-    (org-add-link-type
-     "Deft"
-     (lambda (handle)
-       (org-open-file-with-emacs
-        (expand-file-name handle deft-directory))))
-    (add-hook 'org-store-link-functions 'org-deft-store-link)))
+  (org-link-set-parameters
+   "deft" :follow 'deft--org-follow-link :store 'org-deft-store-link
+   :complete 'deft--org-complete)
+
+  (add-hook 'org-store-link-functions 'org-deft-store-link))
 
 (defun deft--org-follow-link (handle)
   (org-open-file-with-emacs
