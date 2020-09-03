@@ -617,6 +617,11 @@ example, set this variable to \"%FT%T%z\".  See
   :type 'boolean
   :group 'deft)
 
+(defcustom deft-case-fold-search t
+  "If non-nil, searching is case-insensitive."
+  :type 'boolean
+  :group 'deft)
+
 (defcustom deft-incremental-search t
   "Use incremental string search when non-nil and regexp search when nil.
 During incremental string search, substrings separated by spaces are
@@ -939,9 +944,10 @@ Available methods are 'mtime and 'title.")
   "Function to use when matching files against filter strings STR.
 This function calls `search-forward' when `deft-incremental-search'
 is non-nil and `re-search-forward' otherwise."
-  (if deft-incremental-search
-      (search-forward str nil t)
-    (re-search-forward str nil t)))
+  (let ((case-fold-search deft-case-fold-search))
+    (if deft-incremental-search
+        (search-forward str nil t)
+      (re-search-forward str nil t))))
 
 (defun deft-set-mode-name ()
   "Set the mode line text based on search mode."
