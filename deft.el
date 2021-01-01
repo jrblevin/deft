@@ -1365,7 +1365,7 @@ name."
          (fmt (concat slug "_%d"))
          (counter 1)
          (file (deft-absolute-filename slug)))
-    (while (or (file-exists-p file) (get-file-buffer file))
+    (while (or (file-exists-p file) (get-file-buffer (file-truename file)))
       (setq counter (1+ counter))
       (setq slug (format fmt counter))
       (setq file (deft-absolute-filename slug)))
@@ -1373,9 +1373,9 @@ name."
 
 (defun deft-update-visiting-buffers (old new)
   "Rename visited file of buffers visiting file OLD to NEW."
-  (let ((buffer (get-file-buffer old)))
+  (let ((buffer (get-file-buffer (file-truename old))))
     (when buffer
-      (with-current-buffer (get-file-buffer old)
+      (with-current-buffer (get-file-buffer (file-truename old))
         (set-visited-file-name new nil t)
         (hack-local-variables)))))
 
@@ -1454,7 +1454,7 @@ SLUG is the short file name, without a path or a file extension."
       (deft-cache-update-file file)
       (deft-refresh-filter)
       (deft-open-file file)
-      (with-current-buffer (get-file-buffer file)
+      (with-current-buffer (get-file-buffer (file-truename file))
         (goto-char (point-max))))))
 
 ;;;###autoload
@@ -1496,7 +1496,7 @@ proceeding."
     (when filename
       (when (y-or-n-p
              (concat "Delete file " (file-name-nondirectory filename) "? "))
-        (let ((buffer (get-file-buffer filename)))
+        (let ((buffer (get-file-buffer (file-truename filename))))
           (when buffer (kill-buffer buffer)))
         (delete-file filename)
         (delq filename deft-current-files)
