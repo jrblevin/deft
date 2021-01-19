@@ -549,6 +549,8 @@
 (require 'cl-lib)
 (require 'widget)
 (require 'wid-edit)
+(require 'filenotify nil t)
+
 
 ;; Customization
 
@@ -879,6 +881,8 @@ Available methods are 'mtime and 'title.")
 
 (defvar deft-pending-updates nil
   "Indicator of pending updates due to automatic saves, etc.")
+
+(defvar deft-auto-refresh-descriptor nil)
 
 (make-obsolete-variable 'deft-width-offset nil "v0.8")
 
@@ -1307,6 +1311,35 @@ only update the Deft browser."
 (defun deft-window-configuration-change-function ()
   "Possibly refresh Deft browser when window configuration is changed."
   (deft-window-size-change-function nil))
+
+(defun deft-auto-refresh (event)
+    (deft-refresh)
+    )
+
+(defun deft-disable-auto-refresh ()
+  "To disable auto refresh."
+  (interactive)
+  (if (and (fboundp 'file-notify-valid-p) (file-notify-valid-p deft-auto-refresh-descriptor))
+      (file-notify-rm-watch deft-auto-refresh-descriptor)
+    (when (and deft-auto-refresh-descriptor (fboundp 'file-notify-rm-watch))
+      (file-notify-rm-watch deft-auto-refresh-descriptor)
+      )
+    )
+  )
+
+(defun deft-enable-auto-refresh ()
+  "To enable auto refresh"
+  (interactive)
+  (when (fboundp 'file-notify-add-watch)
+    (setq deft-auto-refresh-descriptor
+          (file-notify-add-watch
+           deft-directory
+           '(change attribute-change)
+           'deft-auto-refresh
+           )
+          )
+    )
+  )
 
 (defun deft-refresh ()
   "Update the file cache, reapply the filter, and refresh the *Deft* buffer."
