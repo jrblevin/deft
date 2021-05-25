@@ -1252,7 +1252,7 @@ handles nil values gracefully."
   'action 'deft-open-button
   'face 'deft-title-face
   'follow-link t
-  'help-echo "Edit this file")  
+  'help-echo "Edit this file")
 
 (defun deft-file-button (file)
   "Add a line to the file browser for the given FILE."
@@ -1675,13 +1675,13 @@ replace the entire filter string."
     (if (and deft-incremental-search (string= char " "))
         (setq deft-filter-regexp (cons "" deft-filter-regexp))
       (progn
-	(if (car deft-filter-regexp)
-	    (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
-	  (setq deft-filter-regexp (list char)))
-	(setq deft-current-files (deft-filter-files deft-current-files))
-	(setq deft-current-files (delq nil deft-current-files))
-	(deft-refresh-browser)
-	(run-hooks 'deft-filter-hook)))))
+    (if (car deft-filter-regexp)
+        (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
+      (setq deft-filter-regexp (list char)))
+    (setq deft-current-files (deft-filter-files deft-current-files))
+    (setq deft-current-files (delq nil deft-current-files))
+    (deft-refresh-browser)
+    (run-hooks 'deft-filter-hook)))))
 
 (defun deft-filter-decrement ()
   "Remove last character from the filter, if possible, and update.
