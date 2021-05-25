@@ -407,7 +407,7 @@
 ;; If you are experiencing slow performance with a large number of
 ;; files, you can limit the number of files displayed in the buffer by
 ;; seting `deft-file-limit' to a positive integer value.  This limits
-;; the number of file widgets that need to be rendered, making each
+;; the number of file buttons that need to be rendered, making each
 ;; update faster.
 
 ;; Deft also provides several hooks: `deft-mode-hook',
@@ -547,8 +547,7 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'widget)
-(require 'wid-edit)
+(require 'button)
 
 ;; Customization
 
@@ -924,12 +923,12 @@ Available methods are 'mtime and 'title.")
     ;; Miscellaneous
     (define-key map (kbd "C-c C-g") 'deft-refresh)
     (define-key map (kbd "C-c C-q") 'quit-window)
-    ;; Widgets
-    (define-key map [down-mouse-1] 'widget-button-click)
-    (define-key map [down-mouse-2] 'widget-button-click)
-    (define-key map (kbd "<tab>") 'widget-forward)
-    (define-key map (kbd "<backtab>") 'widget-backward)
-    (define-key map (kbd "<S-tab>") 'widget-backward)
+    ;; Buttons
+    ;; (define-key map [down-mouse-1] 'widget-button-click)
+    ;; (define-key map [down-mouse-2] 'widget-button-click)
+    (define-key map (kbd "<tab>") 'forward-button)
+    (define-key map (kbd "<backtab>") 'backward-button)
+    (define-key map (kbd "<S-tab>") 'backward-button)
     (define-key map (kbd "C-o") 'deft-open-file-other-window)
     map)
   "Keymap for Deft mode.")
@@ -1203,16 +1202,13 @@ the variable `deft-file-limit'."
   "Prints the *Deft* buffer header."
   (if deft-filter-regexp
       (progn
-        (widget-insert
-         (propertize "Deft: " 'face 'deft-header-face))
-        (widget-insert
-         (propertize (deft-whole-filter-regexp) 'face
+        (insert (propertize "Deft: " 'face 'deft-header-face))
+        (insert (propertize (deft-whole-filter-regexp) 'face
                      (if (and (not deft-incremental-search) deft-regexp-error)
                          'deft-filter-string-error-face
                        'deft-filter-string-face))))
-    (widget-insert
-         (propertize "Deft" 'face 'deft-header-face)))
-  (widget-insert "\n\n"))
+    (insert (propertize "Deft" 'face 'deft-header-face)))
+  (insert "\n\n"))
 
 (defun deft-current-window-width ()
   "Return current width of window displaying `deft-buffer'.
@@ -1232,20 +1228,19 @@ When REFRESH is true, attempt to restore the point afterwards."
     (when (deft-buffer-visible-p)
       (setq deft-window-width (deft-current-window-width)))
     (let ((inhibit-read-only t))
-      (erase-buffer))
-    (remove-overlays)
-    (deft-print-header)
+      (erase-buffer)
+      (remove-overlays)
+      (deft-print-header)
 
-    ;; Print the files list
-    (if (not (file-exists-p deft-directory))
-        (widget-insert (deft-no-directory-message))
-      (if deft-current-files
-          (progn
-            (mapc 'deft-file-widget (deft-current-files)))
-        (widget-insert (deft-no-files-message))))
+      ;; Print the files list
+      (if (not (file-exists-p deft-directory))
+          (insert (deft-no-directory-message))
+        (if deft-current-files
+            (progn
+              (mapc 'deft-file-button (deft-current-files)))
+          (insert (deft-no-files-message)))))
 
     (use-local-map deft-mode-map)
-    (widget-setup)
     (setq deft-pending-updates nil)
 
     ;; Position or reposition point
@@ -1259,42 +1254,48 @@ This is simply a wrapper function for `string-width' which
 handles nil values gracefully."
   (if str (string-width str) 0))
 
-(defun deft-file-widget (file)
+(define-button-type 'deft-button
+  'action 'deft-open-button
+  'face 'deft-title-face
+  'follow-link t
+  'help-echo "Edit this file")
+
+(defun deft-file-button (file)
   "Add a line to the file browser for the given FILE."
   (when file
     (let* ((key (file-name-nondirectory file))
            (text (deft-file-contents file))
-           (title (deft-file-title file))
+           (full-title (deft-file-title file))
            (summary (deft-file-summary file))
            (mtime (when deft-time-format
                     (format-time-string deft-time-format (deft-file-mtime file))))
            (mtime-width (deft-string-width mtime))
            (line-width (- deft-window-width mtime-width))
-           (title-width (min line-width (deft-string-width title)))
+           (title-width (min line-width (deft-string-width full-title)))
+           (title (if full-title
+                      (truncate-string-to-width full-title title-width)
+                    deft-empty-file-title))
            (summary-width (min (deft-string-width summary)
                                (- line-width
                                   title-width
                                   (length deft-separator)))))
-      (widget-create 'link
-                     :button-prefix ""
-                     :button-suffix ""
-                     :button-face 'deft-title-face
-                     :format "%[%v%]"
-                     :tag file
-                     :help-echo "Edit this file"
-                     :notify (lambda (widget &rest ignore)
-                               (deft-open-file (widget-get widget :tag)))
-                     (if title (truncate-string-to-width title title-width)
-                       deft-empty-file-title))
+      (insert-text-button title
+                          'type 'deft-button
+                          'tag file)
       (when (> summary-width 0)
-        (widget-insert (propertize deft-separator 'face 'deft-separator-face))
-        (widget-insert (propertize (truncate-string-to-width summary summary-width)
-                                   'face 'deft-summary-face)))
+        (insert (propertize deft-separator 'face 'deft-separator-face))
+        (insert (propertize (truncate-string-to-width summary summary-width)
+                            'face 'deft-summary-face)))
       (when mtime
         (while (< (current-column) line-width)
-          (widget-insert " "))
-        (widget-insert (propertize mtime 'face 'deft-time-face)))
-      (widget-insert "\n"))))
+          (insert " "))
+        (insert (propertize mtime 'face 'deft-time-face)))
+      (insert "\n"))))
+
+(defun deft-open-button (button)
+  "Open the file tagged by BUTTON.
+This is used as the action for buttons of type ``deft-button''."
+  (deft-open-file (button-get button 'tag)))
 
 (defun deft-buffer-visible-p ()
   "Return non-nil if a window is displaying `deft-buffer'."
@@ -1481,12 +1482,14 @@ non-nil and title is not from filename, use it as the title."
     (deft-new-file-named slug)))
 
 (defun deft-filename-at-point ()
-  "Return the name of the file represented by the widget at the point.
-Return nil if the point is not on a file widget."
-  (widget-get (widget-at) :tag))
+  "Return the name of the file represented by the button at the point.
+Return nil if the point is not on a file button."
+  (let ((button (button-at (point))))
+    (when button
+      (button-get button 'tag))))
 
 (defun deft-open-file-other-window (&optional arg)
-  "When the point is at a widget, open the file in the other window.
+  "When the point is at a button, open the file in the other window.
 The argument ARG is passed to `deft-open-file'."
   (interactive "P")
   (let ((file (deft-filename-at-point)))
@@ -1494,8 +1497,8 @@ The argument ARG is passed to `deft-open-file'."
       (deft-open-file file t arg))))
 
 (defun deft-delete-file ()
-  "Delete the file represented by the widget at the point.
-If the point is not on a file widget, do nothing.  Prompts before
+  "Delete the file represented by the button at the point.
+If the point is not on a file button, do nothing.  Prompts before
 proceeding."
   (interactive)
   (let ((filename (deft-filename-at-point)))
@@ -1510,8 +1513,8 @@ proceeding."
         (deft-refresh)))))
 
 (defun deft-rename-file ()
-  "Rename the file represented by the widget at the point.
-If the point is not on a file widget, do nothing."
+  "Rename the file represented by the button at the point.
+If the point is not on a file button, do nothing."
   (interactive)
   (let ((old-filename (deft-filename-at-point))
         (deft-dir (file-name-as-directory deft-directory))
@@ -1528,8 +1531,8 @@ If the point is not on a file widget, do nothing."
       (deft-refresh))))
 
 (defun deft-archive-file ()
-  "Archive the file represented by the widget at the point.
-If the point is not on a file widget, do nothing."
+  "Archive the file represented by the button at the point.
+If the point is not on a file button, do nothing."
   (interactive)
   (let (old new name-ext)
     (setq old (deft-filename-at-point))
@@ -1680,13 +1683,13 @@ replace the entire filter string."
     (if (and deft-incremental-search (string= char " "))
         (setq deft-filter-regexp (cons "" deft-filter-regexp))
       (progn
-	(if (car deft-filter-regexp)
-	    (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
-	  (setq deft-filter-regexp (list char)))
-	(setq deft-current-files (deft-filter-files deft-current-files))
-	(setq deft-current-files (delq nil deft-current-files))
-	(deft-refresh-browser)
-	(run-hooks 'deft-filter-hook)))))
+    (if (car deft-filter-regexp)
+        (setcar deft-filter-regexp (concat (car deft-filter-regexp) char))
+      (setq deft-filter-regexp (list char)))
+    (setq deft-current-files (deft-filter-files deft-current-files))
+    (setq deft-current-files (delq nil deft-current-files))
+    (deft-refresh-browser)
+    (run-hooks 'deft-filter-hook)))))
 
 (defun deft-filter-decrement ()
   "Remove last character from the filter, if possible, and update.
@@ -1733,16 +1736,16 @@ filter regexp.  Therefore, in both cases, only the car of
 
 (defun deft-complete ()
   "Complete the current action.
-If there is a widget at the point, press it.  If a filter is
+If there is a button at the point, press it.  If a filter is
 applied and there is at least one match, open the first matching
 file.  If there is an active filter but there are no matches,
 quick create a new file using the filter string as the title.
 Otherwise, quick create a new file."
   (interactive)
   (cond
-   ;; Activate widget
-   ((widget-at)
-    (widget-button-press (point)))
+   ;; Activate button
+   ((button-at (point))
+    (push-button))
    ;; Active filter string with match
    ((and deft-filter-regexp deft-current-files)
     (deft-open-file (car deft-current-files)))
@@ -1771,7 +1774,7 @@ Otherwise, quick create a new file."
 (declare-function org-open-file-with-emacs "org")
 
 (defun org-deft-store-link ()
-  "Store the Deft widget at point as an org-mode link."
+  "Store the Deft button at point as an org-mode link."
   (when (equal major-mode 'deft-mode)
     (let ((link (concat "deft:" (file-name-nondirectory (deft-filename-at-point))))
           (title (deft-file-title (deft-filename-at-point))))
