@@ -1478,7 +1478,9 @@ non-nil and title is not from filename, use it as the title."
 (defun deft-filename-at-point ()
   "Return the name of the file represented by the button at the point.
 Return nil if the point is not on a file button."
-  (button-get (button-at (point)) 'tag))
+  (let ((button (button-at (point))))
+    (when button
+      (button-get button 'tag))))
 
 (defun deft-open-file-other-window (&optional arg)
   "When the point is at a button, open the file in the other window.
