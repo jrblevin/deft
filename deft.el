@@ -258,21 +258,22 @@
 ;; Reading Files
 ;; -------------
 
-;; The displayed title of each file is taken to be the first line of
-;; the file, with certain characters removed from the beginning.  Hash
-;; characters, as used in Markdown headers, and asterisks, as in Org
-;; Mode headers, are removed.  Additionally, Org mode `#+TITLE:` tags,
-;; MultiMarkdown `Title:` tags, LaTeX comment markers, and
-;; Emacs mode-line declarations (e.g., `-*-mode-*-`) are stripped from
-;; displayed titles.  This can be customized by changing
+;; The displayed title of each file is taken by deftault to be the
+;; first line of the file, with certain characters removed from the
+;; beginning.  Hash characters, as used in Markdown headers, and
+;; asterisks, as in Org Mode headers, are removed.  Additionally, Org
+;; mode `#+TITLE:` tags, MultiMarkdown `Title:` tags, LaTeX comment
+;; markers, and Emacs mode-line declarations (e.g., `-*-mode-*-`) are
+;; stripped from displayed titles.  This can be customized by changing
 ;; `deft-strip-title-regexp'.
 
 ;; More generally, the title post-processing function itself can be
-;; customized by setting `deft-parse-title-function', which accepts
-;; the first line of the file as an argument and returns the parsed
-;; title to display in the file browser.  The default function is
-;; `deft-strip-title', which removes all occurrences of
-;; `deft-strip-title-regexp' as described above.
+;; customized for different file extensions by setting functions in
+;; `deft-parse-title-functions'.  These functions accept the file
+;; content as an argument and returns the parsed title to display in
+;; the file browser.  The default function is `deft-strip-title',
+;; which removes all occurrences of `deft-strip-title-regexp' as
+;; described above.
 
 ;; For compatibility with other applications which use the filename as
 ;; the title of a note (rather than the first line of the file), set the
@@ -656,8 +657,10 @@ recursively, that is, when `deft-recursive' is non-nil."
   :safe 'stringp
   :group 'deft)
 
-(defcustom deft-parse-title-function 'deft-strip-title
-  "Function for post-processing file titles."
+(defcustom deft-parse-title-functions
+  '((:default . deft-strip-title))
+  "Functions for post-processing file titles.
+Entries are of the form (entension . parse-function)."
   :type 'function
   :group 'deft)
 
@@ -1073,21 +1076,24 @@ See `deft-generation-rules'."
                 (setq val t)))))))
     val))
 
-(defun deft-strip-title (title)
+(defun deft-strip-title (contents)
   "Remove all strings matching `deft-strip-title-regexp' from TITLE."
-  (deft-chomp (replace-regexp-in-string deft-strip-title-regexp "" title)))
+  (let ((begin (string-match "^.+$" contents)))
+    (when begin
+      (let ((title (substring contents begin (match-end 0))))
+        (deft-chomp (replace-regexp-in-string deft-strip-title-regexp "" title))))))
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
 If `deft-use-filename-as-title' is nil, the title is taken to
 be the first non-empty line of the FILE.  Else the base name of the FILE is
 used as title."
-  (if deft-use-filename-as-title
-      (deft-base-filename file)
-    (let ((begin (string-match "^.+$" contents)))
-      (if begin
-          (funcall deft-parse-title-function
-                   (substring contents begin (match-end 0)))))))
+  (let ((extension (file-name-extension file)))
+    (if deft-use-filename-as-title
+        (deft-base-filename file)
+      (funcall (or (cdr (assoc extension deft-parse-title-functions))
+                   (cdr (assoc :default deft-parse-title-functions)))
+               contents))))
 
 (defun deft-parse-summary (contents title)
   "Parse the file CONTENTS, given the TITLE, and extract a summary.
