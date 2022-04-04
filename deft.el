@@ -680,12 +680,14 @@ form -*-mode-*-."
   :group 'deft)
 
 (defcustom deft-title-regexp
-  (concat "^%+" ; line beg with %
+  (concat "\\(?:"
+          "^%+" ; line beg with %
           "\\|^#\\+TITLE: *" ; org-mode title
           "\\|^[#* ]+" ; line beg with #, * and/or space
           "\\|-\\*-[[:alpha:]]+-\\*-" ; -*- .. -*- lines
           "\\|^Title:[\t ]*" ; MultiMarkdown metadata
           "\\|#+" ; line with just # chars
+          "\\)"
           ".+$")
   "Regular expression to find file titles."
   :type 'regexp
