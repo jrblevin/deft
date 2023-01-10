@@ -872,6 +872,9 @@ Available methods are 'mtime and 'title.")
 (defvar deft-window-width nil
   "Width of Deft buffer.")
 
+(defvar deft-window-width-offset 1
+  "Offset width applied to Deft buffer window width.")
+
 (defvar deft-filter-history nil
   "History of interactive filter strings.")
 
@@ -1216,7 +1219,7 @@ If the frame has a fringe, it will absorb the newline.
 Otherwise, we reduce the line length by a one-character offset."
   (let* ((window (get-buffer-window deft-buffer))
          (fringe-right (ceiling (or (cadr (window-fringes)) 0)))
-         (offset (if (> fringe-right 0) 0 1)))
+         (offset (if (> fringe-right 0) 0 deft-window-width-offset)))
     (when window
       (- (window-text-width window) offset))))
 
