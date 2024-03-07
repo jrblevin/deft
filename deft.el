@@ -707,38 +707,38 @@ slash characters in the file name.  The default behavior is to
 replace slashes with hyphens in the file name.  To change the
 replacement charcter to an underscore, one could use:
 
-   (setq deft-file-naming-rules '((noslash . \"_\")))
+   (setq deft-file-naming-rules \\='((noslash . \"_\")))
 
 Value of `nospace' is a string which should replace the space
 characters in the file name.  Below example replaces spaces with
 underscores in the file names:
 
-   (setq deft-file-naming-rules '((nospace . \"_\")))
+   (setq deft-file-naming-rules \\='((nospace . \"_\")))
 
 Value of `case-fn' is a function name that takes a string as
 input that has to be applied on the file name.  Below example
 makes the file name all lower case:
 
-   (setq deft-file-naming-rules '((case-fn . downcase)))
+   (setq deft-file-naming-rules \\='((case-fn . downcase)))
 
 It is also possible to use a combination of the above cons cells
 to get file name in various case styles like,
 
 snake_case:
 
-    (setq deft-file-naming-rules '((noslash . \"_\")
+    (setq deft-file-naming-rules \\='((noslash . \"_\")
                                    (nospace . \"_\")
                                    (case-fn . downcase)))
 
 or CamelCase
 
-    (setq deft-file-naming-rules '((noslash . \"\")
+    (setq deft-file-naming-rules \\='((noslash . \"\")
                                    (nospace . \"\")
                                    (case-fn . capitalize)))
 
 or kebab-case
 
-    (setq deft-file-naming-rules '((noslash . \"-\")
+    (setq deft-file-naming-rules \\='((noslash . \"-\")
                                    (nospace . \"-\")
                                    (case-fn . downcase)))"
   :type '(alist :key-type symbol :value-type sexp)
@@ -849,7 +849,7 @@ regexp.")
 
 (defvar deft-current-sort-method 'mtime
   "Current file soft method.
-Available methods are 'mtime and 'title.")
+Available methods are \\='mtime and \\='title.")
 
 (defvar deft-all-files nil
   "List of all files in `deft-directory'.")
