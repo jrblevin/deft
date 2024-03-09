@@ -1005,7 +1005,7 @@ See `deft-find-files'."
 (defun deft-find-all-files-no-prefix ()
   "List files in Deft directory with the Deft directory prefix removed.
 See `deft-find-files' and `deft-find-all-files'."
-  (let* ((dir (expand-file-name deft-directory))
+  (let* ((dir (expand-file-name (concat deft-directory "/")))
          (files (mapcar (lambda (f) (replace-regexp-in-string dir "" f))
                         (deft-find-all-files))))
     files))
@@ -1801,8 +1801,8 @@ Otherwise, quick create a new file."
    (expand-file-name handle deft-directory)))
 
 (defun deft--org-complete ()
-  (let ((file (completing-read "file" (deft-find-all-files-no-prefix))))
-    (concat "deft:" (substring file 1))))
+  (let ((file (completing-read "File: " (deft-find-all-files-no-prefix))))
+    (concat "deft:" file)))
 
 ;;; Mode definition
 
