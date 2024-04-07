@@ -673,7 +673,7 @@ recursively, that is, when `deft-recursive' is non-nil."
   "Regular expression to remove from file titles.
 Presently, it removes leading LaTeX comment delimiters, leading
 and trailing hash marks from Markdown ATX headings, leading
-astersisks from Org Mode headings, and Emacs mode lines of the
+asterisks from Org Mode headings, and Emacs mode lines of the
 form -*-mode-*-."
   :type 'regexp
   :safe 'stringp
