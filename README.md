@@ -146,8 +146,8 @@ search mode is indicated by an "R" in the mode line.
 Common file operations can also be carried out from within Deft.
 Files can be renamed using <kbd>C-c C-r</kbd> or deleted using <kbd>C-c C-d</kbd>.
 New files can also be created using <kbd>C-c C-n</kbd> for quick creation or
-<kbd>C-c C-m</kbd> for a filename prompt.  You can leave Deft at any time
-with <kbd>C-c C-q</kbd>.
+<kbd>C-c C-m</kbd> for a filename prompt; with a prefix argument, these operations
+ask for a file extension.  You can leave Deft at any time with <kbd>C-c C-q</kbd>.
 
 Unused files can be archived by pressing <kbd>C-c C-a</kbd>.  Files will be
 moved to `deft-archive-directory`, which is a directory named
