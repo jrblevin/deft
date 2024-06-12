@@ -679,6 +679,21 @@ form -*-mode-*-."
   :safe 'stringp
   :group 'deft)
 
+(defcustom deft-title-regexp
+  (concat "\\(?:"
+          "^%+" ; line beg with %
+          "\\|^#\\+TITLE: *" ; org-mode title
+          "\\|^[#* ]+" ; line beg with #, * and/or space
+          "\\|-\\*-[[:alpha:]]+-\\*-" ; -*- .. -*- lines
+          "\\|^Title:[\t ]*" ; MultiMarkdown metadata
+          "\\|#+" ; line with just # chars
+          "\\)"
+          ".+$")
+  "Regular expression to find file titles."
+  :type 'regexp
+  :safe 'stringp
+  :group 'deft)
+
 (defcustom deft-strip-summary-regexp
   (concat "\\("
            "[\n\t]" ;; blank
@@ -1079,12 +1094,12 @@ See `deft-generation-rules'."
 
 (defun deft-parse-title (file contents)
   "Parse the given FILE and CONTENTS and determine the title.
-If `deft-use-filename-as-title' is nil, the title is taken to
-be the first non-empty line of the FILE.  Else the base name of the FILE is
-used as title."
+If `deft-use-filename-as-title' is nil, the title is taken to be
+the first line matching `deft-title-regexp' of the FILE.  Else
+the base name of the FILE is used as title."
   (if deft-use-filename-as-title
       (deft-base-filename file)
-    (let ((begin (string-match "^.+$" contents)))
+    (let ((begin (string-match deft-title-regexp contents)))
       (if begin
           (funcall deft-parse-title-function
                    (substring contents begin (match-end 0)))))))
